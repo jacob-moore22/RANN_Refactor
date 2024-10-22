@@ -33,28 +33,27 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_stateequation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class State_repulse : public State {
-   public:
-    State_repulse(class PairRANN *);
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class State_repulse : public State
+{
+public:
+    State_repulse(class PairRANN*);
     ~State_repulse();
-    void eos_function(double*,double**,int,int,double*,double*,double*,int*,int,int*);
+    void eos_function(double*, double**, int, int, double*, double*, double*, int*, int, int*);
     bool parse_values(std::string, std::vector<std::string>);
     void generate_table();
-    void allocate(){generate_table();}
-    void write_values(FILE *); 
-    void init(int*,int);
-    double alpha;
-    double b;
-    double dr;
-    double *table;
-    double *dtable;
-  };
-
-
-
+    void allocate() { generate_table(); }
+    void write_values(FILE*);
+    void init(int*, int);
+    double  alpha;
+    double  b;
+    double  dr;
+    double* table;
+    double* dtable;
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

@@ -32,31 +32,77 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_activation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-class Activation_slowcapped : public Activation {
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class Activation_slowcapped : public Activation
+{
 public:
-    
-    Activation_slowcapped(PairRANN *_pair) : Activation(_pair){
+
+    Activation_slowcapped(PairRANN* _pair) : Activation(_pair)
+    {
         empty = false;
         style = "slowcapped";
     };
 
-    double activation_function(double A){
-        return log(exp(A/10+2.5)+1)*10; 
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn activation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double activation_function(double A)
+    {
+        return log(exp(A / 10 + 2.5) + 1) * 10;
     };
-    
-    double dactivation_function(double A){
-        return exp(A/10+2.5)/(exp(A/10+2.5)+1);
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn dactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double dactivation_function(double A)
+    {
+        return exp(A / 10 + 2.5) / (exp(A / 10 + 2.5) + 1);
     };
-    
-    double ddactivation_function(double A){
-        return exp(A/10+2.5)*(1/(exp(A/10+2.5)+1)-1/(exp(A/10+2.5)+1)/exp(A/10+2.5)+1); 
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn ddactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double ddactivation_function(double A)
+    {
+        return exp(A / 10 + 2.5) * (1 / (exp(A / 10 + 2.5) + 1) - 1 / (exp(A / 10 + 2.5) + 1) / exp(A / 10 + 2.5) + 1);
     };
 };
-
-
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

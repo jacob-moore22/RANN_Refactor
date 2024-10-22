@@ -32,32 +32,79 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_activation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-class Activation_capped : public Activation {
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class Activation_capped : public Activation
+{
 public:
-    Activation_capped(PairRANN *_pair) : Activation(_pair) {
+    Activation_capped(PairRANN* _pair) : Activation(_pair)
+    {
         empty = false;
         style = "capped";
     };
-    
-    double activation_function(double A){
-        if (A > 34) return A;
-        return log(exp(A+0.5)+1); 
-    };
-    
-    double dactivation_function(double A){
-        if (A > 34) return 1;
-        return exp(A+0.5)/(exp(A+0.5)+1);
-    };
-    
-    double ddactivation_function(double A){
-        if (A > 34) return 0;
-        return exp(A+0.5)*(1/(exp(A+0.5)+1)-1/(exp(A+0.5)+1)/exp(A+0.5)+1); 
-        };
-}; // end of Activation_capped class
 
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn activation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double activation_function(double A)
+    {
+        if (A > 34) { return A; }
+        return log(exp(A + 0.5) + 1);
+    };
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn dactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double dactivation_function(double A)
+    {
+        if (A > 34) { return 1; }
+        return exp(A + 0.5) / (exp(A + 0.5) + 1);
+    };
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn ddactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double ddactivation_function(double A)
+    {
+        if (A > 34) { return 0; }
+        return exp(A + 0.5) * (1 / (exp(A + 0.5) + 1) - 1 / (exp(A + 0.5) + 1) / exp(A + 0.5) + 1);
+    };
+}; // end of Activation_capped class
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

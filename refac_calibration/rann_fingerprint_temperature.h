@@ -33,23 +33,23 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_fingerprint.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class Fingerprint_temperature : public Fingerprint {
-   public:
-    Fingerprint_temperature(PairRANN *);
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class Fingerprint_temperature : public Fingerprint
+{
+public:
+    Fingerprint_temperature(PairRANN*);
     ~Fingerprint_temperature();
     bool parse_values(std::string, std::vector<std::string>);
-    void write_values(FILE *);
-    void init(int *, int);
+    void write_values(FILE*);
+    void init(int*, int);
     void allocate();
-    void compute_fingerprint(double *, double *, double *, double *, int, int, double *, double *,
-                             double *, int *, int, int *);
+    void compute_fingerprint(double*, double*, double*, double*, int, int, double*, double*,
+        double*, int*, int, int*);
     int get_length();
-
-  };
-
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

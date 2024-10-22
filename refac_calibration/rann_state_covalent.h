@@ -33,32 +33,31 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_stateequation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class State_covalent : public State {
-   public:
-    State_covalent(class PairRANN *);
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class State_covalent : public State
+{
+public:
+    State_covalent(class PairRANN*);
     ~State_covalent();
-    void eos_function(double*,double**,int,int,double*,double*,double*,int*,int,int*);//noscreen,nospin
+    void eos_function(double*, double**, int, int, double*, double*, double*, int*, int, int*); // noscreen,nospin
     bool parse_values(std::string, std::vector<std::string>);
     void allocate();
-    void write_values(FILE *); 
-    void init(int*,int);
-    double rc;
-    double dr;
-    double *Ec;
-    double *a;
-    double *b;
-    double *c;
-    double *table1;
-    double *table2;
-    double *table3;
-    double *table4;
-  };
-
-
-
+    void write_values(FILE*);
+    void init(int*, int);
+    double  rc;
+    double  dr;
+    double* Ec;
+    double* a;
+    double* b;
+    double* c;
+    double* table1;
+    double* table2;
+    double* table3;
+    double* table4;
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

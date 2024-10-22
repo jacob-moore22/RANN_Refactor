@@ -33,29 +33,28 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_stateequation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class State_spinj : public State {
-   public:
-    State_spinj(class PairRANN *);
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class State_spinj : public State
+{
+public:
+    State_spinj(class PairRANN*);
     ~State_spinj();
-    void eos_function(double*,double**,double**,int,int,double*,double*,double*,int*,int,int*);
+    void eos_function(double*, double**, double**, int, int, double*, double*, double*, int*, int, int*);
     bool parse_values(std::string, std::vector<std::string>);
     void generate_spin_table();
-    void allocate(){generate_spin_table();}
-    void write_values(FILE *); 
-    void init(int*,int);
-    double a;
-    double re;
-    double b;
-    double dr;
-    double *spintable;
-    double *spindtable;
-  };
-
-
-
+    void allocate() { generate_spin_table(); }
+    void write_values(FILE*);
+    void init(int*, int);
+    double  a;
+    double  re;
+    double  b;
+    double  dr;
+    double* spintable;
+    double* spindtable;
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

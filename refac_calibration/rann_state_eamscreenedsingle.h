@@ -33,43 +33,41 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_stateequation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class State_eamscreenedsingle : public State {
-   public:
-    State_eamscreenedsingle(class PairRANN *);
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class State_eamscreenedsingle : public State
+{
+public:
+    State_eamscreenedsingle(class PairRANN*);
     ~State_eamscreenedsingle();
-    void eos_function(double*,double**,double*,double*,double*,
-                      double*,double*,double*,double*,bool*,int,
-                      int,double*,double*,double*,int*,int,int*);
+    void eos_function(double*, double**, double*, double*, double*,
+        double*, double*, double*, double*, bool*, int,
+        int, double*, double*, double*, int*, int, int*);
     bool parse_values(std::string, std::vector<std::string>);
     void generate_rose_table();
-    void allocate(){generate_rose_table();}
-    void write_values(FILE *); 
-    void init(int*,int);
-    double ec;
-    double re;
-    double alpha;
-    double delta;
-    double dr;
-    double Z1;
-    double Z2;
-    double snn;
-    double beta0;
-    double Asub;
-    double C;
-    double Cmin;
-    double Cmax;
-    double *rosetable;
-    double *rosedtable;
-    double *embedtable;
-    double *embeddtable;
-
-  };
-
-
-
+    void allocate() { generate_rose_table(); }
+    void write_values(FILE*);
+    void init(int*, int);
+    double  ec;
+    double  re;
+    double  alpha;
+    double  delta;
+    double  dr;
+    double  Z1;
+    double  Z2;
+    double  snn;
+    double  beta0;
+    double  Asub;
+    double  C;
+    double  Cmin;
+    double  Cmax;
+    double* rosetable;
+    double* rosedtable;
+    double* embedtable;
+    double* embeddtable;
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

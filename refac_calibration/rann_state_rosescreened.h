@@ -33,32 +33,31 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_stateequation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class State_rosescreened : public State {
-   public:
-    State_rosescreened(class PairRANN *);
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class State_rosescreened : public State
+{
+public:
+    State_rosescreened(class PairRANN*);
     ~State_rosescreened();
-    void eos_function(double*,double**,double*,double*,double*,
-                      double*,double*,double*,double*,bool*,int,
-                      int,double*,double*,double*,int*,int,int*);
+    void eos_function(double*, double**, double*, double*, double*,
+        double*, double*, double*, double*, bool*, int,
+        int, double*, double*, double*, int*, int, int*);
     bool parse_values(std::string, std::vector<std::string>);
     void generate_rose_table();
-    void allocate(){generate_rose_table();}
-    void write_values(FILE *); 
-    void init(int*,int);
-    double ec;
-    double re;
-    double alpha;
-    double delta;
-    double dr;
-    double *rosetable;
-    double *rosedtable;
-  };
-
-
-
+    void allocate() { generate_rose_table(); }
+    void write_values(FILE*);
+    void init(int*, int);
+    double  ec;
+    double  re;
+    double  alpha;
+    double  delta;
+    double  dr;
+    double* rosetable;
+    double* rosedtable;
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

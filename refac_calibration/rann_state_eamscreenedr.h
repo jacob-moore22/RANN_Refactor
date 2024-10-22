@@ -33,57 +33,56 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_stateequation.h"
 #include <string>
-namespace LAMMPS_NS {
-namespace RANN {
-
+namespace LAMMPS_NS
+{
+namespace RANN
+{
 class Reference_lattice;
 
-  class State_eamscreenedr : public State {
-   public:
-    State_eamscreenedr(class PairRANN *);
+class State_eamscreenedr : public State
+{
+public:
+    State_eamscreenedr(class PairRANN*);
     ~State_eamscreenedr();
-    void eos_function(double*,double**,double*,double*,double*,
-                      double*,double*,double*,double*,bool*,int,
-                      int,double*,double*,double*,int*,int,int*);
+    void eos_function(double*, double**, double*, double*, double*,
+        double*, double*, double*, double*, bool*, int,
+        int, double*, double*, double*, int*, int, int*);
     bool parse_values(std::string, std::vector<std::string>);
     void allocate();
-    void write_values(FILE *);
-    void init(int*,int);
-    Reference_lattice *create_lattice(const char *);
-    double get_psi_single(double,int);
-    double get_dpsi_single(double,int);
-    double get_Fbar(double,int,int);
-    double get_dFbar(double,int,int);
-    double get_psi_binary(double,int,int);
-    double get_dpsi_binary(double,int,int);
-    double get_phi_single(double,int);
-    double get_dphi_single(double,int);
-    double get_phi_binary(double,int,int);
-    double get_dphi_binary(double,int,int);
-    double get_rose(double,int,int);
-    double get_drose(double,int,int);
-    double interpolate(double*,double,int,int);
-    double interpolate(double*,double);
-    double **ec;
-    double **re;
-    double **alpha;
-    double **delta;
-    double *cweight;
-    double **dr;
-    double **rc;
-    double *beta0;
-    double *Asub;
-    double *D_ref;
-    Reference_lattice ***lat;
-    double ***rhosummandtable;
-    double ***phitable;
-    double ***drhosummandtable;
-    double ***dphitable;
-    int *map;
-  };
-
-
-
+    void write_values(FILE*);
+    void init(int*, int);
+    Reference_lattice* create_lattice(const char*);
+    double get_psi_single(double, int);
+    double get_dpsi_single(double, int);
+    double get_Fbar(double, int, int);
+    double get_dFbar(double, int, int);
+    double get_psi_binary(double, int, int);
+    double get_dpsi_binary(double, int, int);
+    double get_phi_single(double, int);
+    double get_dphi_single(double, int);
+    double get_phi_binary(double, int, int);
+    double get_dphi_binary(double, int, int);
+    double get_rose(double, int, int);
+    double get_drose(double, int, int);
+    double interpolate(double*, double, int, int);
+    double interpolate(double*, double);
+    double** ec;
+    double** re;
+    double** alpha;
+    double** delta;
+    double*  cweight;
+    double** dr;
+    double** rc;
+    double*  beta0;
+    double*  Asub;
+    double*  D_ref;
+    Reference_lattice*** lat;
+    double*** rhosummandtable;
+    double*** phitable;
+    double*** drhosummandtable;
+    double*** dphitable;
+    int*      map;
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

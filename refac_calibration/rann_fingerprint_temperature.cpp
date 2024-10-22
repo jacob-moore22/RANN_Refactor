@@ -36,52 +36,112 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 using namespace LAMMPS_NS::RANN;
 
-Fingerprint_temperature::Fingerprint_temperature(PairRANN *_pair) : Fingerprint(_pair)
+Fingerprint_temperature::Fingerprint_temperature(PairRANN* _pair) : Fingerprint(_pair)
 {
-  n_body_type = 1;
-  rc = 0;
-  id = -1;
-  style = "temperature";
-  atomtypes = new int[n_body_type];
-  empty = false;
-  fullydefined = true;
-  _pair->allscreen = false;
+    n_body_type = 1;
+    rc               = 0;
+    id               = -1;
+    style            = "temperature";
+    atomtypes        = new int[n_body_type];
+    empty            = false;
+    fullydefined     = true;
+    _pair->allscreen = false;
 }
 
 Fingerprint_temperature::~Fingerprint_temperature()
 {
-  delete[] atomtypes;
+    delete[] atomtypes;
 }
 
-bool Fingerprint_temperature::parse_values(std::string constant,std::vector<std::string> line1) {
-  return false;
+/////////////////////////////////////////////////////////////////////////////
+///
+/// \fn parse_values
+///
+/// \brief <insert brief description>
+///
+/// <Insert longer more detailed description which
+/// can span multiple lines if needed>
+///
+/// \param <function parameter description>
+///
+/// \return <return type and definition description if not void>
+///
+/////////////////////////////////////////////////////////////////////////////
+bool Fingerprint_temperature::parse_values(std::string constant, std::vector<std::string> line1)
+{
+    return false;
 }
 
-void Fingerprint_temperature::write_values(FILE *fid) {
- 
+/////////////////////////////////////////////////////////////////////////////
+///
+/// \fn write_values
+///
+/// \brief <insert brief description>
+///
+/// <Insert longer more detailed description which
+/// can span multiple lines if needed>
+///
+/// \param <function parameter description>
+///
+/// \return <return type and definition description if not void>
+///
+/////////////////////////////////////////////////////////////////////////////
+void Fingerprint_temperature::write_values(FILE* fid)
+{
 }
 
-//called after fingerprint is fully defined and tables can be computed.
+// called after fingerprint is fully defined and tables can be computed.
 void Fingerprint_temperature::allocate()
 {
 }
 
-//called after fingerprint is declared for i-j type, but before its parameters are read.
-void Fingerprint_temperature::init(int *i,int _id)
+// called after fingerprint is declared for i-j type, but before its parameters are read.
+void Fingerprint_temperature::init(int* i, int _id)
 {
-  empty = false;
-  for (int j=0;j<n_body_type;j++) {atomtypes[j] = i[j];}
-  id = _id;
+    empty = false;
+    for (int j = 0; j < n_body_type; j++) {
+        atomtypes[j] = i[j];
+    }
+    id = _id;
 }
 
-void Fingerprint_temperature::compute_fingerprint(double * features,double * dfeaturesx,double *dfeaturesy,double *dfeaturesz,int ii,int sid,double *xn,double *yn,double*zn,int *tn,int jnum,int * /*jl*/)
+/////////////////////////////////////////////////////////////////////////////
+///
+/// \fn compute_fingerprint
+///
+/// \brief <insert brief description>
+///
+/// <Insert longer more detailed description which
+/// can span multiple lines if needed>
+///
+/// \param <function parameter description>
+///
+/// \return <return type and definition description if not void>
+///
+/////////////////////////////////////////////////////////////////////////////
+void Fingerprint_temperature::compute_fingerprint(double* features, double* dfeaturesx, double* dfeaturesy, double* dfeaturesz, int ii, int sid, double* xn, double* yn, double* zn, int* tn, int jnum,
+    int* /*jl*/)
 {
-  PairRANN::Simulation *sim = &pair->sims[sid];
-  int count=startingneuron;
-  features[count]=sim->temp;
+    PairRANN::Simulation* sim = &pair->sims[sid];
+    int count = startingneuron;
+    features[count] = sim->temp;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+///
+/// \fn get_length
+///
+/// \brief <insert brief description>
+///
+/// <Insert longer more detailed description which
+/// can span multiple lines if needed>
+///
+/// \param <function parameter description>
+///
+/// \return <return type and definition description if not void>
+///
+/////////////////////////////////////////////////////////////////////////////
 int Fingerprint_temperature::get_length()
 {
-  return 1;
+    return 1;
 }

@@ -33,35 +33,81 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_activation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-class Activation_sigI : public Activation {
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class Activation_sigI : public Activation
+{
 public:
-    
-    Activation_sigI(PairRANN *_pair) : Activation(_pair){
+
+    Activation_sigI(PairRANN* _pair) : Activation(_pair)
+    {
         empty = false;
         style = "sigI";
     };
-    
-    double activation_function(double in){
-        if (in > 34) return in;
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn activation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double activation_function(double in)
+    {
+        if (in > 34) { return in; }
         return 0.1 * in + 0.9 * log(exp(in) + 1);
     };
-    
-    double dactivation_function(double in) {
-        if (in > 34) return 1;
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn dactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double dactivation_function(double in)
+    {
+        if (in > 34) { return 1; }
         return 0.1 + 0.9 / (exp(in) + 1) * exp(in);
     };
-    
-    double ddactivation_function(double in) {
-        if (in > 34) return 0;
-        //return 0.9 * exp(in) / (exp(in) + 1) / (exp(in) + 1);
-        return 0.9*exp(in)/(exp(in) + 1) - 0.9*exp(2*in)/(exp(in) + 1)/(exp(in) + 1);
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn ddactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double ddactivation_function(double in)
+    {
+        if (in > 34) { return 0; }
+        // return 0.9 * exp(in) / (exp(in) + 1) / (exp(in) + 1);
+        return 0.9 * exp(in) / (exp(in) + 1) - 0.9 * exp(2 * in) / (exp(in) + 1) / (exp(in) + 1);
     };
 };
-
-
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

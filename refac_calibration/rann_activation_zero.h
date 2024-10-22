@@ -32,31 +32,77 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_activation.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-class Activation_zero : public Activation {
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class Activation_zero : public Activation
+{
 public:
 
-    Activation_zero(PairRANN *_pair) : Activation(_pair){
+    Activation_zero(PairRANN* _pair) : Activation(_pair)
+    {
         empty = false;
         style = "zero";
     };
-    
-    double activation_function(double A){
-        return 0.0; 
-    };
-    
-    double dactivation_function(double A){
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn activation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double activation_function(double A)
+    {
         return 0.0;
     };
-    
-    double ddactivation_function(double A){
-        return 0.0; 
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn dactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double dactivation_function(double A)
+    {
+        return 0.0;
+    };
+
+    /////////////////////////////////////////////////////////////////////////////
+    ///
+    /// \fn ddactivation_function
+    ///
+    /// \brief <insert brief description>
+    ///
+    /// <Insert longer more detailed description which
+    /// can span multiple lines if needed>
+    ///
+    /// \param <function parameter description>
+    ///
+    /// \return <return type and definition description if not void>
+    ///
+    /////////////////////////////////////////////////////////////////////////////
+    double ddactivation_function(double A)
+    {
+        return 0.0;
     };
 };
-
-
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

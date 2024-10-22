@@ -32,46 +32,48 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 #include "rann_state_eam_ref.h"
 
-namespace LAMMPS_NS {
-namespace RANN {
-
-  class Ref_B2 : public Reference_lattice {
-   public:
-    Ref_B2 (State *_state) : Reference_lattice(_state) {
-      //Part 1: define lattice data:
-      empty = false;
-      n_body_type = 2;//single or binary
-      style = "b2";//lattice name
-      natoms = 2;
-      int atomtypes1 [] = {0,1};
-      double box1 [3][3] = {{1,0,0},{0,1,0},{0,0,1}};
-      double atoms1[][3] = {{0,0,0},
-                                  {0.5,0.5,0.5}};
-      double origin1[3] = {0,0,0};
-      //Part 2: save lattice data to struct
-      type = new int[natoms];
-      x = new double *[natoms];
-      box = new double*[3];
-      for (int i = 0;i<3;i++){
-        box[i] = new double[3];
-        origin[i] = origin1[i];
-        for (int j = 0;j<3;j++){
-          box[i][j] = box1[i][j];
+namespace LAMMPS_NS
+{
+namespace RANN
+{
+class Ref_B2 : public Reference_lattice
+{
+public:
+    Ref_B2 (State* _state) : Reference_lattice(_state)
+    {
+        // Part 1: define lattice data:
+        empty = false;
+        n_body_type = 2; // single or binary
+        style  = "b2"; // lattice name
+        natoms = 2;
+        int    atomtypes1[] = { 0, 1 };
+        double box1[3][3]   = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+        double atoms1[][3]  = { { 0, 0, 0 },
+            { 0.5, 0.5, 0.5 } };
+        double origin1[3] = { 0, 0, 0 };
+        // Part 2: save lattice data to struct
+        type = new int[natoms];
+        x    = new double*[natoms];
+        box  = new double*[3];
+        for (int i = 0; i < 3; i++) {
+            box[i]    = new double[3];
+            origin[i] = origin1[i];
+            for (int j = 0; j < 3; j++) {
+                box[i][j] = box1[i][j];
+            }
         }
-      }
-      for (int i = 0;i<natoms;i++){
-        x[i] = new double[3];
-        type[i] = atomtypes1[i];
-        for (int j = 0;j<3;j++){
-          x[i][j] = atoms1[i][j];
+        for (int i = 0; i < natoms; i++) {
+            x[i]    = new double[3];
+            type[i] = atomtypes1[i];
+            for (int j = 0; j < 3; j++) {
+                x[i][j] = atoms1[i][j];
+            }
         }
-      }
     };
-    ~Ref_B2() {
-
+    ~Ref_B2()
+    {
     };
-  };
-
+};
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

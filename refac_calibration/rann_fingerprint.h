@@ -35,89 +35,85 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 #include <string>
 #include <vector>
 
-namespace LAMMPS_NS {
+namespace LAMMPS_NS
+{
 class PairRANN;
-namespace RANN {
-
-
-class Fingerprint {
+namespace RANN
+{
+class Fingerprint
+{
 public:
-    Fingerprint(PairRANN *);
+    Fingerprint(PairRANN*);
     virtual ~Fingerprint() {}
 
     virtual bool parse_values(std::string, std::vector<std::string>) { return false; }
-    virtual void write_values(FILE *) {}
+    virtual void write_values(FILE*) {}
 
-    virtual void init(int *, int) {}
+    virtual void init(int*, int) {}
     virtual void allocate() {}
 
     void init_screen(int);
 
-    //no screen,no spin
-    virtual void compute_fingerprint(double *, double *, double *, double *, int, int, double *,
-        double *, double *, int *, int, int *)
-    {
-    }
-    
-    //screen
-    virtual void compute_fingerprint(double *, double *, double *, double *, double *, double *,
-        double *, double *, double *, double *, double *, bool *, int,
-        int, double *, double *, double *, int *, int, int *)
-    {
-    }
-    
-    //spin
-    virtual void compute_fingerprint(double *, double *, double *, double *, double *, double *,
-        double *, double *, double *, double *, double *, double *,
-        double *, int, int, double *, double *, double *, int *, int,
-        int *)
+    // no screen,no spin
+    virtual void compute_fingerprint(double*, double*, double*, double*, int, int, double*,
+    double*, double*, int*, int, int*)
     {
     }
 
-    //spin,screen
-    virtual void compute_fingerprint(double *, double *, double *, double *, double *, double *,
-        double *, double *, double *, double *, double *, double *,
-        double *, double *, bool *, int, int, double *, double *,
-        double *, int *, int, int *)
+    // screen
+    virtual void compute_fingerprint(double*, double*, double*, double*, double*, double*,
+    double*, double*, double*, double*, double*, bool*, int,
+    int, double*, double*, double*, int*, int, int*)
     {
     }
 
-    //spin,screen,secondderivative
+    // spin
+    virtual void compute_fingerprint(double*, double*, double*, double*, double*, double*,
+    double*, double*, double*, double*, double*, double*,
+    double*, int, int, double*, double*, double*, int*, int,
+    int*)
+    {
+    }
+
+    // spin,screen
+    virtual void compute_fingerprint(double*, double*, double*, double*, double*, double*,
+    double*, double*, double*, double*, double*, double*,
+    double*, double*, bool*, int, int, double*, double*,
+    double*, int*, int, int*)
+    {
+    }
+
+    // spin,screen,secondderivative
     virtual void compute_fingerprint(
-        double *, double *, double *, double *, double *, double *,
-        double *, double *, double *, double *, double *, double *,
-        double *, double *, double *, double *, double *, double *,
-        double *, double *, bool *, int, int, double *, double *,
-        double *, int *, int, int *)
+    double*, double*, double*, double*, double*, double*,
+    double*, double*, double*, double*, double*, double*,
+    double*, double*, double*, double*, double*, double*,
+    double*, double*, bool*, int, int, double*, double*,
+    double*, int*, int, int*)
     {
     }
 
     virtual int get_length() { return 0; };
     virtual double cutofffunction(double, double, double);
     virtual void generate_rinvssqrttable();
-    
 
-    PairRANN *pair;
+    PairRANN* pair;
 
-    double *rinvsqrttable;
-    double rc;
+    double* rinvsqrttable;
+    double  rc;
 
-    int n_body_type;    //i-j vs. i-j-k vs. i-j-k-l, etc.
-    int startingneuron;
-    int id;    //based on ordering of fingerprints listed for i-j in potential file
-    int *atomtypes;
+    int  n_body_type;   // i-j vs. i-j-k vs. i-j-k-l, etc.
+    int  startingneuron;
+    int  id;   // based on ordering of fingerprints listed for i-j in potential file
+    int* atomtypes;
 
     bool spin;
     bool screen;
     bool empty;
     bool fullydefined;
-    
-    const char *style;
-        
+
+    const char* style;
 };
-
-
-
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 
