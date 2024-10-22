@@ -35,47 +35,47 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 using namespace LAMMPS_NS::RANN;
 
-Fingerprint::Fingerprint(PairRANN *_pair)
-{
-  spin = false;
-  screen = false;
-  empty = true;
-  fullydefined = false;
-  n_body_type = 0;
-  style = "empty";
-  pair = _pair;
+Fingerprint::Fingerprint(PairRANN *_pair){
+    spin = false;
+    screen = false;
+    empty = true;
+    fullydefined = false;
+    n_body_type = 0;
+    style = "empty";
+    pair = _pair;
 }
 
 // Smooth cutoff, goes from 1 to zero over the interval rc-dr to rc.
 // Same as MEAM uses. Used by generateradialtable and generatexpcuttable.
 
-double Fingerprint::cutofffunction(double r, double rc, double dr)
-{
-  double out;
-  if (r < (rc - dr))
-    out = 1;
-  else if (r > rc)
-    out = 0;
-  else {
-    out = 1 - (rc - r) / dr;
-    out *= out;
-    out *= out;
-    out = 1 - out;
-    out *= out;
-  }
-  return out;
+double Fingerprint::cutofffunction(double r, double rc, double dr){
+
+    double out;
+    if (r < (rc - dr)){
+        out = 1;
+    }
+    else if (r > rc){
+        out = 0;
+    }
+    else {
+        out = 1 - (rc - r) / dr;
+        out *= out;
+        out *= out;
+        out = 1 - out;
+        out *= out;
+    }
+    return out;
 }
 
-void Fingerprint::generate_rinvssqrttable()
-{
-  int buf = 5;
-  int m;
-  double r1;
-  double cutmax = pair->cutmax;
-  int res = pair->res;
-  rinvsqrttable = new double[res + buf];
-  for (m = 0; m < (res + buf); m++) {
-    r1 = cutmax * cutmax * (double) (m) / (double) (res);
-    rinvsqrttable[m] = 1 / sqrt(r1);
-  }
+void Fingerprint::generate_rinvssqrttable(){
+    int buf = 5;
+    int m;
+    double r1;
+    double cutmax = pair->cutmax;
+    int res = pair->res;
+    rinvsqrttable = new double[res + buf];
+    for (m = 0; m < (res + buf); m++) {
+        r1 = cutmax * cutmax * (double) (m) / (double) (res);
+        rinvsqrttable[m] = 1 / sqrt(r1);
+    }
 }

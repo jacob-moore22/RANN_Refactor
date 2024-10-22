@@ -35,31 +35,31 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 namespace LAMMPS_NS {
 namespace RANN {
 
-  class Activation_cappedshift : public Activation {
-   public:
+class Activation_cappedshift : public Activation {
+public:
     Activation_cappedshift(PairRANN *_pair) : Activation(_pair) {
-      empty = false;
-      style = "cappedshift";
+        empty = false;
+        style = "cappedshift";
     };
     double activation_function(double A){
-      if (A>18)
-	return A+2;
-      else
-	return log(exp(A+2)+1); 
+        if (A>18)
+            return A+2;
+        else
+            return log(exp(A+2)+1); 
     };
     double dactivation_function(double A){
-      if (A>18)
-	return 1;
-      else
-	return exp(A+2)/(exp(A+2)+1);
+        if (A>18)
+            return 1;
+        else
+            return exp(A+2)/(exp(A+2)+1);
     };
     double ddactivation_function(double A){
-      if (A>18)
-	return 0;
-      else
-	return exp(A+2)/(exp(A+2)+1)/(exp(A+2)+1); 
+        if (A>18)
+            return 0;
+        else
+            return exp(A+2)/(exp(A+2)+1)/(exp(A+2)+1); 
     };
-  };
+};
 
 }    // namespace RANN
 }    // namespace LAMMPS_NS

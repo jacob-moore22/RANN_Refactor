@@ -35,22 +35,28 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 namespace LAMMPS_NS {
 namespace RANN {
 
-  class Activation_slowcapped : public Activation {
-   public:
+class Activation_slowcapped : public Activation {
+public:
+    
     Activation_slowcapped(PairRANN *_pair) : Activation(_pair){
-      empty = false;
-      style = "slowcapped";
+        empty = false;
+        style = "slowcapped";
     };
+
     double activation_function(double A){
-      return log(exp(A/10+2.5)+1)*10; 
+        return log(exp(A/10+2.5)+1)*10; 
     };
+    
     double dactivation_function(double A){
-      return exp(A/10+2.5)/(exp(A/10+2.5)+1);
+        return exp(A/10+2.5)/(exp(A/10+2.5)+1);
     };
+    
     double ddactivation_function(double A){
-      return exp(A/10+2.5)*(1/(exp(A/10+2.5)+1)-1/(exp(A/10+2.5)+1)/exp(A/10+2.5)+1); 
+        return exp(A/10+2.5)*(1/(exp(A/10+2.5)+1)-1/(exp(A/10+2.5)+1)/exp(A/10+2.5)+1); 
     };
-  };
+};
+
+
 }    // namespace RANN
 }    // namespace LAMMPS_NS
 

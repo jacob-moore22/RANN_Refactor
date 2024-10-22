@@ -33,19 +33,26 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 
 namespace LAMMPS_NS {
 namespace RANN {
-  class Activation {
-   public:
+
+
+class Activation {
+    public:
+    
     Activation(class PairRANN *) {
-      empty = true;
-      style = "empty";
+        empty = true;
+        style = "empty";
     };
+    
     virtual ~Activation(){};
     virtual double activation_function(double A){ return A;}
     virtual double dactivation_function(double){ return 1.0;}
     virtual double ddactivation_function(double){ return 0.0;}
+    
     bool empty;
+    
     const char *style;
-  };
+
+};
 
 
 }    // namespace RANN

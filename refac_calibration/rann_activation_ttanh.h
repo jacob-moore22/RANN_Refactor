@@ -36,24 +36,27 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 namespace LAMMPS_NS {
 namespace RANN {
 
-  class Activation_ttanh : public Activation {
-   public:
+class Activation_ttanh : public Activation {
+public:
     Activation_ttanh(PairRANN *_pair) : Activation(_pair){
-      empty = false;
-      style = "ttanh";
+        empty = false;
+        style = "ttanh";
     };
+
     double activation_function(double in){
-      return 8 / (exp(-in) + 1);
+        return 8 / (exp(-in) + 1);
     };
+    
     double dactivation_function(double in) {
-      if (in > 34) return 0;
-      return 8 * exp(in) / (exp(in) + 1) / (exp(in) + 1);
+        if (in > 34) return 0;
+        return 8 * exp(in) / (exp(in) + 1) / (exp(in) + 1);
     };
+    
     double ddactivation_function(double in) {
-      if (in > 34) return 0;
-      return 8 * exp(in) * (1 - exp(in))/ (exp(in) + 1) / (exp(in) + 1) / (exp(in) + 1);
+        if (in > 34) return 0;
+        return 8 * exp(in) * (1 - exp(in))/ (exp(in) + 1) / (exp(in) + 1) / (exp(in) + 1);
     };
-  };
+};
 
   
 

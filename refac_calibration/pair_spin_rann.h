@@ -97,13 +97,13 @@ public:
 	bool ***bundle_outputdefined;
 	double energy_fitv_best;
 	int nelements;                // # of elements (distinct from LAMMPS atom types since multiple atom types can be mapped to one element)
-	int nelementsp;				// nelements+1
+	int nelementsp;								// nelements+1
 	char **elements;              // names of elements
-	char **elementsp;				// names of elements with "all" appended as the last "element"
+	char **elementsp;							// names of elements with "all" appended as the last "element"
 	double *mass;                 // mass of each element
-	double cutmax;				// max radial distance for neighbor lists
+	double cutmax;								// max radial distance for neighbor lists
 	int *map;                     // mapping from atom types to elements
-	int *fingerprintcount;		// static variable used in initialization
+	int *fingerprintcount;				// static variable used in initialization
 	int *fingerprintlength;       // # of input neurons defined by fingerprints of each element.
 	int *fingerprintperelement;   // # of fingerprints for each element
 	int *stateequationperelement;
@@ -122,23 +122,23 @@ public:
 	double hbar;
 
 	struct NNarchitecture{
-	  int layers;
-	  int *dimensions;//vector of length layers with entries for neurons per layer
-	  int *activations;//unused
-	  int maxlayer;//longest layer (for memory allocation)
-	  int sumlayers;
-	  int *startI;
-	  bool bundle;
-	  int *bundles;
-	  int **bundleinputsize;
-	  int **bundleoutputsize;
-	  bool **identitybundle;
-	  int ***bundleinput;
-	  int ***bundleoutput;
-	  double ***bundleW;
-	  double ***bundleB;
-	  bool ***freezeW;
-	  bool ***freezeB;
+		int layers;
+		int *dimensions;//vector of length layers with entries for neurons per layer
+		int *activations;//unused
+		int maxlayer;//longest layer (for memory allocation)
+		int sumlayers;
+		int *startI;
+		bool bundle;
+		int *bundles;
+		int **bundleinputsize;
+		int **bundleoutputsize;
+		bool **identitybundle;
+		int ***bundleinput;
+		int ***bundleoutput;
+		double ***bundleW;
+		double ***bundleB;
+		bool ***freezeW;
+		bool ***freezeB;
 	};
 	NNarchitecture *net;//array of networks, 1 for each element.
 
@@ -185,31 +185,25 @@ public:
 
 	//read potential file:
 	void read_file(char *);
-  void read_atom_types(std::vector<std::string>, char *, int);
-  void read_fpe(
-      std::vector<std::string>, std::vector<std::string>, char *,
-      int);    //fingerprints per element. Count total fingerprints defined for each 1st element in element combinations
-  void read_fingerprints(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_fingerprint_constants(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_network_layers(std::vector<std::string>, std::vector<std::string>, char *,
-                           int);    //include input and output layer (hidden layers + 2)
-  void read_layer_size(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_weight(std::vector<std::string>, std::vector<std::string>, FILE *, char *,
-                   int *);    //weights should be formatted as properly shaped matrices
-  void read_bias(std::vector<std::string>, std::vector<std::string>, FILE *, char *,
-                 int *);    //biases should be formatted as properly shaped vectors
-  void read_activation_functions(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_screening(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_mass(const std::vector<std::string> &, const std::vector<std::string> &, const char *,
-                 int);
-  void read_eospe(std::vector<std::string>, std::vector<std::string>, char *,int);    
-  void read_eos(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_eos_constants(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_bundles(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_bundle_input(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_bundle_output(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_bundle_id(std::vector<std::string>, std::vector<std::string>, char *, int);
-  void read_parameters(std::vector<std::string>, std::vector<std::string>, FILE *, char *, int*,char *);
+	void read_atom_types(std::vector<std::string>, char *, int);
+	void read_fpe( std::vector<std::string>, std::vector<std::string>, char *, int);    //fingerprints per element. Count total fingerprints defined for each 1st element in element combinations
+	void read_fingerprints(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_fingerprint_constants(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_network_layers(std::vector<std::string>, std::vector<std::string>, char *, int);    //include input and output layer (hidden layers + 2)
+	void read_layer_size(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_weight(std::vector<std::string>, std::vector<std::string>, FILE *, char *, int *);    //weights should be formatted as properly shaped matrices
+	void read_bias(std::vector<std::string>, std::vector<std::string>, FILE *, char *, int *);    //biases should be formatted as properly shaped vectors
+	void read_activation_functions(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_screening(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_mass(const std::vector<std::string> &, const std::vector<std::string> &, const char *, int);
+	void read_eospe(std::vector<std::string>, std::vector<std::string>, char *,int);    
+	void read_eos(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_eos_constants(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_bundles(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_bundle_input(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_bundle_output(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_bundle_id(std::vector<std::string>, std::vector<std::string>, char *, int);
+	void read_parameters(std::vector<std::string>, std::vector<std::string>, FILE *, char *, int*,char *);
 	bool check_potential();
 
 	//process_data
@@ -273,10 +267,10 @@ public:
   	RANN::Activation *create_activation(const char *);
 	RANN::State *create_state(const char *);
 
- protected:
-  RANN::Activation ****activation;
-  RANN::Fingerprint ***fingerprints;
-  RANN::State ***state;
+protected:
+	RANN::Activation ****activation;
+	RANN::Fingerprint ***fingerprints;
+	RANN::State ***state;
 };
 
 

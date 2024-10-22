@@ -35,35 +35,39 @@ DISTRIBUTION A. Approved for public release; distribution unlimited. OPSEC#4918
 namespace LAMMPS_NS {
 namespace RANN {
 
-  class Activation_sharpcapped : public Activation {
-   public:
+class Activation_sharpcapped : public Activation {
+public:
+    
     Activation_sharpcapped(PairRANN *_pair) : Activation(_pair) {
-      empty = false;
-      style = "sharpcapped";
+        empty = false;
+        style = "sharpcapped";
     };
+    
     double activation_function(double A){
-      if (A<20)	{
-	return log(exp(4*A+2)+1)/4; 
-      } else {
-	return A + 0.5 ;
-      }
+        if (A<20)	{
+            return log(exp(4*A+2)+1)/4; 
+        } else {
+            return A + 0.5 ;
+        }
     };
+    
     double dactivation_function(double A){
-      if (A<20) {
-	return exp(4*A+2)/(exp(4*A+2)+1);
-      } else {
-	return 1.0;
-      }
+        if (A<20) {
+            return exp(4*A+2)/(exp(4*A+2)+1);
+        } else {
+            return 1.0;
+        }
     };
+    
     double ddactivation_function(double A){
-      if (A<20) {
-	//return 4*exp(4*A+2.0)/(exp(4*A+2.0)+1)/(exp(4*A+2.0)+1); 
-      return 4*exp(4*A + 2)/(exp(4*A + 2) + 1) - 4*exp(8*A + 4)/(exp(4*A + 2) + 1)/(exp(4*A + 2) + 1);
-      } else {
-	return 0.0;
-      }
+        if (A<20) {
+            //return 4*exp(4*A+2.0)/(exp(4*A+2.0)+1)/(exp(4*A+2.0)+1); 
+            return 4*exp(4*A + 2)/(exp(4*A + 2) + 1) - 4*exp(8*A + 4)/(exp(4*A + 2) + 1)/(exp(4*A + 2) + 1);
+        } else {
+            return 0.0;
+        }
     };
-  };
+};
 
 }    // namespace RANN
 }    // namespace LAMMPS_NS
