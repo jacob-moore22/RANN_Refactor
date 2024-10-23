@@ -98,13 +98,13 @@ public:
     bool***  bundle_outputdefined;
     double   energy_fitv_best;
     int      nelements;               // # of elements (distinct from LAMMPS atom types since multiple atom types can be mapped to one element)
-    int      nelementsp;                                                        // nelements+1
+    int      nelementsp;              // nelements+1
     char**   elements;                // names of elements
-    char**   elementsp;                                                         // names of elements with "all" appended as the last "element"
+    char**   elementsp;               // names of elements with "all" appended as the last "element"
     double*  mass;                    // mass of each element
-    double   cutmax;                                                            // max radial distance for neighbor lists
+    double   cutmax;                  // max radial distance for neighbor lists
     int*     map;                     // mapping from atom types to elements
-    int*     fingerprintcount;                          // static variable used in initialization
+    int*     fingerprintcount;        // static variable used in initialization
     int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element.
     int*     fingerprintperelement;   // # of fingerprints for each element
     int*     stateequationperelement;
