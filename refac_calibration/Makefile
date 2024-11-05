@@ -1,18 +1,33 @@
 
-SRC_DIR := ./
-OBJ_DIR := ./obj
+SRC_DIR := . activation/ utils/  fingerprint/ state/ 
+OBJ_DIR :=  obj
 #TEST_DIR := ../calibration_testing/TiZr_fit/fit_1
 #TEST_FILE := ZrTi1.nn
-TEST_DIR := /mnt/wwn-0x5000c500a2b12ba1-part2/cdb333/Altraining
-TEST_FILE := MgAl_900.nn
+TEST_DIR := /examples
+TEST_FILE := Alnew1.nn
 #TEST_DIR := ../calibration_testing/Mg_pure
 #TEST_FILE := Mg_new.nn
-SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+
+
+
+
+
+SRC_FILES := $(wildcard $(addsuffix *.cpp, $(SRC_DIR)))
+# $(info SRC_FILES: $(SRC_FILES))
+
+# SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+# OBJ_FILES := $(SRC_FILES:.cpp=.o)
+# OBJ_FILES := $(patsubst $(SRC_DIR)%/*.cpp,$(OBJ_DIR)/%.o, $(SRC_FILES))
+OBJ_FILES := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
+
 REPFLAGS = -qopt-report=5 -qopt-report-filter="calibration.cpp,1802-2101"
 DEPENDS := ${OBJ_FILES:.o=.d}  # substitutes ".o" with ".d"
+
 # https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html
 # MMD: to handle dependency by includ header locations in .d file
+
+
+$(info OBJ_FILES: $(OBJ_FILES))
 
 ## for debugging using gnu compiler
 # TARGET := nn_calib_gcc_debug
@@ -41,7 +56,7 @@ DEPENDS := ${OBJ_FILES:.o=.d}  # substitutes ".o" with ".d"
 ## for production run using gcc compiler
 TARGET := nn_calib_gcc_new
 CXX := g++
-CXXFLAGS := -O2 -shared-libgcc -MMD -fopenmp
+CXXFLAGS := -O2 -shared-libgcc -MMD -fopenmp -Iactivation -Ifingerprint -Istate -Iutils
 LDFLAGS := -fopenmp
 
 
@@ -56,10 +71,14 @@ all: $(TARGET)
 # $<: the name of the first prerequisite, e.g. activation.cpp
 $(TARGET): $(OBJ_FILES)
 	$(CXX) $^ $(LDFLAGS) $(LDLIBS) -o $@
-	cp $(TARGET) $(TEST_DIR)
+# 	cp $(TARGET) $(TEST_DIR)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+
+
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	@mkdir -p $(OBJ_DIR)
+	$(info OBJ_DIR: $(OBJ_DIR))
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run:

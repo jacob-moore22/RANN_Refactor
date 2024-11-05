@@ -8,11 +8,15 @@ TEST_FILE := MgAl_900.nn
 #TEST_DIR := ../calibration_testing/Mg_pure
 #TEST_FILE := Mg_new.nn
 SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
 REPFLAGS = -qopt-report=5 -qopt-report-filter="calibration.cpp,1802-2101"
 DEPENDS := ${OBJ_FILES:.o=.d}  # substitutes ".o" with ".d"
 # https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html
 # MMD: to handle dependency by includ header locations in .d file
+
+
+$(info SRC_DIR: $(SRC_DIR))
+$(info OBJ_FILES: $(OBJ_FILES))
 
 ## for debugging using gnu compiler
 # TARGET := nn_calib_gcc_debug

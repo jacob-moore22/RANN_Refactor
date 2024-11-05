@@ -1,2 +1,0 @@
-obj/rann_state_spin_j.o: rann_state_spin_j.cpp rann_state_spin_j.h \
- rann_stateequation.h pair_spin_rann.h utils.h
