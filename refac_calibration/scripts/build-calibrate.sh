@@ -56,7 +56,7 @@ show_help() {
 build_action="full-app"
 # execution="examples"
 machine="linux"
-kokkos_build_type="serial"
+kokkos_build_type="cuda"
 build_cores="8"
 trilinos="disabled"
 

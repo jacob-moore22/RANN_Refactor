@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     Kokkos::initialize();
     {
 
-        CArrayKokkos<int> arr(10);
+        DualCArray<int> arr(10);
         FOR_ALL(i, 0, 10, {
             arr(i) = i;
         });
