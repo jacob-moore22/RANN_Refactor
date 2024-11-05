@@ -221,6 +221,7 @@ PairRANN::~PairRANN()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::setup()
 {
+    std::cout << "**** Inside PairRANN::setup ****" << std::endl;
     int nthreads = 1;
         #pragma omp parallel
     nthreads = omp_get_num_threads();
@@ -269,6 +270,7 @@ void PairRANN::setup()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::run()
 {
+    std::cout << "**** Inside PairRANN::run ****" << std::endl;
     if (strcmp(algorithm, "LMqr") == 0) {
         // DEPRECATED. Do not use.
         // slow but robust.
@@ -310,6 +312,7 @@ void PairRANN::run()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::finish()
 {
+    std::cout << "**** Inside PairRANN::finish ****" << std::endl;
 //	write_potential_file(true);
 }
 
@@ -329,6 +332,7 @@ void PairRANN::finish()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::string> line1, FILE* fp, char* filename, int* linenum, char* linetemp)
 {
+    std::cout << "**** Inside PairRANN::read_parameters ****" << std::endl;
     if (line[1] == "algorithm") {
         if (line[1].size() > SHORTLINE) {
             delete[] algorithm;
@@ -585,6 +589,7 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::create_random_weights(int rows, int columns, int itype, int layer, int bundle)
 {
+    std::cout << "**** Inside PairRANN::create_random_weights ****" << std::endl;
     net[itype].bundleW[layer][bundle] = new double [rows * columns];
     net[itype].freezeW[layer][bundle] = new bool [rows * columns];
     double r;
@@ -614,6 +619,7 @@ void PairRANN::create_random_weights(int rows, int columns, int itype, int layer
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::create_random_biases(int rows, int itype, int layer, int bundle)
 {
+    std::cout << "**** Inside PairRANN::create_random_biases ****" << std::endl;
     net[itype].bundleB[layer][bundle] = new double [rows];
     net[itype].freezeB[layer][bundle] = new bool [rows];
     double r;
@@ -641,6 +647,7 @@ void PairRANN::create_random_biases(int rows, int itype, int layer, int bundle)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::allocate(const std::vector<std::string>& elementwords)
 {
+    std::cout << "**** Inside PairRANN::allocate ****" << std::endl;
     int i, n;
     cutmax     = 0;
     nelementsp = nelements + 1;
@@ -710,6 +717,7 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::update_stack_size()
 {
+    std::cout << "**** Inside PairRANN::update_stack_size ****" << std::endl;
     // TO DO: fix. Still getting stack overflow from underestimating memory needs.
     // get very rough guess of memory usage
     int jlen = nsims;
@@ -768,6 +776,7 @@ void PairRANN::update_stack_size()
 /////////////////////////////////////////////////////////////////////////////
 bool PairRANN::check_parameters()
 {
+    std::cout << "**** Inside PairRANN::check_parameters ****" << std::endl;
     int itype, layer, bundle, rows, columns, r, c, count;
     if (strcmp(algorithm, "LMqr") != 0 && strcmp(algorithm, "LMch") != 0 && strcmp(algorithm, "CG") != 0 && strcmp(algorithm, "LMsearch") != 0 && strcmp(algorithm, "bfgs") != 0) {
         errorf(FLERR, "Unrecognized algorithm. Must be CG, LMch or LMqr\n");                                                                                                                                                             // add others later maybe
@@ -838,8 +847,9 @@ bool PairRANN::check_parameters()
 // part of setup. Do not optimize:
 void PairRANN::read_dump_files()
 {
+    std::cout << "**** Inside PairRANN::read_dump_files ****" << std::endl;
     DIR* folder;
-//	char str[MAXLINE];
+    //	char str[MAXLINE];
     struct dirent* entry;
     int    file = 0;
     char   line[MAXLINE], * ptr;
@@ -1219,6 +1229,7 @@ void PairRANN::read_dump_files()
 /////////////////////////////////////////////////////////////////////////////
 int PairRANN::count_unique_species(int* s, int nsims)
 {
+    std::cout << "**** Inside PairRANN::count_unique_species ****" << std::endl;
     int nn, n1, j, count1, count2, count3;
     count1 = 0;
     count3 = 0;
@@ -1254,11 +1265,12 @@ int PairRANN::count_unique_species(int* s, int nsims)
 // part of setup. Do not optimize:
 void PairRANN::create_neighbor_lists()
 {
+    std::cout << "**** Inside PairRANN::create_neighbor_lists ****" << std::endl;
     // brute force search technique rather than tree search because we only do it once and most simulations are small.
     // I did optimize for low memory footprint by only adding ghost neighbors
     // within cutoff distance of the box
     int i, ix, iy, iz, j, k;
-//	char str[MAXLINE];
+    //	char str[MAXLINE];
     double buffer = 0.01;    // over-generous compensation for roundoff error
     std::cout << "building neighbor lists\n";
     for (i = 0; i < nsims; i++) {
@@ -1490,7 +1502,7 @@ void PairRANN::create_neighbor_lists()
 // TO DO: fix stack size problem
 void PairRANN::compute_fingerprints()
 {
-    std::cout << "computing fingerprints\n";
+    std::cout << "**** Inside PairRANN::compute_fingerprints ****" << std::endl;
     int nn, j, ii, f, i, itype, jnum;
     for (nn = 0; nn < nsims; nn++) {
         sims[nn].features = new double*[sims[nn].inum];
@@ -1722,6 +1734,7 @@ void PairRANN::compute_fingerprints()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::normalize_data()
 {
+    std::cout << "**** Inside PairRANN::normalize_data ****" << std::endl;
     int i, n, ii, j, itype;
     int natoms[nelementsp];
     normalgain  = new double*[nelementsp];
@@ -1836,6 +1849,7 @@ void PairRANN::normalize_data()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::unnormalize_net(NNarchitecture* net_out)
 {
+    std::cout << "**** Inside PairRANN::unnormalize_net ****" << std::endl;
     int    i, j, k;
     double temp;
     copy_network(net, net_out);
@@ -1873,6 +1887,7 @@ void PairRANN::unnormalize_net(NNarchitecture* net_out)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::normalize_net(NNarchitecture* net_out)
 {
+    std::cout << "**** Inside PairRANN::normalize_net ****" << std::endl;
     int    i, j, k;
     double temp;
     copy_network(net, net_out);
@@ -1914,6 +1929,7 @@ void PairRANN::normalize_net(NNarchitecture* net_out)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::separate_validation()
 {
+    std::cout << "**** Inside PairRANN::separate_validation ****" << std::endl;
     int  n1, n2, i, vnum, len, startI, endI, j, t, k;
     char str[MAXLINE];
     int  Iv[nsims];
@@ -2004,6 +2020,7 @@ void PairRANN::separate_validation()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::copy_network(NNarchitecture* net_old, NNarchitecture* net_new)
 {
+    std::cout << "**** Inside PairRANN::copy_network ****" << std::endl;
     int i, j, k;
     for (i = 0; i < nelementsp; i++) {
         net_new[i].layers = net_old[i].layers;
@@ -2069,6 +2086,7 @@ void PairRANN::copy_network(NNarchitecture* net_old, NNarchitecture* net_new)
 // top level run function, calls compute_jacobian and qrsolve. Cannot be parallelized.
 void PairRANN::levenburg_marquardt_ch()
 {
+    std::cout << "**** Inside PairRANN::levenburg_marquardt_ch ****" << std::endl;
     // jlen is number of rows; betalen is number of columns of jacobian
     char   str[MAXLINE];
     int    iter, jlen, i, jlenv, j, jlen2, nn;
@@ -2511,6 +2529,7 @@ void PairRANN::levenburg_marquardt_ch()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::conjugate_gradient()
 {
+    std::cout << "**** Inside PairRANN::conjugate_gradient ****" << std::endl;
     // jlen is number of rows; betalen is number of columns of jacobian
     char   str[MAXLINE];
     int    iter, jlen, i, jlenv, j, jlen2, nn;
@@ -2996,6 +3015,7 @@ void PairRANN::conjugate_gradient()
 // top level run function, calls compute_jacobian and qrsolve. Cannot be parallelized.
 void PairRANN::levenburg_marquardt_linesearch()
 {
+    std::cout << "**** Inside PairRANN::levenburg_marquardt_linesearch ****" << std::endl;
     // jlen is number of rows; betalen is number of columns of jacobian
     char   str[MAXLINE];
     int    iter, jlen, i, jlenv, j, jlen2, nn;
@@ -3506,6 +3526,7 @@ void PairRANN::levenburg_marquardt_linesearch()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::bfgs()
 {
+    std::cout << "**** Inside PairRANN::bfgs ****" << std::endl;
     // jlen is number of rows; betalen is number of columns of jacobian
     char   str[MAXLINE];
     int    iter, jlen, i, jlenv, j, jlen2, nn;
@@ -4044,6 +4065,7 @@ void PairRANN::bfgs()
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::flatten_beta(NNarchitecture* net, double* beta)
 {
+    std::cout << "**** Inside PairRANN::flatten_beta ****" << std::endl;
     int itype, i, k1, k2, count2;
     count2 = 0;
     for (itype = 0; itype < nelementsp; itype++) {
@@ -4087,6 +4109,7 @@ void PairRANN::flatten_beta(NNarchitecture* net, double* beta)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::unflatten_beta(NNarchitecture* net, double* beta)
 {
+    std::cout << "**** Inside PairRANN::unflatten_beta ****" << std::endl;
     int itype, i, k1, k2, count2;
     count2 = 0;
     for (itype = 0; itype < nelementsp; itype++) {
@@ -4130,11 +4153,12 @@ void PairRANN::unflatten_beta(NNarchitecture* net, double* beta)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, int natoms, NNarchitecture* net)
 {
+    std::cout << "**** Inside PairRANN::jacobian_convolution ****" << std::endl;
     // clock_t start = clock();
     double start_time = omp_get_wtime();
         #pragma omp parallel
     {
-//	char str[MAXLINE];
+    //	char str[MAXLINE];
         int nn, ii, n1, j;
         int count4 = 0;
         int aoff, soff;
@@ -4383,6 +4407,7 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
 // finds total error from features
 void PairRANN::forward_pass(double* target, int* s, int sn, NNarchitecture* net)
 {
+    std::cout << "**** Inside PairRANN::forward_pass ****" << std::endl;
     // clock_t start = clock();
     double start_time = omp_get_wtime();
 
@@ -4539,6 +4564,7 @@ void PairRANN::forward_pass(double* target, int* s, int sn, NNarchitecture* net)
 // finds per atom energies from features
 void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, NNarchitecture* net)
 {
+    std::cout << "**** Inside PairRANN::get_per_atom_energy ****" << std::endl;
     double start_time = omp_get_wtime();
         #pragma omp parallel
     {
@@ -4612,6 +4638,7 @@ void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, NNarchitec
 void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum, int itype, double* features, double* dfeaturesx, double* dfeaturesy, double* dfeaturesz, int* jl, int nn,
     NNarchitecture* net)
 {
+    std::cout << "**** Inside PairRANN::propagateforward ****" << std::endl;
     int i, j, k, jj, j1, i1;
     NNarchitecture net1 = net[itype];
     int L = net1.layers - 1;
@@ -4730,6 +4757,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
 void PairRANN::propagateforwardspin(double* energy, double** force, double** fm, double** hm, int ii, int jnum, int itype, double* features, double* dfeaturesx, double* dfeaturesy, double* dfeaturesz,
     double* sx, double* sy, double* sz, double* sxx, double* sxy, double* sxz, double* syy, double* syz, double* szz, int* jl, int nn, NNarchitecture* net)
 {
+    std::cout << "**** Inside PairRANN::propagateforwardspin ****" << std::endl;
     int i, j, k, jj, j1, i1;
     NNarchitecture net1 = net[itype];
     int L = net1.layers - 1;
@@ -4931,6 +4959,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::cull_neighbor_list(double* xn, double* yn, double* zn, int* tn, int* jnum, int* jl, int i, int sn, double cutmax)
 {
+    // std::cout << "**** Inside PairRANN::cull_neighbor_list ****" << std::endl;
     int*     jlist, j, count, jj, * type, jtype;
     double   xtmp, ytmp, ztmp, delx, dely, delz, rsq;
     double** x = sims[sn].x;
@@ -4982,6 +5011,7 @@ void PairRANN::cull_neighbor_list(double* xn, double* yn, double* zn, int* tn, i
 void PairRANN::screen_neighbor_list(double* xn, double* yn, double* zn, int* tn, int* jnum, int* jl, int i, int sn, bool* Bij, double* Sik, double* dSikx, double* dSiky, double* dSikz, double* dSijkx,
     double* dSijky, double* dSijkz)
 {
+    std::cout << "**** Inside PairRANN::screen_neighbor_list ****" << std::endl;
     double xnc[jnum[0]], ync[jnum[0]], znc[jnum[0]];
     double Sikc[jnum[0]];
     double dSikxc[jnum[0]];
@@ -5039,6 +5069,7 @@ void PairRANN::screen_neighbor_list(double* xn, double* yn, double* zn, int* tn,
 // replaced with Cholesky solution for greater speed for finding solve step. Still used to process input data.
 void PairRANN::qrsolve(double* A, int m, int n, double* b, double* x_)
 {
+    // std::cout << "**** Inside PairRANN::qrsolve ****" << std::endl;
     double QR_[m * n];
 //	char str[MAXLINE];
     double Rdiag[n];
@@ -5115,6 +5146,7 @@ void PairRANN::qrsolve(double* A, int m, int n, double* b, double* x_)
 // adapted from public domain source at:  http://math.nist.gov/javanumerics/jama
 void PairRANN::chsolve(double* A, int n, double* b, double* x)
 {
+    std::cout << "**** Inside PairRANN::chsolve ****" << std::endl;
     // clock_t start = clock();
     double start_time = omp_get_wtime();
 
@@ -5198,6 +5230,7 @@ void PairRANN::chsolve(double* A, int n, double* b, double* x)
 // writes files used for restarting and final output:
 void PairRANN::write_potential_file(bool writeparameters, char* header, int iter, double reg)
 {
+    std::cout << "**** Inside PairRANN::write_potential_file ****" << std::endl;
     int  i, j, k, l;
     char filename[strlen(potential_output_file) + 10];
     if (overwritepotentials) {
@@ -5547,7 +5580,20 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
 /// <Insert longer more detailed description which
 /// can span multiple lines if needed>
 ///
-/// \param <function parameter description>
+/// \param Sik
+/// \param dSikx
+/// \param dSiky
+/// \param dSikz
+/// \param dSijkx
+/// \param dSijky
+/// \param dSijkz
+/// \param Bij
+/// \param ii
+/// \param sid
+/// \param xn
+/// \param yn
+/// \param tn
+/// \param jnum
 ///
 /// \return <return type and definition description if not void>
 ///
@@ -5555,6 +5601,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
 void PairRANN::screen(double* Sik, double* dSikx, double* dSiky, double* dSikz, double* dSijkx, double* dSijky, double* dSijkz, bool* Bij, int ii, int sid, double* xn, double* yn, double* zn, int* tn,
     int jnum)
 {
+    // std::cout << "**** Inside PairRANN::screen ****" << std::endl;
     // #pragma omp parallel
     {
         // see Baskes, Materials Chemistry and Physics 50 (1997) 152-1.58

@@ -29,7 +29,7 @@ file(GLOB_RECURSE SOURCES
 )
 
 # Set global compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -shared-libgcc -MMD -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -shared-libgcc -MMD -fopenmp -Wno-write-strings")
 
 
 # Set global linker flags
