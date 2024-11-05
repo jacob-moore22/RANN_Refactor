@@ -6,9 +6,7 @@
  */
 
 #include "pair_spin_rann.h"
-#include "matar.h"
 
-using namespace mtr; // matar namespace
 
 #include <chrono>  // For std::chrono
 

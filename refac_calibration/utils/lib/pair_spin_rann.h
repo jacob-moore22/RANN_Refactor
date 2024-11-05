@@ -19,6 +19,33 @@
 #define NEIGHMASK 0x3FFFFFFF
 #define FLERR __FILE__, __LINE__
 
+
+#include "matar.h"
+
+using namespace mtr; // matar namespace
+
+// Typedef for defining floating point precision 
+typedef double real_t;
+
+
+// Template name for dual type for 
+template <typename T>
+using DualCArray = DCArrayKokkos <T>;
+
+template <typename T>
+using ViewCArray = ViewCArrayKokkos <T>;
+
+
+
+template <typename T>
+using DualFArray = DFArrayKokkos <T>;
+
+
+template <typename T>
+using ViewFArray = ViewCArrayKokkos <T>;
+
+
+
 #ifndef CALIBRATION_H_
 #define CALIBRATION_H_
 
