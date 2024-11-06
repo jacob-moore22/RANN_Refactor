@@ -1,6 +1,6 @@
 # Ignore changes to original files
-/OG_calibration
-/OG_lammps
+/OG_calibration/*
+/OG_lammps/*
 
 #ignore build files for refac
 /refac_calibration/build*

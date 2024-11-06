@@ -67,13 +67,13 @@ public:
     void run();
     void finish();
 
-    // global parameters read from file
-    char*  algorithm;               // 1D
-    char*  potential_input_file;    // 1D
-    char*  dump_directory;          // 1D
+    // global parameters read from file, generally for parsing
+    char*  algorithm;               // 1D DEFINE: 
+    char*  potential_input_file;    // 1D DEFINE:
+    char*  dump_directory;          // 1D DEFINE:
     bool   doforces;
-    double tolerance;
-    double regularizer;
+    double tolerance;   // DEFINE:
+    double regularizer; // DEFINE:
     bool   doregularizer;
     char*  log_file;        // 1D
     char*  potential_output_file;   // 1D
@@ -87,129 +87,136 @@ public:
     int    debug_level5_freq;
     int    debug_level5_spin_freq;
     int    debug_level6_freq;
-    bool   adaptive_regularizer;
-    double lambda_initial;
-    double lambda_increase;
-    double lambda_reduce;
+    bool   adaptive_regularizer; // DEFINE:
+    double lambda_initial; // DEFINE:
+    double lambda_increase;// DEFINE:
+    double lambda_reduce;// DEFINE:
     int    seed;
-    double validation;
-    bool   normalizeinput;
-    int    targettype;
-    double inum_weight;
+    double validation; // DEFINE:
+    bool   normalizeinput; // DEFINE:
+    int    targettype; // DEFINE:
+    double inum_weight; // DEFINE:
 
     // global variables calculated internally
     bool     is_lammps = false;
-    char*    lmp = nullptr; // 1D
-    int      nsims;
-    int      nsets;
-    int      betalen;
-    int      jlen1;
-    int*     betalen_v; // 1D
-    int*     betalen_f; // 1D
-    int      natoms;
-    int      natomsr;
-    int      natomsv;
-    int      fmax;
-    int      fnmax;
-    int*     r; // simulations included in training
-    int*     v; // simulations held back for validation
-    int      nsimr, nsimv;
-    int*     Xset;
-    char**   dumpfilenames;
-    double** normalshift;
-    double** normalgain;
-    bool***  weightdefined;
-    bool***  biasdefined;
-    bool**   dimensiondefined;
-    bool***  bundle_inputdefined;
-    bool***  bundle_outputdefined;
-    double   energy_fitv_best;
+    char*    lmp = nullptr; // 1D DEFINE:
+    int      nsims;// DEFINE:
+    int      nsets;// DEFINE:
+    int      betalen;// DEFINE:
+    int      jlen1; // DEFINE:
+    int*     betalen_v; // 1D DEFINE:
+    int*     betalen_f; // 1D DEFINE:
+    int      natoms; // DEFINE:
+    int      natomsr; // DEFINE:
+    int      natomsv; // DEFINE:
+    int      fmax;  // DEFINE:
+    int      fnmax; // DEFINE:
+    int*     r; // simulations included in training // 1D
+    int*     v; // simulations held back for validation // 1D
+    int      nsimr, nsimv;  // DEFINE:
+    int*     Xset;          // 1D 
+    char**   dumpfilenames; // 2D
+    double** normalshift;   // 2D   // DEFINE:
+    double** normalgain;    // 2D   // DEFINE:
+    bool***  weightdefined; // 3D   // DEFINE:
+    bool***  biasdefined;   // 3D   // DEFINE:
+    bool**   dimensiondefined;  // 2D   // DEFINE:
+    bool***  bundle_inputdefined;   // 3D   // DEFINE:
+    bool***  bundle_outputdefined;  // 3D   // DEFINE:
+    double   energy_fitv_best;  // DEFINE:
     int      nelements;               // # of elements (distinct from LAMMPS atom types since multiple atom types can be mapped to one element)
     int      nelementsp;              // nelements+1
-    char**   elements;                // names of elements
-    char**   elementsp;               // names of elements with "all" appended as the last "element"
-    double*  mass;                    // mass of each element
+    char**   elements;                // names of elements // 2D
+    char**   elementsp;               // names of elements with "all" appended as the last "element" // 2D
+    double*  mass;                    // mass of each element // 1D
     double   cutmax;                  // max radial distance for neighbor lists
-    int*     map;                     // mapping from atom types to elements
-    int*     fingerprintcount;        // static variable used in initialization
-    int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element.
-    int*     fingerprintperelement;   // # of fingerprints for each element
-    int*     stateequationperelement;
-    int*     stateequationcount;
+    int*     map;                     // mapping from atom types to elements // 1D
+    int*     fingerprintcount;        // static variable used in initialization // 1D
+    int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element. // 1D
+    int*     fingerprintperelement;   // # of fingerprints for each element // 1D
+    int*     stateequationperelement; // 1D // DEFINE:
+    int*     stateequationcount;      // 1D // DEFINE:
     bool     doscreen; // screening is calculated if any defined fingerprint uses it
     bool     allscreen;
     bool     dospin;
     int      res; // Resolution of function tables for cubic interpolation.
-    double*  screening_min;
-    double*  screening_max;
-    int      memguess;
-    bool*    freezebeta;
-    int      speciesnumberr;
-    int      speciesnumberv;
-    bool     freeenergy;
-    double   hbar;
+    double*  screening_min; // 1D   // DEFINE:
+    double*  screening_max; // 1D   // DEFINE:
+    int      memguess;  // DEFINE:
+    bool*    freezebeta; // 1D
+    int      speciesnumberr;    // DEFINE:
+    int      speciesnumberv;    // DEFINE:
+    bool     freeenergy;    // DEFINE:
+    double   hbar;  // DEFINE:
 
     struct NNarchitecture
     {
         int layers;
-        int* dimensions;        // vector of length layers with entries for neurons per layer
-        int* activations;        // unused
+        int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
+        int* activations;        // unused // 1D
         int maxlayer;        // longest layer (for memory allocation)
         int sumlayers;
-        int* startI;
+        int* startI; // 1D
         bool bundle;
-        int* bundles;
-        int** bundleinputsize;
-        int** bundleoutputsize;
-        bool** identitybundle;
-        int*** bundleinput;
-        int*** bundleoutput;
-        double*** bundleW;
-        double*** bundleB;
-        bool*** freezeW;
-        bool*** freezeB;
+        int* bundles; // 1D
+        int** bundleinputsize;  // 2D // DEFINE: 
+        int** bundleoutputsize; // 2D // DEFINE:
+        bool** identitybundle;  // 2D // DEFINE:
+        int*** bundleinput;     // 3D // DEFINE:
+        int*** bundleoutput;    // 3D // DEFINE:
+        double*** bundleW;      // 3D // DEFINE:
+        double*** bundleB;      // 3D // DEFINE:
+        bool*** freezeW;        // 3D // DEFINE:
+        bool*** freezeB;        // 3D // DEFINE:
     };
+    
     NNarchitecture* net;    // array of networks, 1 for each element.
 
+    // DEFINE: 
     struct Simulation
     {
-        bool forces;
-        bool spins;
-        int* id;
-        double** x;
-        double** f;
-        double** s;
-        double box[3][3];
-        double origin[3];
-        double** features;
-        double** dfx;
-        double** dfy;
-        double** dfz;
-        double** dsx;
-        double** dsy;
-        double** dsz;
-        int* ilist, * numneigh, ** firstneigh, * type, inum, gnum;
-        double energy;
-        double energy_weight;
-        double force_weight;
+        bool forces; // DEFINE:
+        bool spins; // DEFINE:
+        int* id;    // 1D // DEFINE:
+        double** x; // 2D // DEFINE:
+        double** f; // 2D // DEFINE:
+        double** s; // 2D // DEFINE:
+        double box[3][3]; // 2D // DEFINE:
+        double origin[3]; // 1D // DEFINE:
+        double** features;  // 2D // DEFINE:
+        double** dfx;   // 2D // DEFINE:
+        double** dfy;   // 2D // DEFINE:
+        double** dfz;   // 2D // DEFINE:
+        double** dsx;   // 2D // DEFINE:
+        double** dsy;   // 2D // DEFINE:
+        double** dsz;   // 2D // DEFINE:
+        int* ilist;     // 1D // DEFINE:
+        int* numneigh;  // 1D // DEFINE:
+        int** firstneigh; // 2D // DEFINE:
+        int* type;  // 1D // DEFINE:
+        int inum;   // DEFINE:
+        int gnum;   // DEFINE:
+        double energy;  // DEFINE:
+        double energy_weight;   // scalar? DEFINE:
+        double force_weight;    // DEFINE:
         int startI;
         char* filename;
         int timestep;
         bool spinspirals;
-        double spinvec[3];
-        double spinaxis[3];
-        double** force;
-        double** fm;
+        double spinvec[3]; // 1D // DEFINE:
+        double spinaxis[3]; // 1D // DEFINE:
+        double** force; // 2D // DEFINE:
+        double** fm;    // 2D// DEFINE:
         double state_e;
-        double* state_ea;
-        double* total_ea;
+        double* state_ea;   // 1D // DEFINE:
+        double* total_ea;   // 1D // DEFINE:
         double time;
         int uniquespecies;
-        int* speciesmap;
-        int speciesoffset;
-        int atomoffset;
-        int* speciescount;
-        double temp;
+        int* speciesmap;    // 1D // DEFINE:
+        int speciesoffset; // DEFINE:
+        int atomoffset; // DEFINE:
+        int* speciescount; // 1D // DEFINE:
+        double temp; // DEFINE:
     };
     Simulation* sims;
 
