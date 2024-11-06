@@ -68,16 +68,16 @@ public:
     void finish();
 
     // global parameters read from file
-    char*  algorithm;
-    char*  potential_input_file;
-    char*  dump_directory;
+    char*  algorithm;               // 1D
+    char*  potential_input_file;    // 1D
+    char*  dump_directory;          // 1D
     bool   doforces;
     double tolerance;
     double regularizer;
     bool   doregularizer;
-    char*  log_file;
-    char*  potential_output_file;
-    int    potential_output_freq;
+    char*  log_file;        // 1D
+    char*  potential_output_file;   // 1D
+    int    potential_output_freq;   
     int    max_epochs;
     bool   overwritepotentials;
     int    debug_level1_freq;
@@ -99,13 +99,13 @@ public:
 
     // global variables calculated internally
     bool     is_lammps = false;
-    char*    lmp = nullptr;
+    char*    lmp = nullptr; // 1D
     int      nsims;
     int      nsets;
     int      betalen;
     int      jlen1;
-    int*     betalen_v;
-    int*     betalen_f;
+    int*     betalen_v; // 1D
+    int*     betalen_f; // 1D
     int      natoms;
     int      natomsr;
     int      natomsv;
@@ -214,26 +214,46 @@ public:
     Simulation* sims;
 
     // read potential file:
-    void read_file(char*);
-    void read_atom_types(std::vector<std::string>, char*, int);
-    void read_fpe(std::vector<std::string>, std::vector<std::string>, char*, int);          // fingerprints per element. Count total fingerprints defined for each 1st element in element combinations
-    void read_fingerprints(std::vector<std::string>, std::vector<std::string>, char*, int);
-    void read_fingerprint_constants(std::vector<std::string>, std::vector<std::string>, char*, int);
+    void read_file(char* filename);
+    
+    void read_atom_types(std::vector<std::string> line, char* filename, int linenum);
+    
+    void read_fpe(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum);          // fingerprints per element. Count total fingerprints defined for each 1st element in element combinations
+    
+    void read_fingerprints(std::vector<std::string> line, std::vector<std::string> line1, char*, int linenum);
+    
+    void read_fingerprint_constants(std::vector<std::string>, std::vector<std::string>, char* filename, int);
+    
     void read_network_layers(std::vector<std::string>, std::vector<std::string>, char*, int);         // include input and output layer (hidden layers + 2)
+    
     void read_layer_size(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_weight(std::vector<std::string>, std::vector<std::string>, FILE*, char*, int*);           // weights should be formatted as properly shaped matrices
+    
     void read_bias(std::vector<std::string>, std::vector<std::string>, FILE*, char*, int*);           // biases should be formatted as properly shaped vectors
+    
     void read_activation_functions(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_screening(std::vector<std::string>, std::vector<std::string>, char*, int);
+
     void read_mass(const std::vector<std::string>&, const std::vector<std::string>&, const char*, int);
+    
     void read_eospe(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_eos(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_eos_constants(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_bundles(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_bundle_input(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_bundle_output(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_bundle_id(std::vector<std::string>, std::vector<std::string>, char*, int);
+    
     void read_parameters(std::vector<std::string>, std::vector<std::string>, FILE*, char*, int*, char*);
+    
     bool check_potential();
 
     // process_data
