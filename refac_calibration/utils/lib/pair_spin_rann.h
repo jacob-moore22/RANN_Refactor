@@ -111,8 +111,8 @@ public:
     int      natomsv; // DEFINE:
     int      fmax;  // DEFINE:
     int      fnmax; // DEFINE:
-    int*     r; // simulations included in training // 1D
-    int*     v; // simulations held back for validation // 1D
+    int*     r; // simulations included in training // 1D // DEFINE:
+    int*     v; // simulations held back for validation // 1D // DEFINE:
     int      nsimr, nsimv;  // DEFINE:
     int*     Xset;          // 1D 
     char**   dumpfilenames; // 2D
@@ -156,9 +156,9 @@ public:
         int* activations;        // unused // 1D
         int maxlayer;        // longest layer (for memory allocation)
         int sumlayers;
-        int* startI; // 1D
+        int* startI;    // 1D
         bool bundle;
-        int* bundles; // 1D
+        int* bundles;   // 1D
         int** bundleinputsize;  // 2D // DEFINE: 
         int** bundleoutputsize; // 2D // DEFINE:
         bool** identitybundle;  // 2D // DEFINE:
@@ -321,14 +321,14 @@ public:
     void write_debug_level6(double*, double*);
 
     // create styles
-    RANN::Fingerprint* create_fingerprint(const char*);
-    RANN::Activation* create_activation(const char*);
-    RANN::State* create_state(const char*);
+    RANN::Fingerprint* create_fingerprint(const char*); // DEFINE: 
+    RANN::Activation* create_activation(const char*);   // DEFINE:
+    RANN::State* create_state(const char*); // DEFINE: 
 
 protected:
-    RANN::Activation**** activation;
-    RANN::Fingerprint*** fingerprints;
-    RANN::State***       state;
+    RANN::Activation**** activation;    // DEFINE: 
+    RANN::Fingerprint*** fingerprints;  // DEFINE: 
+    RANN::State***       state;         // DEFINE: 
 };
 } // namespace LAMMPS_NS
 #endif /* CALIBRATION_H_ */
