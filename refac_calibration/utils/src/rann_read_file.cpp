@@ -383,38 +383,50 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
     }
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
-            net[i].layers = utils::inumeric(filename, linenum, line1[0], true, lmp);
+            
+
+            int num_layers = this->net(i).layers;
+
+            this->net(i).layers = utils::inumeric(filename, linenum, line1[0], true, lmp);
+            
             if (net[i].layers < 1) {
                 errorf(filename, linenum, "invalid number of network layers");
             }
-            weightdefined[i]        = new bool*[net[i].layers];
-            biasdefined[i]          = new bool*[net[i].layers];
-            dimensiondefined[i]     = new bool [net[i].layers];
-            bundle_inputdefined[i]  = new bool*[net[i].layers];
-            bundle_outputdefined[i] = new bool*[net[i].layers];
-            net[i].dimensions       = new int [net[i].layers];
-            net[i].bundles          = new int[net[i].layers];
-            net[i].identitybundle   = new bool*[net[i].layers];
-            net[i].bundleinputsize  = new int*[net[i].layers];
-            net[i].bundleoutputsize = new int*[net[i].layers];
-            net[i].bundleinput      = new int**[net[i].layers];
-            net[i].bundleoutput     = new int**[net[i].layers];
-            net[i].bundleW          = new double**[net[i].layers];
-            net[i].bundleB          = new double**[net[i].layers];
-            net[i].freezeW          = new bool**[net[i].layers];
-            net[i].freezeB          = new bool**[net[i].layers];
-            for (j = 0; j < net[i].layers; j++) {
+            
+            weightdefined[i]        = new bool*[num_layers];
+            biasdefined[i]          = new bool*[num_layers];
+            dimensiondefined[i]     = new bool [num_layers];
+            bundle_inputdefined[i]  = new bool*[num_layers];
+            bundle_outputdefined[i] = new bool*[num_layers];
+            
+            this->net(i).dimensions       = DualCArray<int>(num_layers, "net_dimensions");
+            this->net(i).bundles          = DualCArray<int>(num_layers, "net_bundles");             // new int[num_layers];
+            this->net(i).identitybundle   = DualCArray<bool>(num_layers, 1, "net_identitybundle");  // new bool*[num_layers];
+            this->net(i).bundleinputsize  = DualCArray<int>(num_layers, 1, "net_bundleinputsize");      // new int*[num_layers];
+            this->net(i).bundleoutputsize = DualCArray<int>(num_layers, 1, "net_bundleinputsize");      // new int*[num_layers];
+            this->net(i).bundleinput      = DualCArray<int>(num_layers, 1, "net_bundleinput");    // new int**[num_layers];
+            this->net(i).bundleoutput     =      // new int**[num_layers];
+            this->net(i).bundleW          =      // new double**[num_layers];
+            this->net(i).bundleB          =      // new double**[num_layers];
+            this->net(i).freezeW          =      // new bool**[num_layers];
+            this->net(i).freezeB          =      // new bool**[num_layers];
+            
+            for (j = 0; j < num_layers; j++) {
                 net[i].dimensions[j] = 0;
                 net[i].bundles[j]    = 1;
+                
                 net[i].bundleinputsize[j]  = new int [net[i].bundles[j]];
                 net[i].bundleoutputsize[j] = new int [net[i].bundles[j]];
+                
                 net[i].bundleinput[j]  = new int*[net[i].bundles[j]];
                 net[i].bundleoutput[j] = new int*[net[i].bundles[j]];
+                
                 net[i].bundleW[j] = new double*[net[i].bundles[j]];
                 net[i].bundleB[j] = new double*[net[i].bundles[j]];
                 net[i].freezeW[j] = new bool*[net[i].bundles[j]];
                 net[i].freezeB[j] = new bool*[net[i].bundles[j]];
                 net[i].identitybundle[j] = new bool[net[i].bundles[j]];
+                
                 weightdefined[i][j]        = new bool[net[i].bundles[j]];
                 biasdefined[i][j]          = new bool[net[i].bundles[j]];
                 dimensiondefined[i][j]     = false;
@@ -428,6 +440,7 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
                     net[i].identitybundle[j][k]   = false;
                 }
             }
+
             activation[i] = new RANN::Activation * *[net[i].layers - 1];
             for (int j = 0; j < net[i].layers - 1; j++) {
                 activation[i][j] = new RANN::Activation*;

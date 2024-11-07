@@ -47,27 +47,27 @@ int main(int argc, char** argv)
             std::cout << "******************************************" << std::endl;
 
             
-            auto start_run = std::chrono::steady_clock::now();
-            cal->run();
+            // auto start_run = std::chrono::steady_clock::now();
+            // cal->run();
 
-            now = std::chrono::steady_clock::now();
-            duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_run);
+            // now = std::chrono::steady_clock::now();
+            // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_run);
             
-            std::cout << "******************************************" << std::endl;
-            std::cout << "*****  Time taken for run: " << duration_ms.count() << " s" << std::endl;
-            std::cout << "******************************************" << std::endl;
+            // std::cout << "******************************************" << std::endl;
+            // std::cout << "*****  Time taken for run: " << duration_ms.count() << " s" << std::endl;
+            // std::cout << "******************************************" << std::endl;
 
 
-            auto start_finish = std::chrono::steady_clock::now();
+            // auto start_finish = std::chrono::steady_clock::now();
 
-            cal->finish();
+            // cal->finish();
             
-            now = std::chrono::steady_clock::now();
-            duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_finish);
+            // now = std::chrono::steady_clock::now();
+            // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_finish);
             
-            std::cout << "******************************************" << std::endl;
-            std::cout << "*****  Time taken for finish: " << duration_ms.count() << " s" << std::endl;
-            std::cout << "******************************************" << std::endl;
+            // std::cout << "******************************************" << std::endl;
+            // std::cout << "*****  Time taken for finish: " << duration_ms.count() << " s" << std::endl;
+            // std::cout << "******************************************" << std::endl;
 
 
             now = std::chrono::steady_clock::now();

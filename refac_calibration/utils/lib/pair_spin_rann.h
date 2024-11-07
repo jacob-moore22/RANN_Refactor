@@ -151,26 +151,52 @@ public:
 
     struct NNarchitecture
     {
+        // int layers;
+        // int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
+        // int* activations;        // unused // 1D
+        // int maxlayer;        // longest layer (for memory allocation)
+        // int sumlayers;
+        // int* startI; // 1D
+        // bool bundle;
+        // int* bundles; // 1D
+        // int** bundleinputsize;  // 2D // DEFINE: 
+        // int** bundleoutputsize; // 2D // DEFINE:
+        // bool** identitybundle;  // 2D // DEFINE:
+        // int*** bundleinput;     // 3D // DEFINE:
+        // int*** bundleoutput;    // 3D // DEFINE:
+        // double*** bundleW;      // 3D // DEFINE:
+        // double*** bundleB;      // 3D // DEFINE:
+        // bool*** freezeW;        // 3D // DEFINE:
+        // bool*** freezeB;        // 3D // DEFINE:
+
         int layers;
-        int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
-        int* activations;        // unused // 1D
-        int maxlayer;        // longest layer (for memory allocation)
+        int maxlayer;
         int sumlayers;
-        int* startI; // 1D
+        
+        DualCArray<int> dimensions;  // 1D 
+        DualCArray<int> activations; // 1D
+
+        DualCArray<int> startI;     // 1D
+
         bool bundle;
-        int* bundles; // 1D
-        int** bundleinputsize;  // 2D // DEFINE: 
-        int** bundleoutputsize; // 2D // DEFINE:
-        bool** identitybundle;  // 2D // DEFINE:
-        int*** bundleinput;     // 3D // DEFINE:
-        int*** bundleoutput;    // 3D // DEFINE:
-        double*** bundleW;      // 3D // DEFINE:
-        double*** bundleB;      // 3D // DEFINE:
-        bool*** freezeW;        // 3D // DEFINE:
-        bool*** freezeB;        // 3D // DEFINE:
+        DualCArray<bool> bundles;   // 1D
+        DualCArray<int> bundleinputsize;    // 2D
+        DualCArray<int> bundleoutputsize;   // 2D
+        DualCArray<bool> identitybundle;    // 2D
+        
+        DualCArray<int> bundleinput;    // 3D
+        DualCArray<int> bundleoutput;   // 3D
+        DualCArray<real_t> bundleW; // 3D
+        DualCArray<real_t> bundleB; // 3D
+        
+        DualCArray<bool> freezeW;   // 3D
+        DualCArray<bool> freezeB;   // 3D
+
     };
     
-    NNarchitecture* net;    // array of networks, 1 for each element.
+    // NNarchitecture* net;    // array of networks, 1 for each element.
+
+    CArray<NNarchitecture> net; // array of networks, 1 for each element.
 
     // DEFINE: 
     struct Simulation
@@ -326,7 +352,7 @@ public:
     RANN::State* create_state(const char*);
 
 protected:
-    RANN::Activation**** activation;
+    RANN::Activation**** activation; // List of activation
     RANN::Fingerprint*** fingerprints;
     RANN::State***       state;
 };

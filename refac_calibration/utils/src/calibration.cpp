@@ -656,9 +656,12 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     elementsp = new char*[nelementsp];     // elements + 'all'
     map  = new int[nelementsp];
     mass = new double[nelements];
-    net  = new NNarchitecture[nelementsp];
+    // net  = new NNarchitecture[nelementsp];
+
+    this->net = CArray<NNarchitecture>(nelementsp, "NNarchitecture_array");
+
     for (i = 0; i < nelementsp; i++) {
-        net[i].layers = 0;
+        net(i).layers = 0;
     }
     betalen_v     = new int[nelementsp];
     betalen_f     = new int[nelementsp];
