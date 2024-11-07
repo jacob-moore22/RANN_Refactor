@@ -13,7 +13,7 @@ PairRANN::PairRANN(char* potential_file)
     nelements  = -1;
     net = NULL;
     fingerprintlength = NULL;
-    mass    = NULL;
+    // mass    = NULL;
     betalen = 0;
     doregularizer  = false;
     normalizeinput = true;
@@ -83,7 +83,7 @@ PairRANN::~PairRANN()
     delete[] r;
     delete[] v;
     delete[] Xset;
-    delete[] mass;
+    // delete[] mass;
     for (int i = 0; i < nsims; i++) {
         for (int j = 0; j < sims[i].inum; j++) {
 //			delete [] sims[i].x[j];
@@ -223,7 +223,7 @@ void PairRANN::setup()
 {
     std::cout << "**** Inside PairRANN::setup ****" << std::endl;
     int nthreads = 1;
-        #pragma omp parallel
+#pragma omp parallel
     nthreads = omp_get_num_threads();
 
     std::cout << std::endl;
@@ -651,17 +651,23 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     int i, n;
     cutmax     = 0;
     nelementsp = nelements + 1;
+    
+
     // initialize arrays
     elements  = new char*[nelements];
     elementsp = new char*[nelementsp];     // elements + 'all'
     map  = new int[nelementsp];
-    mass = new double[nelements];
-    // net  = new NNarchitecture[nelementsp];
+    
+    // mass = new double[nelements];
+    this->mass = DualCArray<double>(nelements, "mass");
 
-    this->net = CArray<NNarchitecture>(nelementsp, "NNarchitecture_array");
+
+    net  = new NNarchitecture[nelementsp];
+
+    // this->net = CArray<NNarchitecture>(nelementsp, "NNarchitecture_array");
 
     for (i = 0; i < nelementsp; i++) {
-        net(i).layers = 0;
+        net[i].layers = 0;
     }
     betalen_v     = new int[nelementsp];
     betalen_f     = new int[nelementsp];
@@ -697,7 +703,7 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
         stateequationcount[i] = 0;
         map[i] = i;
         if (i < nelements) {
-            mass[i]     = -1.0;
+            mass(i)     = -1.0;
             elements[i] = utils::strdup(elementwords[i]);
         }
         elementsp[i] = utils::strdup(elementwords[i]);
@@ -1553,11 +1559,11 @@ void PairRANN::compute_fingerprints()
             }
         }
     }
-                #pragma omp parallel
+#pragma omp parallel
     {
         int i, ii, itype, f, jnum, len, j, nn;
         double** force, ** fm;
-                #pragma omp for schedule(guided)
+#pragma omp for schedule(guided)
         for (nn = 0; nn < nsims; nn++) {
             clock_t start = clock();
 
@@ -5265,7 +5271,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     // mass section
     for (i = 0; i < nelements; i++) {
         fprintf(fid, "mass:%s:\n", elements[i]);
-        fprintf(fid, "%f\n", mass[i]);
+        fprintf(fid, "%f\n", mass(i));
     }
     // fingerprints per element section
     for (i = 0; i < nelementsp; i++) {

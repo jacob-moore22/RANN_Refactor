@@ -124,12 +124,18 @@ public:
     bool***  bundle_inputdefined;   // 3D   // DEFINE:
     bool***  bundle_outputdefined;  // 3D   // DEFINE:
     double   energy_fitv_best;  // DEFINE:
+    
     int      nelements;               // # of elements (distinct from LAMMPS atom types since multiple atom types can be mapped to one element)
     int      nelementsp;              // nelements+1
+    
     char**   elements;                // names of elements // 2D
     char**   elementsp;               // names of elements with "all" appended as the last "element" // 2D
-    double*  mass;                    // mass of each element // 1D
+    
+    DualCArray<real_t> mass; // mass of each element 1D
+
+
     double   cutmax;                  // max radial distance for neighbor lists
+    
     int*     map;                     // mapping from atom types to elements // 1D
     int*     fingerprintcount;        // static variable used in initialization // 1D
     int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element. // 1D
@@ -151,52 +157,52 @@ public:
 
     struct NNarchitecture
     {
-        // int layers;
-        // int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
-        // int* activations;        // unused // 1D
-        // int maxlayer;        // longest layer (for memory allocation)
-        // int sumlayers;
-        // int* startI; // 1D
-        // bool bundle;
-        // int* bundles; // 1D
-        // int** bundleinputsize;  // 2D // DEFINE: 
-        // int** bundleoutputsize; // 2D // DEFINE:
-        // bool** identitybundle;  // 2D // DEFINE:
-        // int*** bundleinput;     // 3D // DEFINE:
-        // int*** bundleoutput;    // 3D // DEFINE:
-        // double*** bundleW;      // 3D // DEFINE:
-        // double*** bundleB;      // 3D // DEFINE:
-        // bool*** freezeW;        // 3D // DEFINE:
-        // bool*** freezeB;        // 3D // DEFINE:
-
         int layers;
-        int maxlayer;
+        int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
+        int* activations;        // unused // 1D
+        int maxlayer;        // longest layer (for memory allocation)
         int sumlayers;
-        
-        DualCArray<int> dimensions;  // 1D 
-        DualCArray<int> activations; // 1D
-
-        DualCArray<int> startI;     // 1D
-
+        int* startI; // 1D
         bool bundle;
-        DualCArray<bool> bundles;   // 1D
-        DualCArray<int> bundleinputsize;    // 2D
-        DualCArray<int> bundleoutputsize;   // 2D
-        DualCArray<bool> identitybundle;    // 2D
+        int* bundles; // 1D
+        int** bundleinputsize;  // 2D // DEFINE: 
+        int** bundleoutputsize; // 2D // DEFINE:
+        bool** identitybundle;  // 2D // DEFINE:
+        int*** bundleinput;     // 3D // DEFINE:
+        int*** bundleoutput;    // 3D // DEFINE:
+        double*** bundleW;      // 3D // DEFINE:
+        double*** bundleB;      // 3D // DEFINE:
+        bool*** freezeW;        // 3D // DEFINE:
+        bool*** freezeB;        // 3D // DEFINE:
+
+        // int layers;
+        // int maxlayer;
+        // int sumlayers;
         
-        DualCArray<int> bundleinput;    // 3D
-        DualCArray<int> bundleoutput;   // 3D
-        DualCArray<real_t> bundleW; // 3D
-        DualCArray<real_t> bundleB; // 3D
+        // DualCArray<int> dimensions;  // 1D (num_layers)
+        // DualCArray<int> activations; // 1D
+
+        // DualCArray<int> startI;     // 1D
+
+        // bool bundle;
+        // DualCArray<bool> bundles;   // 1D (num_layers)
+        // DualCArray<int> bundleinputsize;    // 2D
+        // DualCArray<int> bundleoutputsize;   // 2D
+        // DualCArray<bool> identitybundle;    // 2D
         
-        DualCArray<bool> freezeW;   // 3D
-        DualCArray<bool> freezeB;   // 3D
+        // DualCArray<int> bundleinput;    // 3D
+        // DualCArray<int> bundleoutput;   // 3D
+        // DualCArray<real_t> bundleW; // 3D
+        // DualCArray<real_t> bundleB; // 3D
+        
+        // DualCArray<bool> freezeW;   // 3D
+        // DualCArray<bool> freezeB;   // 3D
 
     };
     
-    // NNarchitecture* net;    // array of networks, 1 for each element.
+    NNarchitecture* net;    // array of networks, 1 for each element.
 
-    CArray<NNarchitecture> net; // array of networks, 1 for each element.
+    // CArray<NNarchitecture> net; // array of networks, 1 for each element.
 
     // DEFINE: 
     struct Simulation
