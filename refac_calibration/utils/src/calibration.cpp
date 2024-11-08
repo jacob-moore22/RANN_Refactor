@@ -1745,21 +1745,27 @@ void PairRANN::normalize_data()
     std::cout << "**** Inside PairRANN::normalize_data ****" << std::endl;
     int i, n, ii, j, itype;
     int natoms[nelementsp];
-    normalgain  = new double*[nelementsp];
-    normalshift = new double*[nelementsp];
+
+    // Stride sizes for ragged normalgain and normalshift
+    auto strides = CArrayKokkos<size_t>(nelementsp, "tmp_strides");
+
     // initialize
     for (i = 0; i < nelementsp; i++) {
         if (net(i).layers == 0) {
             continue;
         }
-        normalgain[i]  = new double [net(i).dimensions[0]];
-        normalshift[i] = new double [net(i).dimensions[0]];
-        for (j = 0; j < net(i).dimensions[0]; j++) {
-            normalgain[i][j]  = 0;
-            normalshift[i][j] = 0;
-        }
+
+        strides(i) = net(i).dimensions[0];
         natoms[i] = 0;
     }
+
+    normalgain = RaggedRightArrayKokkos<real_t>(strides, "normalgain");
+    normalshift = RaggedRightArrayKokkos<real_t>(strides, "normalshift");
+
+    normalgain.set_values(0.0);
+    normalshift.set_values(0.0);
+
+
     // get mean value of each 1st layer neuron input
     for (n = 0; n < nsims; n++) {
         for (ii = 0; ii < sims[n].inum; ii++) {
@@ -1767,14 +1773,14 @@ void PairRANN::normalize_data()
             natoms[itype]++;
             if (net(itype).layers != 0) {
                 for (j = 0; j < net(itype).dimensions[0]; j++) {
-                    normalshift[itype][j] += sims[n].features[ii][j];
+                    normalshift(itype,j) += sims[n].features[ii][j];
                 }
             }
             itype = nelements;
             natoms[itype]++;
             if (net(itype).layers != 0) {
                 for (j = 0; j < net(itype).dimensions[0]; j++) {
-                    normalshift[itype][j] += sims[n].features[ii][j];
+                    normalshift(itype,j) += sims[n].features[ii][j];
                 }
             }
         }
@@ -1784,7 +1790,7 @@ void PairRANN::normalize_data()
             continue;
         }
         for (j = 0; j < net(i).dimensions[0]; j++) {
-            normalshift[i][j] /= natoms[i];
+            normalshift(i, j) /= natoms[i];
         }
     }
     // get standard deviation
@@ -1793,13 +1799,13 @@ void PairRANN::normalize_data()
             itype = sims[n].type[ii];
             if (net(itype).layers != 0) {
                 for (j = 0; j < net(itype).dimensions[0]; j++) {
-                    normalgain[itype][j] += (sims[n].features[ii][j] - normalshift[itype][j]) * (sims[n].features[ii][j] - normalshift[itype][j]);
+                    normalgain(itype,j) += (sims[n].features[ii][j] - normalshift(itype,j)) * (sims[n].features[ii][j] - normalshift(itype,j));
                 }
             }
             itype = nelements;
             if (net(itype).layers != 0) {
                 for (j = 0; j < net(itype).dimensions[0]; j++) {
-                    normalshift[itype][j] += (sims[n].features[ii][j] - normalshift[itype][j]) * (sims[n].features[ii][j] - normalshift[itype][j]);
+                    normalshift(itype,j) += (sims[n].features[ii][j] - normalshift(itype,j)) * (sims[n].features[ii][j] - normalshift(itype,j));
                 }
             }
         }
@@ -1809,7 +1815,7 @@ void PairRANN::normalize_data()
             continue;
         }
         for (j = 0; j < net(i).dimensions[0]; j++) {
-            normalgain[i][j] = sqrt(normalgain[i][j] / natoms[i]);
+            normalgain(i,j) = sqrt(normalgain(i,j) / natoms[i]);
         }
     }
     // shift input to mean=0, std = 1
@@ -1818,18 +1824,18 @@ void PairRANN::normalize_data()
             itype = sims[n].type[ii];
             if (net(itype).layers != 0) {
                 for (j = 0; j < net(itype).dimensions[0]; j++) {
-                    if (normalgain[itype][j] > 0) {
-                        sims[n].features[ii][j] -= normalshift[itype][j];
-                        sims[n].features[ii][j] /= normalgain[itype][j];
+                    if (normalgain(itype,j) > 0) {
+                        sims[n].features[ii][j] -= normalshift(itype,j);
+                        sims[n].features[ii][j] /= normalgain(itype,j);
                     }
                 }
             }
             itype = nelements;
             if (net(itype).layers != 0) {
                 for (j = 0; j < net(itype).dimensions[0]; j++) {
-                    if (normalgain[itype][j] > 0) {
-                        sims[n].features[ii][j] -= normalshift[itype][j];
-                        sims[n].features[ii][j] /= normalgain[itype][j];
+                    if (normalgain(itype,j) > 0) {
+                        sims[n].features[ii][j] -= normalshift(itype,j);
+                        sims[n].features[ii][j] /= normalgain(itype,j);
                     }
                 }
             }
@@ -1868,9 +1874,9 @@ void PairRANN::unnormalize_net(CArray<NNarchitecture> net_out)
                 for (j = 0; j < net(i).bundleoutputsize[0][i1]; j++) {
                     temp = 0.0;
                     for (k = 0; k < net(i).bundleinputsize[0][i1]; k++) {
-                        if (normalgain[i][k] > 0) {
-                            net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] /= normalgain[i][net(i).bundleinput[0][i1][k]];
-                            temp += net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] * normalshift[i][net(i).bundleinput[0][i1][k]];
+                        if (normalgain(i, k) > 0) {
+                            net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] /= normalgain(i, net(i).bundleinput[0][i1][k]);
+                            temp += net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] * normalshift(i, net(i).bundleinput[0][i1][k]);
                         }
                     }
                     net_out(i).bundleB[0][i1][j] -= temp;
@@ -1906,10 +1912,10 @@ void PairRANN::normalize_net(CArray<NNarchitecture> net_out)
                 for (j = 0; j < net(i).bundleoutputsize[0][i1]; j++) {
                     temp = 0.0;
                     for (k = 0; k < net(i).bundleinputsize[0][i1]; k++) {
-                        if (normalgain[i][k] > 0) {
-                            temp += net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] * normalshift[i][net(i).bundleinput[0][i1][k]];
+                        if (normalgain(i, k) > 0) {
+                            temp += net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] * normalshift(i, net(i).bundleinput[0][i1][k]);
                             if (weightdefined[i][i1][0]) {
-                                net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] *= normalgain[i][net(i).bundleinput[0][i1][k]];
+                                net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] *= normalgain(i, net(i).bundleinput[0][i1][k]);
                             }
                         }
                     }

@@ -119,8 +119,8 @@ public:
     int*     Xset;          // 1D 
     char**   dumpfilenames; // 2D
     
-    double** normalshift;   // 2D   // DEFINE:
-    double** normalgain;    // 2D   // DEFINE:
+    RaggedRightArrayKokkos<real_t> normalshift; // 2D   // DEFINE:
+    RaggedRightArrayKokkos<real_t> normalgain; // 2D   // DEFINE:
     
     bool***  weightdefined; // 3D   // DEFINE:
     bool***  biasdefined;   // 3D   // DEFINE:
@@ -138,8 +138,9 @@ public:
     char**   elements;                // names of elements // 2D
     char**   elementsp;               // names of elements with "all" appended as the last "element" // 2D
     
-    DualCArray<real_t> mass; // mass of each element 1D
-    double   cutmax;                  // max radial distance for neighbor lists                
+    double   cutmax;                  // max radial distance for neighbor lists    
+
+    DualCArray<real_t> mass; // mass of each element 1D      
     DualCArray<int> map;     // mapping from atom types to elements // 1D
 
 
@@ -148,17 +149,25 @@ public:
     int*     fingerprintperelement;   // # of fingerprints for each element // 1D
     int*     stateequationperelement; // 1D // DEFINE:
     int*     stateequationcount;      // 1D // DEFINE:
+    
     bool     doscreen; // screening is calculated if any defined fingerprint uses it
     bool     allscreen;
     bool     dospin;
+    
     int      res; // Resolution of function tables for cubic interpolation.
+    
     double*  screening_min; // 1D   // DEFINE:
     double*  screening_max; // 1D   // DEFINE:
+    
     int      memguess;  // DEFINE:
+    
     bool*    freezebeta; // 1D
+    
     int      speciesnumberr;    // DEFINE:
     int      speciesnumberv;    // DEFINE:
+    
     bool     freeenergy;    // DEFINE:
+    
     double   hbar;  // DEFINE:
 
     struct NNarchitecture
@@ -191,7 +200,7 @@ public:
         // DualCArray<int> startI;     // 1D
 
         // bool bundle;
-        // DualCArray<bool> bundles;   // 1D (num_layers)
+        // DualCArray<int> bundles;   // 1D (num_layers)
         // DualCArray<int> bundleinputsize;    // 2D
         // DualCArray<int> bundleoutputsize;   // 2D
         // DualCArray<bool> identitybundle;    // 2D
