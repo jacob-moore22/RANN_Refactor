@@ -178,8 +178,7 @@ PairRANN::~PairRANN()
             delete[] net(i).bundles;
         }
     }
-    // delete[] net;
-    // delete[] map;
+
     for (int i = 0; i < nelementsp; i++) {
         if (fingerprintperelement[i] > 0) {
             for (int j = 0; j < fingerprintperelement[i]; j++) {
@@ -660,23 +659,16 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     elementsp = new char*[nelementsp];     // elements + 'all'
     
     this->map = DualCArray<int>(nelementsp, "map");
-    this->mass = DualCArray<double>(nelements, "mass");
-
-    // net = new NNarchitecture[nelementsp];
-
+    this->mass= DualCArray<double>(nelements, "mass");
     this->net = CArray<NNarchitecture>(nelementsp);
 
     for (i = 0; i < nelementsp; i++) {
         net(i).layers = 0;
     }
-    
-    // betalen_v     = new int[nelementsp];
-    // betalen_f     = new int[nelementsp];
 
     this->betalen_v = DualCArray<int>(nelementsp, "betalen_v");
     this->betalen_f = DualCArray<int>(nelementsp, "betalen_f");
 
-    
     screening_min = new double [nelements * nelements * nelements];
     screening_max = new double [nelements * nelements * nelements];
     
@@ -1843,11 +1835,11 @@ void PairRANN::normalize_data()
             }
         }
     }
-    // CArray<NNarchitecture> net_new = new NNarchitecture[nelementsp];
+
     auto net_new = CArray<NNarchitecture>(nelementsp);
     normalize_net(net_new);
     copy_network(net_new, net);
-    // delete[] net_new;
+
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2165,8 +2157,6 @@ void PairRANN::levenburg_marquardt_ch()
     // clock_t start1 = clock();
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
-
-    // NNarchitecture net1[nelementsp];
 
     auto net1 = CArray<NNarchitecture>(nelementsp);
 
@@ -2613,8 +2603,6 @@ void PairRANN::conjugate_gradient()
     // clock_t start1 = clock();
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
-    // NNarchitecture net1[nelementsp];
-    // NNarchitecture net2[nelementsp];
 
     auto net1 = CArray<NNarchitecture>(nelementsp);
     auto net2 = CArray<NNarchitecture>(nelementsp);
@@ -3106,9 +3094,6 @@ void PairRANN::levenburg_marquardt_linesearch()
     // clock_t start1 = clock();
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
-
-    // NNarchitecture net1[nelementsp];
-    // NNarchitecture net2[nelementsp];
 
     auto net1 = CArray<NNarchitecture>(nelementsp);
     auto net2 = CArray<NNarchitecture>(nelementsp);
@@ -3624,8 +3609,6 @@ void PairRANN::bfgs()
     // clock_t start1 = clock();
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
-    // NNarchitecture net1[nelementsp];
-    // NNarchitecture net2[nelementsp];
 
     auto net1 = CArray<NNarchitecture>(nelementsp);
     auto net2 = CArray<NNarchitecture>(nelementsp);
@@ -5277,7 +5260,6 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
         printf("%s", filename);
         errorf("Invalid parameter file name");
     }
-    // CArray<NNarchitecture> net_out = new NNarchitecture[nelementsp];
     auto net_out = CArray<NNarchitecture>(nelementsp);
     if (normalizeinput) {
         unnormalize_net(net_out);
@@ -5602,7 +5584,6 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
         fprintf(fid, "%d\n", targettype);
     }
     fclose(fid);
-    // delete[] net_out;
 }
 
 /////////////////////////////////////////////////////////////////////////////
