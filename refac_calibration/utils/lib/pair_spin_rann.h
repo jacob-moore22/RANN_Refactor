@@ -206,9 +206,9 @@ public:
 
     };
     
-    NNarchitecture* net;    // array of networks, 1 for each element.
+    // CArray<NNarchitecture> net;    // array of networks, 1 for each element.
 
-    // CArray<NNarchitecture> net; // array of networks, 1 for each element.
+    CArray<NNarchitecture> net; // array of networks, 1 for each element.
 
     // DEFINE:   Note: mostly ragged
     struct Simulation
@@ -316,17 +316,17 @@ public:
     void create_random_weights(int, int, int, int, int);
     void create_random_biases(int, int, int, int);
     void create_identity_wb(int, int, int, int, int);
-    void jacobian_convolution(double*, double*, int*, int, int, NNarchitecture*);
-    void forward_pass(double*, int*, int, NNarchitecture*);
-    void get_per_atom_energy(double**, int*, int, NNarchitecture*);
-    void propagateforward(double*, double**, int, int, int, double*, double*, double*, double*, int*, int, NNarchitecture*);
+    void jacobian_convolution(double*, double*, int*, int, int, CArray<NNarchitecture>);
+    void forward_pass(double*, int*, int, CArray<NNarchitecture>);
+    void get_per_atom_energy(double**, int*, int, CArray<NNarchitecture>);
+    void propagateforward(double*, double**, int, int, int, double*, double*, double*, double*, int*, int, CArray<NNarchitecture>);
     void propagateforwardspin(double*, double**, double**, double**, int, int, int, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*,
-        int*, int, NNarchitecture*);
-    void flatten_beta(NNarchitecture*, double*);   // fill beta vector from net structure
-    void unflatten_beta(NNarchitecture*, double*);   // fill net structure from beta vector
-    void copy_network(NNarchitecture*, NNarchitecture*);
-    void normalize_net(NNarchitecture*);
-    void unnormalize_net(NNarchitecture*);
+        int*, int, CArray<NNarchitecture>);
+    void flatten_beta(CArray<NNarchitecture>, double*);   // fill beta vector from net structure
+    void unflatten_beta(CArray<NNarchitecture>, double*);   // fill net structure from beta vector
+    void copy_network(CArray<NNarchitecture>, CArray<NNarchitecture>);
+    void normalize_net(CArray<NNarchitecture>);
+    void unnormalize_net(CArray<NNarchitecture>);
 
     // run fitting
     void levenburg_marquardt_ch();
