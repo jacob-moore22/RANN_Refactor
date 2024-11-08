@@ -254,8 +254,8 @@ void Fingerprint_radialscreenedspinn::compute_fingerprint(double* features, doub
     ilist = sim->ilist;
     double cutmax = pair->cutmax;
     i     = ilist[ii];
-    itype = pair->map[type[i]];
-    int     f = pair->net[itype].dimensions[0];
+    itype = pair->map(type[i]);
+    int     f = pair->net(itype).dimensions[0];
     double  cutinv2 = 1 / cutmax / cutmax;
     double* si = sim->s[i];
     // loop over neighbors

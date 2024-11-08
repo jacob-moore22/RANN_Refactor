@@ -11,9 +11,9 @@ PairRANN::PairRANN(char* potential_file)
     cutmax     = 0.0;
     nelementsp = -1;
     nelements  = -1;
-    net = NULL;
+    // net = NULL;
     fingerprintlength = NULL;
-    mass    = NULL;
+    // mass    = NULL;
     betalen = 0;
     doregularizer  = false;
     normalizeinput = true;
@@ -32,7 +32,7 @@ PairRANN::PairRANN(char* potential_file)
     doscreen  = false;
     allscreen = true;
     dospin    = false;
-    map      = NULL; // check this
+    // map      = NULL; // check this
     natoms   = 0;
     nsims    = 0;
     doforces = false;
@@ -83,7 +83,7 @@ PairRANN::~PairRANN()
     delete[] r;
     delete[] v;
     delete[] Xset;
-    delete[] mass;
+    // delete[] mass;
     for (int i = 0; i < nsims; i++) {
         for (int j = 0; j < sims[i].inum; j++) {
 //			delete [] sims[i].x[j];
@@ -141,45 +141,44 @@ PairRANN::~PairRANN()
     }
     delete[] elementsp;
     for (int i = 0; i <= nelements; i++) {
-        if (net[i].layers > 0) {
-            for (int j = 0; j < net[i].layers - 1; j++) {
-                delete[] net[i].bundleinputsize[j];
-                delete[] net[i].bundleoutputsize[j];
-                for (int k = 0; k < net[i].dimensions[j + 1]; k++) {
+        if (net(i).layers > 0) {
+            for (int j = 0; j < net(i).layers - 1; j++) {
+                delete[] net(i).bundleinputsize[j];
+                delete[] net(i).bundleoutputsize[j];
+                for (int k = 0; k < net(i).dimensions[j + 1]; k++) {
                     delete activation[i][j][k];
                 }
-                for (int k = 0; k < net[i].bundles[j]; k++) {
-                    delete[] net[i].bundleinput[j][k];
-                    delete[] net[i].bundleoutput[j][k];
-                    delete[] net[i].bundleW[j][k];
-                    delete[] net[i].bundleB[j][k];
-                    delete[] net[i].freezeW[j][k];
-                    delete[] net[i].freezeB[j][k];
+                for (int k = 0; k < net(i).bundles[j]; k++) {
+                    delete[] net(i).bundleinput[j][k];
+                    delete[] net(i).bundleoutput[j][k];
+                    delete[] net(i).bundleW[j][k];
+                    delete[] net(i).bundleB[j][k];
+                    delete[] net(i).freezeW[j][k];
+                    delete[] net(i).freezeB[j][k];
                 }
                 delete[] activation[i][j];
-                delete[] net[i].bundleinput[j];
-                delete[] net[i].bundleoutput[j];
-                delete[] net[i].bundleW[j];
-                delete[] net[i].bundleB[j];
-                delete[] net[i].freezeW[j];
-                delete[] net[i].freezeB[j];
+                delete[] net(i).bundleinput[j];
+                delete[] net(i).bundleoutput[j];
+                delete[] net(i).bundleW[j];
+                delete[] net(i).bundleB[j];
+                delete[] net(i).freezeW[j];
+                delete[] net(i).freezeB[j];
             }
             delete[] activation[i];
-            delete[] net[i].dimensions;
-            delete[] net[i].startI;
-            delete[] net[i].bundleinput;
-            delete[] net[i].bundleoutput;
-            delete[] net[i].bundleinputsize;
-            delete[] net[i].bundleoutputsize;
-            delete[] net[i].bundleW;
-            delete[] net[i].bundleB;
-            delete[] net[i].freezeW;
-            delete[] net[i].freezeB;
-            delete[] net[i].bundles;
+            delete[] net(i).dimensions;
+            delete[] net(i).startI;
+            delete[] net(i).bundleinput;
+            delete[] net(i).bundleoutput;
+            delete[] net(i).bundleinputsize;
+            delete[] net(i).bundleoutputsize;
+            delete[] net(i).bundleW;
+            delete[] net(i).bundleB;
+            delete[] net(i).freezeW;
+            delete[] net(i).freezeB;
+            delete[] net(i).bundles;
         }
     }
-    delete[] net;
-    delete[] map;
+
     for (int i = 0; i < nelementsp; i++) {
         if (fingerprintperelement[i] > 0) {
             for (int j = 0; j < fingerprintperelement[i]; j++) {
@@ -223,7 +222,7 @@ void PairRANN::setup()
 {
     std::cout << "**** Inside PairRANN::setup ****" << std::endl;
     int nthreads = 1;
-        #pragma omp parallel
+#pragma omp parallel
     nthreads = omp_get_num_threads();
 
     std::cout << std::endl;
@@ -233,6 +232,7 @@ void PairRANN::setup()
 
     read_file(potential_input_file);
     check_parameters();
+    
     for (int i = 0; i < nelementsp; i++) {
         for (int j = 0; j < fingerprintperelement[i]; j++) {
             fingerprints[i][j]->allocate();
@@ -241,6 +241,7 @@ void PairRANN::setup()
             state[i][j]->allocate();
         }
     }
+    
     read_dump_files();
     create_neighbor_lists();
     compute_fingerprints();
@@ -384,9 +385,9 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
     //  int i;
     //  for (i=0;i<nelements;i++){
     //          if (strcmp(words[2],elements[i])==0){
-    //                  if (net[i].layers==0)errorf("networklayers for each atom type must be defined before the corresponding layer sizes.");
+    //                  if (net(i).layers==0)errorf("networklayers for each atom type must be defined before the corresponding layer sizes.");
     //                  int j = strtol(words[3],NULL,10);
-    //                  net[i].dimensionsr[j]= strtol(line1,NULL,10);
+    //                  net(i).dimensionsr[j]= strtol(line1,NULL,10);
     //                  return;
     //          }
     //  }
@@ -405,11 +406,11 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
         }
         for (l = 0; l < nelements; l++) {
             if (line[2] == elements[l]) {
-                if (net[l].layers == 0) {
+                if (net(l).layers == 0) {
                     errorf("networklayers must be defined before weights.");
                 }
                 i = strtol(line[3].c_str(), NULL, 10);
-                if (i >= net[l].layers || i < 0) {
+                if (i >= net(l).layers || i < 0) {
                     errorf("invalid weight layer");
                 }
                 if (dimensiondefined[l][i] == false || dimensiondefined[l][i + 1] == false) {
@@ -421,28 +422,28 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
                 if (bundle_outputdefined[l][i][b] == false && b != 0) {
                     errorf("bundle outputs must be defined before weights");
                 }
-                if (net[l].identitybundle[i][b]) {
+                if (net(l).identitybundle[i][b]) {
                     errorf("cannot define weights for an identity bundle");
                 }
                 if (bundle_inputdefined[l][i][b] == false) {
-                    ins = net[l].dimensions[i];
+                    ins = net(l).dimensions[i];
                 }
                 else {
-                    ins = net[l].bundleinputsize[i][b];
+                    ins = net(l).bundleinputsize[i][b];
                 }
                 if (bundle_outputdefined[l][i][b] == false) {
-                    ops = net[l].dimensions[i + 1];
+                    ops = net(l).dimensions[i + 1];
                 }
                 else {
-                    ops = net[l].bundleoutputsize[i][b];
+                    ops = net(l).bundleoutputsize[i][b];
                 }
-                net[l].freezeW[i][b] = new bool [ins * ops];
+                net(l).freezeW[i][b] = new bool [ins * ops];
                 nwords = line1.size();
                 if (nwords != ins) {
                     errorf("invalid weights per line");
                 }
                 for (k = 0; k < ins; k++) {
-                    net[l].freezeW[i][b][k] = strtol(line1[k].c_str(), NULL, 10);
+                    net(l).freezeW[i][b][k] = strtol(line1[k].c_str(), NULL, 10);
                 }
                 for (j = 1; j < ops; j++) {
                     ptr = fgets(linetemp, MAXLINE, fp);
@@ -456,7 +457,7 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
                         errorf("invalid weights per line");
                     }
                     for (k = 0; k < ins; k++) {
-                        net[l].freezeW[i][b][j * ins + k] = strtol(line1[k].c_str(), NULL, 10);
+                        net(l).freezeW[i][b][j * ins + k] = strtol(line1[k].c_str(), NULL, 10);
                     }
                 }
                 delete[] words1;
@@ -478,11 +479,11 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
         }
         for (l = 0; l < nelements; l++) {
             if (line[2] == elements[l]) {
-                if (net[l].layers == 0) {
+                if (net(l).layers == 0) {
                     errorf("networklayers must be defined before biases.");
                 }
                 i = strtol(line[3].c_str(), NULL, 10);
-                if (i >= net[l].layers || i < 0) {
+                if (i >= net(l).layers || i < 0) {
                     errorf("invalid bias layer");
                 }
                 if (dimensiondefined[l][i] == false) {
@@ -491,24 +492,24 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
                 if (bundle_outputdefined[l][i][b] == false && b != 0) {
                     errorf("bundle outputs must be defined before bias");
                 }
-                if (net[l].identitybundle[i][b]) {
+                if (net(l).identitybundle[i][b]) {
                     errorf("cannot define bias for an identity bundle");
                 }
                 if (bundle_outputdefined[l][i][b] == false) {
-                    ops = net[l].dimensions[i + 1];
+                    ops = net(l).dimensions[i + 1];
                 }
                 else {
-                    ops = net[l].bundleoutputsize[i][b];
+                    ops = net(l).bundleoutputsize[i][b];
                 }
-                net[l].freezeB[i][b]    = new bool [ops];
-                net[l].freezeB[i][b][0] = strtol(line1[0].c_str(), NULL, 10);
+                net(l).freezeB[i][b]    = new bool [ops];
+                net(l).freezeB[i][b][0] = strtol(line1[0].c_str(), NULL, 10);
                 for (j = 1; j < ops; j++) {
                     ptr = fgets(linetemp, MAXLINE, fp);
                     if (ptr == NULL) {
                         errorf("unexpected end of potential file!");
                     }
                     line1 = tokenmaker(linetemp, " ,\t:_\n");
-                    net[l].freezeB[i][b][j] = strtol(line1[0].c_str(), NULL, 10);
+                    net(l).freezeB[i][b][j] = strtol(line1[0].c_str(), NULL, 10);
                 }
                 return;
             }
@@ -590,14 +591,14 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
 void PairRANN::create_random_weights(int rows, int columns, int itype, int layer, int bundle)
 {
     std::cout << "**** Inside PairRANN::create_random_weights ****" << std::endl;
-    net[itype].bundleW[layer][bundle] = new double [rows * columns];
-    net[itype].freezeW[layer][bundle] = new bool [rows * columns];
+    net(itype).bundleW[layer][bundle] = new double [rows * columns];
+    net(itype).freezeW[layer][bundle] = new bool [rows * columns];
     double r;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             r = (double)rand() / RAND_MAX * 2 - 1;      // flat distribution from -1 to 1
-            net[itype].bundleW[layer][bundle][i * columns + j] = r;
-            net[itype].freezeW[layer][bundle][i * columns + j] = 0;
+            net(itype).bundleW[layer][bundle][i * columns + j] = r;
+            net(itype).freezeW[layer][bundle][i * columns + j] = 0;
         }
     }
     weightdefined[itype][layer][bundle] = true;
@@ -620,13 +621,13 @@ void PairRANN::create_random_weights(int rows, int columns, int itype, int layer
 void PairRANN::create_random_biases(int rows, int itype, int layer, int bundle)
 {
     std::cout << "**** Inside PairRANN::create_random_biases ****" << std::endl;
-    net[itype].bundleB[layer][bundle] = new double [rows];
-    net[itype].freezeB[layer][bundle] = new bool [rows];
+    net(itype).bundleB[layer][bundle] = new double [rows];
+    net(itype).freezeB[layer][bundle] = new bool [rows];
     double r;
     for (int i = 0; i < rows; i++) {
         r = (double) rand() / RAND_MAX * 2 - 1;
-        net[itype].bundleB[layer][bundle][i] = r;
-        net[itype].freezeB[layer][bundle][i] = 0;
+        net(itype).bundleB[layer][bundle][i] = r;
+        net(itype).freezeB[layer][bundle][i] = 0;
     }
     biasdefined[itype][layer][bundle] = true;
 }
@@ -651,19 +652,26 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     int i, n;
     cutmax     = 0;
     nelementsp = nelements + 1;
+    
+
     // initialize arrays
     elements  = new char*[nelements];
     elementsp = new char*[nelementsp];     // elements + 'all'
-    map  = new int[nelementsp];
-    mass = new double[nelements];
-    net  = new NNarchitecture[nelementsp];
+    
+    this->map = DualCArray<int>(nelementsp, "map");
+    this->mass= DualCArray<double>(nelements, "mass");
+    this->net = CArray<NNarchitecture>(nelementsp);
+
     for (i = 0; i < nelementsp; i++) {
-        net[i].layers = 0;
+        net(i).layers = 0;
     }
-    betalen_v     = new int[nelementsp];
-    betalen_f     = new int[nelementsp];
+
+    this->betalen_v = DualCArray<int>(nelementsp, "betalen_v");
+    this->betalen_f = DualCArray<int>(nelementsp, "betalen_f");
+
     screening_min = new double [nelements * nelements * nelements];
     screening_max = new double [nelements * nelements * nelements];
+    
     for (i = 0; i < nelements; i++) {
         for (int j = 0; j < nelements; j++) {
             for (int k = 0; k < nelements; k++) {
@@ -692,9 +700,9 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
         fingerprintcount[i] = 0;
         stateequationperelement[i] = 0;
         stateequationcount[i] = 0;
-        map[i] = i;
+        map(i) = i;
         if (i < nelements) {
-            mass[i]     = -1.0;
+            mass(i)     = -1.0;
             elements[i] = utils::strdup(elementwords[i]);
         }
         elementsp[i] = utils::strdup(elementwords[i]);
@@ -730,7 +738,7 @@ void PairRANN::update_stack_size()
     // neighborlist memory use:
     memguess = 0;
     for (int i = 0; i < nelementsp; i++) {
-        memguess += 8 * net[i].dimensions[0] * 20 * 3;
+        memguess += 8 * net(i).dimensions[0] * 20 * 3;
     }
     memguess += 8 * 20 * 12;
     memguess += 8 * 20 * 20 * 3;
@@ -795,29 +803,29 @@ bool PairRANN::check_parameters()
     // populate vector of frozen parameters
     betalen = 0;
     for (itype = 0; itype < nelementsp; itype++) {
-        for (layer = 0; layer < net[itype].layers - 1; layer++) {
-            for (bundle = 0; bundle < net[itype].bundles[layer]; bundle++) {
-                if (net[itype].identitybundle[layer][bundle]) {
+        for (layer = 0; layer < net(itype).layers - 1; layer++) {
+            for (bundle = 0; bundle < net(itype).bundles[layer]; bundle++) {
+                if (net(itype).identitybundle[layer][bundle]) {
                     continue;
                 }
-                rows     = net[itype].bundleoutputsize[layer][bundle];
-                columns  = net[itype].bundleinputsize[layer][bundle];
+                rows     = net(itype).bundleoutputsize[layer][bundle];
+                columns  = net(itype).bundleinputsize[layer][bundle];
                 betalen += rows * columns + rows;
             }
         }
     }
     freezebeta = new bool[betalen];
     for (itype = 0; itype < nelementsp; itype++) {
-        for (layer = 0; layer < net[itype].layers - 1; layer++) {
-            for (bundle = 0; bundle < net[itype].bundles[layer]; bundle++) {
-                if (net[itype].identitybundle[layer][bundle]) {
+        for (layer = 0; layer < net(itype).layers - 1; layer++) {
+            for (bundle = 0; bundle < net(itype).bundles[layer]; bundle++) {
+                if (net(itype).identitybundle[layer][bundle]) {
                     continue;
                 }
-                rows    = net[itype].bundleoutputsize[layer][bundle];
-                columns = net[itype].bundleinputsize[layer][bundle];
+                rows    = net(itype).bundleoutputsize[layer][bundle];
+                columns = net(itype).bundleinputsize[layer][bundle];
                 for (r = 0; r < rows; r++) {
                     for (c = 0; c < columns; c++) {
-                        if (net[itype].freezeW[layer][bundle][r * columns + c]) {
+                        if (net(itype).freezeW[layer][bundle][r * columns + c]) {
                             freezebeta[count] = 1;
                             count++;
                         }
@@ -826,7 +834,7 @@ bool PairRANN::check_parameters()
                             count++;
                         }
                     }
-                    if (net[itype].freezeB[layer][bundle][r]) {
+                    if (net(itype).freezeB[layer][bundle][r]) {
                         freezebeta[count] = 1;
                         count++;
                     }
@@ -837,7 +845,7 @@ bool PairRANN::check_parameters()
                 }
             }
         }
-        betalen_v[itype] = count;
+        betalen_v(itype) = count;
     }
     betalen = count;    // update betalen to skip frozen parameters
 
@@ -1531,11 +1539,11 @@ void PairRANN::compute_fingerprints()
         }
         for (ii = 0; ii < sims[nn].inum; ii++) {
             i     = sims[nn].ilist[ii];
-            itype = map[sims[nn].type[i]];
-            if (net[itype].layers == 0) {
+            itype = map(sims[nn].type[i]);
+            if (net(itype).layers == 0) {
                 errorf(FLERR, "atom type found without corresponding network defined");
             }
-            f    = net[itype].dimensions[0];
+            f    = net(itype).dimensions[0];
             jnum = sims[nn].numneigh[i];
             sims[nn].features[ii] = new double [f];
             if (doforces) {
@@ -1550,11 +1558,11 @@ void PairRANN::compute_fingerprints()
             }
         }
     }
-                #pragma omp parallel
+#pragma omp parallel
     {
         int i, ii, itype, f, jnum, len, j, nn;
         double** force, ** fm;
-                #pragma omp for schedule(guided)
+#pragma omp for schedule(guided)
         for (nn = 0; nn < nsims; nn++) {
             clock_t start = clock();
 
@@ -1566,8 +1574,8 @@ void PairRANN::compute_fingerprints()
             }
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
-                itype = map[sims[nn].type[i]];
-                f     = net[itype].dimensions[0];
+                itype = map(sims[nn].type[i]);
+                f     = net(itype).dimensions[0];
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
                 double yn[jnum];
@@ -1671,7 +1679,7 @@ void PairRANN::compute_fingerprints()
                     }
                 }
                 double e = 0.0;
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 len   = stateequationperelement[itype];
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -1737,100 +1745,107 @@ void PairRANN::normalize_data()
     std::cout << "**** Inside PairRANN::normalize_data ****" << std::endl;
     int i, n, ii, j, itype;
     int natoms[nelementsp];
-    normalgain  = new double*[nelementsp];
-    normalshift = new double*[nelementsp];
+
+    // Stride sizes for ragged normalgain and normalshift
+    auto strides = CArrayKokkos<size_t>(nelementsp, "tmp_strides");
+
     // initialize
     for (i = 0; i < nelementsp; i++) {
-        if (net[i].layers == 0) {
+        if (net(i).layers == 0) {
             continue;
         }
-        normalgain[i]  = new double [net[i].dimensions[0]];
-        normalshift[i] = new double [net[i].dimensions[0]];
-        for (j = 0; j < net[i].dimensions[0]; j++) {
-            normalgain[i][j]  = 0;
-            normalshift[i][j] = 0;
-        }
+
+        strides(i) = net(i).dimensions[0];
         natoms[i] = 0;
     }
+
+    normalgain = RaggedRightArrayKokkos<real_t>(strides, "normalgain");
+    normalshift = RaggedRightArrayKokkos<real_t>(strides, "normalshift");
+
+    normalgain.set_values(0.0);
+    normalshift.set_values(0.0);
+
+
     // get mean value of each 1st layer neuron input
     for (n = 0; n < nsims; n++) {
         for (ii = 0; ii < sims[n].inum; ii++) {
             itype = sims[n].type[ii];
             natoms[itype]++;
-            if (net[itype].layers != 0) {
-                for (j = 0; j < net[itype].dimensions[0]; j++) {
-                    normalshift[itype][j] += sims[n].features[ii][j];
+            if (net(itype).layers != 0) {
+                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                    normalshift(itype,j) += sims[n].features[ii][j];
                 }
             }
             itype = nelements;
             natoms[itype]++;
-            if (net[itype].layers != 0) {
-                for (j = 0; j < net[itype].dimensions[0]; j++) {
-                    normalshift[itype][j] += sims[n].features[ii][j];
+            if (net(itype).layers != 0) {
+                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                    normalshift(itype,j) += sims[n].features[ii][j];
                 }
             }
         }
     }
     for (i = 0; i < nelementsp; i++) {
-        if (net[i].layers == 0) {
+        if (net(i).layers == 0) {
             continue;
         }
-        for (j = 0; j < net[i].dimensions[0]; j++) {
-            normalshift[i][j] /= natoms[i];
+        for (j = 0; j < net(i).dimensions[0]; j++) {
+            normalshift(i, j) /= natoms[i];
         }
     }
     // get standard deviation
     for (n = 0; n < nsims; n++) {
         for (ii = 0; ii < sims[n].inum; ii++) {
             itype = sims[n].type[ii];
-            if (net[itype].layers != 0) {
-                for (j = 0; j < net[itype].dimensions[0]; j++) {
-                    normalgain[itype][j] += (sims[n].features[ii][j] - normalshift[itype][j]) * (sims[n].features[ii][j] - normalshift[itype][j]);
+            if (net(itype).layers != 0) {
+                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                    normalgain(itype,j) += (sims[n].features[ii][j] - normalshift(itype,j)) * (sims[n].features[ii][j] - normalshift(itype,j));
                 }
             }
             itype = nelements;
-            if (net[itype].layers != 0) {
-                for (j = 0; j < net[itype].dimensions[0]; j++) {
-                    normalshift[itype][j] += (sims[n].features[ii][j] - normalshift[itype][j]) * (sims[n].features[ii][j] - normalshift[itype][j]);
+            if (net(itype).layers != 0) {
+                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                    normalshift(itype,j) += (sims[n].features[ii][j] - normalshift(itype,j)) * (sims[n].features[ii][j] - normalshift(itype,j));
                 }
             }
         }
     }
     for (i = 0; i < nelementsp; i++) {
-        if (net[i].layers == 0) {
+        if (net(i).layers == 0) {
             continue;
         }
-        for (j = 0; j < net[i].dimensions[0]; j++) {
-            normalgain[i][j] = sqrt(normalgain[i][j] / natoms[i]);
+        for (j = 0; j < net(i).dimensions[0]; j++) {
+            normalgain(i,j) = sqrt(normalgain(i,j) / natoms[i]);
         }
     }
     // shift input to mean=0, std = 1
     for (n = 0; n < nsims; n++) {
         for (ii = 0; ii < sims[n].inum; ii++) {
             itype = sims[n].type[ii];
-            if (net[itype].layers != 0) {
-                for (j = 0; j < net[itype].dimensions[0]; j++) {
-                    if (normalgain[itype][j] > 0) {
-                        sims[n].features[ii][j] -= normalshift[itype][j];
-                        sims[n].features[ii][j] /= normalgain[itype][j];
+            if (net(itype).layers != 0) {
+                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                    if (normalgain(itype,j) > 0) {
+                        sims[n].features[ii][j] -= normalshift(itype,j);
+                        sims[n].features[ii][j] /= normalgain(itype,j);
                     }
                 }
             }
             itype = nelements;
-            if (net[itype].layers != 0) {
-                for (j = 0; j < net[itype].dimensions[0]; j++) {
-                    if (normalgain[itype][j] > 0) {
-                        sims[n].features[ii][j] -= normalshift[itype][j];
-                        sims[n].features[ii][j] /= normalgain[itype][j];
+            if (net(itype).layers != 0) {
+                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                    if (normalgain(itype,j) > 0) {
+                        sims[n].features[ii][j] -= normalshift(itype,j);
+                        sims[n].features[ii][j] /= normalgain(itype,j);
                     }
                 }
             }
         }
     }
-    NNarchitecture* net_new = new NNarchitecture[nelementsp];
+
+    auto net_new = CArray<NNarchitecture>(nelementsp);
     normalize_net(net_new);
     copy_network(net_new, net);
-    delete[] net_new;
+
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1847,24 +1862,24 @@ void PairRANN::normalize_data()
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::unnormalize_net(NNarchitecture* net_out)
+void PairRANN::unnormalize_net(CArray<NNarchitecture> net_out)
 {
     std::cout << "**** Inside PairRANN::unnormalize_net ****" << std::endl;
     int    i, j, k;
     double temp;
     copy_network(net, net_out);
     for (i = 0; i < nelementsp; i++) {
-        if (net[i].layers > 0) {
-            for (int i1 = 0; i1 < net[i].bundles[0]; i1++) {
-                for (j = 0; j < net[i].bundleoutputsize[0][i1]; j++) {
+        if (net(i).layers > 0) {
+            for (int i1 = 0; i1 < net(i).bundles[0]; i1++) {
+                for (j = 0; j < net(i).bundleoutputsize[0][i1]; j++) {
                     temp = 0.0;
-                    for (k = 0; k < net[i].bundleinputsize[0][i1]; k++) {
-                        if (normalgain[i][k] > 0) {
-                            net_out[i].bundleW[0][i1][j * net[i].bundleinputsize[0][i1] + k] /= normalgain[i][net[i].bundleinput[0][i1][k]];
-                            temp += net_out[i].bundleW[0][i1][j * net[i].bundleinputsize[0][i1] + k] * normalshift[i][net[i].bundleinput[0][i1][k]];
+                    for (k = 0; k < net(i).bundleinputsize[0][i1]; k++) {
+                        if (normalgain(i, k) > 0) {
+                            net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] /= normalgain(i, net(i).bundleinput[0][i1][k]);
+                            temp += net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] * normalshift(i, net(i).bundleinput[0][i1][k]);
                         }
                     }
-                    net_out[i].bundleB[0][i1][j] -= temp;
+                    net_out(i).bundleB[0][i1][j] -= temp;
                 }
             }
         }
@@ -1885,27 +1900,27 @@ void PairRANN::unnormalize_net(NNarchitecture* net_out)
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::normalize_net(NNarchitecture* net_out)
+void PairRANN::normalize_net(CArray<NNarchitecture> net_out)
 {
     std::cout << "**** Inside PairRANN::normalize_net ****" << std::endl;
     int    i, j, k;
     double temp;
     copy_network(net, net_out);
     for (i = 0; i < nelementsp; i++) {
-        if (net[i].layers > 0) {
-            for (int i1 = 0; i1 < net[i].bundles[0]; i1++) {
-                for (j = 0; j < net[i].bundleoutputsize[0][i1]; j++) {
+        if (net(i).layers > 0) {
+            for (int i1 = 0; i1 < net(i).bundles[0]; i1++) {
+                for (j = 0; j < net(i).bundleoutputsize[0][i1]; j++) {
                     temp = 0.0;
-                    for (k = 0; k < net[i].bundleinputsize[0][i1]; k++) {
-                        if (normalgain[i][k] > 0) {
-                            temp += net_out[i].bundleW[0][i1][j * net[i].bundleinputsize[0][i1] + k] * normalshift[i][net[i].bundleinput[0][i1][k]];
+                    for (k = 0; k < net(i).bundleinputsize[0][i1]; k++) {
+                        if (normalgain(i, k) > 0) {
+                            temp += net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] * normalshift(i, net(i).bundleinput[0][i1][k]);
                             if (weightdefined[i][i1][0]) {
-                                net_out[i].bundleW[0][i1][j * net[i].bundleinputsize[0][i1] + k] *= normalgain[i][net[i].bundleinput[0][i1][k]];
+                                net_out(i).bundleW[0][i1][j * net(i).bundleinputsize[0][i1] + k] *= normalgain(i, net(i).bundleinput[0][i1][k]);
                             }
                         }
                     }
                     if (biasdefined[i][i1][0]) {
-                        net_out[i].bundleB[0][i1][j] += temp;
+                        net_out(i).bundleB[0][i1][j] += temp;
                     }
                 }
             }
@@ -2018,64 +2033,64 @@ void PairRANN::separate_validation()
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::copy_network(NNarchitecture* net_old, NNarchitecture* net_new)
+void PairRANN::copy_network(CArray<NNarchitecture> net_old, CArray<NNarchitecture> net_new)
 {
     std::cout << "**** Inside PairRANN::copy_network ****" << std::endl;
     int i, j, k;
     for (i = 0; i < nelementsp; i++) {
-        net_new[i].layers = net_old[i].layers;
-        if (net_new[i].layers > 0) {
-            net_new[i].maxlayer   = net_old[i].maxlayer;
-            net_new[i].sumlayers  = net_old[i].sumlayers;
-            net_new[i].dimensions = new int [net_new[i].layers];
-            net_new[i].startI     = new int [net_new[i].layers];
-            net_new[i].bundleW    = new double**[net_new[i].layers - 1];
-            net_new[i].bundleB    = new double**[net_new[i].layers - 1];
-            net_new[i].freezeW    = new bool**[net_new[i].layers - 1];
-            net_new[i].freezeB    = new bool**[net_new[i].layers - 1];
-            net_new[i].bundleinputsize  = new int*[net_new[i].layers - 1];
-            net_new[i].bundleoutputsize = new int*[net_new[i].layers - 1];
-            net_new[i].bundleinput  = new int**[net_new[i].layers - 1];
-            net_new[i].bundleoutput = new int**[net_new[i].layers - 1];
-            net_new[i].bundles = new int [net_new[i].layers - 1];
-            net_new[i].identitybundle = new bool*[net_new[i].layers - 1];
-            for (j = 0; j < net_old[i].layers; j++) {
-                net_new[i].dimensions[j] = net_old[i].dimensions[j];
-                net_new[i].startI[j]     = net_old[i].startI[j];
-                if (j == net_old[i].layers - 1) {
+        net_new(i).layers = net_old(i).layers;
+        if (net_new(i).layers > 0) {
+            net_new(i).maxlayer   = net_old(i).maxlayer;
+            net_new(i).sumlayers  = net_old(i).sumlayers;
+            net_new(i).dimensions = new int [net_new(i).layers];
+            net_new(i).startI     = new int [net_new(i).layers];
+            net_new(i).bundleW    = new double**[net_new(i).layers - 1];
+            net_new(i).bundleB    = new double**[net_new(i).layers - 1];
+            net_new(i).freezeW    = new bool**[net_new(i).layers - 1];
+            net_new(i).freezeB    = new bool**[net_new(i).layers - 1];
+            net_new(i).bundleinputsize  = new int*[net_new(i).layers - 1];
+            net_new(i).bundleoutputsize = new int*[net_new(i).layers - 1];
+            net_new(i).bundleinput  = new int**[net_new(i).layers - 1];
+            net_new(i).bundleoutput = new int**[net_new(i).layers - 1];
+            net_new(i).bundles = new int [net_new(i).layers - 1];
+            net_new(i).identitybundle = new bool*[net_new(i).layers - 1];
+            for (j = 0; j < net_old(i).layers; j++) {
+                net_new(i).dimensions[j] = net_old(i).dimensions[j];
+                net_new(i).startI[j]     = net_old(i).startI[j];
+                if (j == net_old(i).layers - 1) {
                     continue;
                 }
-                net_new[i].bundles[j] = net_old[i].bundles[j];
-                net_new[i].bundleW[j] = new double*[net_new[i].bundles[j]];
-                net_new[i].bundleB[j] = new double*[net_new[i].bundles[j]];
-                net_new[i].freezeW[j] = new bool*[net_new[i].bundles[j]];
-                net_new[i].freezeB[j] = new bool*[net_new[i].bundles[j]];
-                net_new[i].identitybundle[j]   = new bool[net_new[i].bundles[j]];
-                net_new[i].bundleinputsize[j]  = new int[net_new[i].bundles[j]];
-                net_new[i].bundleoutputsize[j] = new int [net_new[i].bundles[j]];
-                net_new[i].bundleinput[j]  = new int*[net_new[i].bundles[j]];
-                net_new[i].bundleoutput[j] = new int*[net_new[i].bundles[j]];
-                for (int i1 = 0; i1 < net_old[i].bundles[j]; i1++) {
-                    net_new[i].identitybundle[j][i1]   = net_old[i].identitybundle[j][i1];
-                    net_new[i].bundleinputsize[j][i1]  = net_old[i].bundleinputsize[j][i1];
-                    net_new[i].bundleoutputsize[j][i1] = net_old[i].bundleoutputsize[j][i1];
-                    net_new[i].bundleinput[j][i1]  = new int[net_new[i].bundleinputsize[j][i1]];
-                    net_new[i].bundleoutput[j][i1] = new int[net_new[i].bundleoutputsize[j][i1]];
-                    net_new[i].bundleW[j][i1] = new double[net_new[i].bundleinputsize[j][i1] * net_new[i].bundleoutputsize[j][i1]];
-                    net_new[i].bundleB[j][i1] = new double[net_new[i].bundleoutputsize[j][i1]];
-                    net_new[i].freezeW[j][i1] = new bool[net_new[i].bundleinputsize[j][i1] * net_new[i].bundleoutputsize[j][i1]];
-                    net_new[i].freezeB[j][i1] = new bool[net_new[i].bundleoutputsize[j][i1]];
-                    for (int k = 0; k < net_new[i].bundleinputsize[j][i1] * net_new[i].bundleoutputsize[j][i1]; k++) {
-                        net_new[i].bundleW[j][i1][k] = net_old[i].bundleW[j][i1][k];
-                        net_new[i].freezeW[j][i1][k] = net_old[i].freezeW[j][i1][k];
+                net_new(i).bundles[j] = net_old(i).bundles[j];
+                net_new(i).bundleW[j] = new double*[net_new(i).bundles[j]];
+                net_new(i).bundleB[j] = new double*[net_new(i).bundles[j]];
+                net_new(i).freezeW[j] = new bool*[net_new(i).bundles[j]];
+                net_new(i).freezeB[j] = new bool*[net_new(i).bundles[j]];
+                net_new(i).identitybundle[j]   = new bool[net_new(i).bundles[j]];
+                net_new(i).bundleinputsize[j]  = new int[net_new(i).bundles[j]];
+                net_new(i).bundleoutputsize[j] = new int [net_new(i).bundles[j]];
+                net_new(i).bundleinput[j]  = new int*[net_new(i).bundles[j]];
+                net_new(i).bundleoutput[j] = new int*[net_new(i).bundles[j]];
+                for (int i1 = 0; i1 < net_old(i).bundles[j]; i1++) {
+                    net_new(i).identitybundle[j][i1]   = net_old(i).identitybundle[j][i1];
+                    net_new(i).bundleinputsize[j][i1]  = net_old(i).bundleinputsize[j][i1];
+                    net_new(i).bundleoutputsize[j][i1] = net_old(i).bundleoutputsize[j][i1];
+                    net_new(i).bundleinput[j][i1]  = new int[net_new(i).bundleinputsize[j][i1]];
+                    net_new(i).bundleoutput[j][i1] = new int[net_new(i).bundleoutputsize[j][i1]];
+                    net_new(i).bundleW[j][i1] = new double[net_new(i).bundleinputsize[j][i1] * net_new(i).bundleoutputsize[j][i1]];
+                    net_new(i).bundleB[j][i1] = new double[net_new(i).bundleoutputsize[j][i1]];
+                    net_new(i).freezeW[j][i1] = new bool[net_new(i).bundleinputsize[j][i1] * net_new(i).bundleoutputsize[j][i1]];
+                    net_new(i).freezeB[j][i1] = new bool[net_new(i).bundleoutputsize[j][i1]];
+                    for (int k = 0; k < net_new(i).bundleinputsize[j][i1] * net_new(i).bundleoutputsize[j][i1]; k++) {
+                        net_new(i).bundleW[j][i1][k] = net_old(i).bundleW[j][i1][k];
+                        net_new(i).freezeW[j][i1][k] = net_old(i).freezeW[j][i1][k];
                     }
-                    for (int k = 0; k < net_new[i].bundleinputsize[j][i1]; k++) {
-                        net_new[i].bundleinput[j][i1][k] = net_old[i].bundleinput[j][i1][k];
+                    for (int k = 0; k < net_new(i).bundleinputsize[j][i1]; k++) {
+                        net_new(i).bundleinput[j][i1][k] = net_old(i).bundleinput[j][i1][k];
                     }
-                    for (int k = 0; k < net_new[i].bundleoutputsize[j][i1]; k++) {
-                        net_new[i].bundleoutput[j][i1][k] = net_old[i].bundleoutput[j][i1][k];
-                        net_new[i].bundleB[j][i1][k] = net_old[i].bundleB[j][i1][k];
-                        net_new[i].freezeB[j][i1][k] = net_old[i].freezeB[j][i1][k];
+                    for (int k = 0; k < net_new(i).bundleoutputsize[j][i1]; k++) {
+                        net_new(i).bundleoutput[j][i1][k] = net_old(i).bundleoutput[j][i1][k];
+                        net_new(i).bundleB[j][i1][k] = net_old(i).bundleB[j][i1][k];
+                        net_new(i).freezeB[j][i1][k] = net_old(i).freezeB[j][i1][k];
                     }
                 }
             }
@@ -2083,7 +2098,7 @@ void PairRANN::copy_network(NNarchitecture* net_old, NNarchitecture* net_new)
     }
 }
 
-// top level run function, calls compute_jacobian and qrsolve. Cannot be parallelized.
+//top level run function, calls compute_jacobian and qrsolve. Cannot be parallelized over time steps.
 void PairRANN::levenburg_marquardt_ch()
 {
     std::cout << "**** Inside PairRANN::levenburg_marquardt_ch ****" << std::endl;
@@ -2122,13 +2137,13 @@ void PairRANN::levenburg_marquardt_ch()
     jlen1 = jlen;
     sprintf(str, "types=%d; betalen=%d; jlen1=%d; jlen2=%d, regularization:%d\n", nelementsp, betalen, jlen1, jlen2, doregularizer);
     std::cout << str;
-    double  J[jlen1 * betalen];
-    double  J1[jlen1 * betalen];
-    double  J2[betalen * betalen];
-    double  t2[betalen];
+    double  J[jlen1 * betalen]; // jlen1 >>> betalen  (0 or 1 ,number of simulations + betalen , betalen=total number of weights and biases)
+    double  J1[jlen1 * betalen]; // Copy of jacobian, consider wrapping in to 1
+    double  J2[betalen * betalen]; // J^{T}*J
+    double  t2[betalen]; // J^{T}*target_vec 
     double  target[jlen1];
-    double  target1[jlen1];
-    double  targetv[jlenv];
+    double  target1[jlen1]; // corresponds to J1
+    double  targetv[jlenv]; // validation target
     double  beta[betalen];
     double  beta1[betalen];
     double  D[betalen];
@@ -2149,7 +2164,8 @@ void PairRANN::levenburg_marquardt_ch()
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
 
-    NNarchitecture net1[nelementsp];
+    auto net1 = CArray<NNarchitecture>(nelementsp);
+
     copy_network(net, net1);
     for (i = 0; i < nsimr; i++) {
         energy_fit += tp[i] * tp[i];
@@ -2475,33 +2491,33 @@ void PairRANN::levenburg_marquardt_ch()
     }
     // delete dynamic memory use
     for (int i = 0; i <= nelements; i++) {
-        if (net1[i].layers > 0) {
-            for (int j = 0; j < net1[i].layers - 1; j++) {
-                delete[] net1[i].bundleinputsize[j];
-                delete[] net1[i].bundleoutputsize[j];
-                for (int k = 0; k < net1[i].bundles[j]; k++) {
-                    delete[] net1[i].bundleinput[j][k];
-                    delete[] net1[i].bundleoutput[j][k];
-                    delete[] net1[i].bundleW[j][k];
-                    delete[] net1[i].bundleB[j][k];
-                    delete[] net1[i].freezeW[j][k];
-                    delete[] net1[i].freezeB[j][k];
+        if (net1(i).layers > 0) {
+            for (int j = 0; j < net1(i).layers - 1; j++) {
+                delete[] net1(i).bundleinputsize[j];
+                delete[] net1(i).bundleoutputsize[j];
+                for (int k = 0; k < net1(i).bundles[j]; k++) {
+                    delete[] net1(i).bundleinput[j][k];
+                    delete[] net1(i).bundleoutput[j][k];
+                    delete[] net1(i).bundleW[j][k];
+                    delete[] net1(i).bundleB[j][k];
+                    delete[] net1(i).freezeW[j][k];
+                    delete[] net1(i).freezeB[j][k];
                 }
-                delete[] net1[i].bundleinput[j];
-                delete[] net1[i].bundleoutput[j];
-                delete[] net1[i].bundleW[j];
-                delete[] net1[i].bundleB[j];
-                delete[] net1[i].freezeW[j];
-                delete[] net1[i].freezeB[j];
+                delete[] net1(i).bundleinput[j];
+                delete[] net1(i).bundleoutput[j];
+                delete[] net1(i).bundleW[j];
+                delete[] net1(i).bundleB[j];
+                delete[] net1(i).freezeW[j];
+                delete[] net1(i).freezeB[j];
             }
-            delete[] net1[i].bundleinput;
-            delete[] net1[i].bundleoutput;
-            delete[] net1[i].bundleW;
-            delete[] net1[i].bundleB;
-            delete[] net1[i].freezeW;
-            delete[] net1[i].freezeB;
-            delete[] net1[i].dimensions;
-            delete[] net1[i].startI;
+            delete[] net1(i).bundleinput;
+            delete[] net1(i).bundleoutput;
+            delete[] net1(i).bundleW;
+            delete[] net1(i).bundleB;
+            delete[] net1(i).freezeW;
+            delete[] net1(i).freezeB;
+            delete[] net1(i).dimensions;
+            delete[] net1(i).startI;
         }
     }
 
@@ -2593,8 +2609,11 @@ void PairRANN::conjugate_gradient()
     // clock_t start1 = clock();
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
-    NNarchitecture net1[nelementsp];
-    NNarchitecture net2[nelementsp];
+
+    auto net1 = CArray<NNarchitecture>(nelementsp);
+    auto net2 = CArray<NNarchitecture>(nelementsp);
+
+
     copy_network(net, net1);
     copy_network(net, net2);
     for (i = 0; i < nsimr; i++) {
@@ -2974,33 +2993,33 @@ void PairRANN::conjugate_gradient()
     }
     // delete dynamic memory use
     for (int i = 0; i <= nelements; i++) {
-        if (net1[i].layers > 0) {
-            for (int j = 0; j < net1[i].layers - 1; j++) {
-                delete[] net1[i].bundleinputsize[j];
-                delete[] net1[i].bundleoutputsize[j];
-                for (int k = 0; k < net1[i].bundles[j]; k++) {
-                    delete[] net1[i].bundleinput[j][k];
-                    delete[] net1[i].bundleoutput[j][k];
-                    delete[] net1[i].bundleW[j][k];
-                    delete[] net1[i].bundleB[j][k];
-                    delete[] net1[i].freezeW[j][k];
-                    delete[] net1[i].freezeB[j][k];
+        if (net1(i).layers > 0) {
+            for (int j = 0; j < net1(i).layers - 1; j++) {
+                delete[] net1(i).bundleinputsize[j];
+                delete[] net1(i).bundleoutputsize[j];
+                for (int k = 0; k < net1(i).bundles[j]; k++) {
+                    delete[] net1(i).bundleinput[j][k];
+                    delete[] net1(i).bundleoutput[j][k];
+                    delete[] net1(i).bundleW[j][k];
+                    delete[] net1(i).bundleB[j][k];
+                    delete[] net1(i).freezeW[j][k];
+                    delete[] net1(i).freezeB[j][k];
                 }
-                delete[] net1[i].bundleinput[j];
-                delete[] net1[i].bundleoutput[j];
-                delete[] net1[i].bundleW[j];
-                delete[] net1[i].bundleB[j];
-                delete[] net1[i].freezeW[j];
-                delete[] net1[i].freezeB[j];
+                delete[] net1(i).bundleinput[j];
+                delete[] net1(i).bundleoutput[j];
+                delete[] net1(i).bundleW[j];
+                delete[] net1(i).bundleB[j];
+                delete[] net1(i).freezeW[j];
+                delete[] net1(i).freezeB[j];
             }
-            delete[] net1[i].bundleinput;
-            delete[] net1[i].bundleoutput;
-            delete[] net1[i].bundleW;
-            delete[] net1[i].bundleB;
-            delete[] net1[i].freezeW;
-            delete[] net1[i].freezeB;
-            delete[] net1[i].dimensions;
-            delete[] net1[i].startI;
+            delete[] net1(i).bundleinput;
+            delete[] net1(i).bundleoutput;
+            delete[] net1(i).bundleW;
+            delete[] net1(i).bundleB;
+            delete[] net1(i).freezeW;
+            delete[] net1(i).freezeB;
+            delete[] net1(i).dimensions;
+            delete[] net1(i).startI;
         }
     }
 
@@ -3082,8 +3101,9 @@ void PairRANN::levenburg_marquardt_linesearch()
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
 
-    NNarchitecture net1[nelementsp];
-    NNarchitecture net2[nelementsp];
+    auto net1 = CArray<NNarchitecture>(nelementsp);
+    auto net2 = CArray<NNarchitecture>(nelementsp);
+
     copy_network(net, net1);
     copy_network(net, net2);
     for (i = 0; i < nsimr; i++) {
@@ -3472,33 +3492,33 @@ void PairRANN::levenburg_marquardt_linesearch()
     }
     // delete dynamic memory use
     for (int i = 0; i <= nelements; i++) {
-        if (net1[i].layers > 0) {
-            for (int j = 0; j < net1[i].layers - 1; j++) {
-                delete[] net1[i].bundleinputsize[j];
-                delete[] net1[i].bundleoutputsize[j];
-                for (int k = 0; k < net1[i].bundles[j]; k++) {
-                    delete[] net1[i].bundleinput[j][k];
-                    delete[] net1[i].bundleoutput[j][k];
-                    delete[] net1[i].bundleW[j][k];
-                    delete[] net1[i].bundleB[j][k];
-                    delete[] net1[i].freezeW[j][k];
-                    delete[] net1[i].freezeB[j][k];
+        if (net1(i).layers > 0) {
+            for (int j = 0; j < net1(i).layers - 1; j++) {
+                delete[] net1(i).bundleinputsize[j];
+                delete[] net1(i).bundleoutputsize[j];
+                for (int k = 0; k < net1(i).bundles[j]; k++) {
+                    delete[] net1(i).bundleinput[j][k];
+                    delete[] net1(i).bundleoutput[j][k];
+                    delete[] net1(i).bundleW[j][k];
+                    delete[] net1(i).bundleB[j][k];
+                    delete[] net1(i).freezeW[j][k];
+                    delete[] net1(i).freezeB[j][k];
                 }
-                delete[] net1[i].bundleinput[j];
-                delete[] net1[i].bundleoutput[j];
-                delete[] net1[i].bundleW[j];
-                delete[] net1[i].bundleB[j];
-                delete[] net1[i].freezeW[j];
-                delete[] net1[i].freezeB[j];
+                delete[] net1(i).bundleinput[j];
+                delete[] net1(i).bundleoutput[j];
+                delete[] net1(i).bundleW[j];
+                delete[] net1(i).bundleB[j];
+                delete[] net1(i).freezeW[j];
+                delete[] net1(i).freezeB[j];
             }
-            delete[] net1[i].bundleinput;
-            delete[] net1[i].bundleoutput;
-            delete[] net1[i].bundleW;
-            delete[] net1[i].bundleB;
-            delete[] net1[i].freezeW;
-            delete[] net1[i].freezeB;
-            delete[] net1[i].dimensions;
-            delete[] net1[i].startI;
+            delete[] net1(i).bundleinput;
+            delete[] net1(i).bundleoutput;
+            delete[] net1(i).bundleW;
+            delete[] net1(i).bundleB;
+            delete[] net1(i).freezeW;
+            delete[] net1(i).freezeB;
+            delete[] net1(i).dimensions;
+            delete[] net1(i).startI;
         }
     }
 
@@ -3595,8 +3615,10 @@ void PairRANN::bfgs()
     // clock_t start1 = clock();
     double start_time_tot = omp_get_wtime();
     jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
-    NNarchitecture net1[nelementsp];
-    NNarchitecture net2[nelementsp];
+
+    auto net1 = CArray<NNarchitecture>(nelementsp);
+    auto net2 = CArray<NNarchitecture>(nelementsp);
+
     copy_network(net, net1);
     copy_network(net, net2);
     for (i = 0; i < nsimr; i++) {
@@ -4011,33 +4033,33 @@ void PairRANN::bfgs()
     }
     // delete dynamic memory use
     for (int i = 0; i <= nelements; i++) {
-        if (net1[i].layers > 0) {
-            for (int j = 0; j < net1[i].layers - 1; j++) {
-                delete[] net1[i].bundleinputsize[j];
-                delete[] net1[i].bundleoutputsize[j];
-                for (int k = 0; k < net1[i].bundles[j]; k++) {
-                    delete[] net1[i].bundleinput[j][k];
-                    delete[] net1[i].bundleoutput[j][k];
-                    delete[] net1[i].bundleW[j][k];
-                    delete[] net1[i].bundleB[j][k];
-                    delete[] net1[i].freezeW[j][k];
-                    delete[] net1[i].freezeB[j][k];
+        if (net1(i).layers > 0) {
+            for (int j = 0; j < net1(i).layers - 1; j++) {
+                delete[] net1(i).bundleinputsize[j];
+                delete[] net1(i).bundleoutputsize[j];
+                for (int k = 0; k < net1(i).bundles[j]; k++) {
+                    delete[] net1(i).bundleinput[j][k];
+                    delete[] net1(i).bundleoutput[j][k];
+                    delete[] net1(i).bundleW[j][k];
+                    delete[] net1(i).bundleB[j][k];
+                    delete[] net1(i).freezeW[j][k];
+                    delete[] net1(i).freezeB[j][k];
                 }
-                delete[] net1[i].bundleinput[j];
-                delete[] net1[i].bundleoutput[j];
-                delete[] net1[i].bundleW[j];
-                delete[] net1[i].bundleB[j];
-                delete[] net1[i].freezeW[j];
-                delete[] net1[i].freezeB[j];
+                delete[] net1(i).bundleinput[j];
+                delete[] net1(i).bundleoutput[j];
+                delete[] net1(i).bundleW[j];
+                delete[] net1(i).bundleB[j];
+                delete[] net1(i).freezeW[j];
+                delete[] net1(i).freezeB[j];
             }
-            delete[] net1[i].bundleinput;
-            delete[] net1[i].bundleoutput;
-            delete[] net1[i].bundleW;
-            delete[] net1[i].bundleB;
-            delete[] net1[i].freezeW;
-            delete[] net1[i].freezeB;
-            delete[] net1[i].dimensions;
-            delete[] net1[i].startI;
+            delete[] net1(i).bundleinput;
+            delete[] net1(i).bundleoutput;
+            delete[] net1(i).bundleW;
+            delete[] net1(i).bundleB;
+            delete[] net1(i).freezeW;
+            delete[] net1(i).freezeB;
+            delete[] net1(i).dimensions;
+            delete[] net1(i).startI;
         }
     }
 
@@ -4063,29 +4085,29 @@ void PairRANN::bfgs()
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::flatten_beta(NNarchitecture* net, double* beta)
+void PairRANN::flatten_beta(CArray<NNarchitecture> net, double* beta)
 {
     std::cout << "**** Inside PairRANN::flatten_beta ****" << std::endl;
     int itype, i, k1, k2, count2;
     count2 = 0;
     for (itype = 0; itype < nelementsp; itype++) {
-        for (i = 0; i < net[itype].layers - 1; i++) {
-            for (int i1 = 0; i1 < net[itype].bundles[i]; i1++) {
-                if (net[itype].identitybundle[i][i1]) {
+        for (i = 0; i < net(itype).layers - 1; i++) {
+            for (int i1 = 0; i1 < net(itype).bundles[i]; i1++) {
+                if (net(itype).identitybundle[i][i1]) {
                     continue;
                 }
-                for (k1 = 0; k1 < net[itype].bundleoutputsize[i][i1]; k1++) {
-                    for (k2 = 0; k2 < net[itype].bundleinputsize[i][i1]; k2++) {
-                        if (net[itype].freezeW[i][i1][k1 * net[itype].bundleinputsize[i][i1] + k2]) {
+                for (k1 = 0; k1 < net(itype).bundleoutputsize[i][i1]; k1++) {
+                    for (k2 = 0; k2 < net(itype).bundleinputsize[i][i1]; k2++) {
+                        if (net(itype).freezeW[i][i1][k1 * net(itype).bundleinputsize[i][i1] + k2]) {
                             continue;
                         }
-                        beta[count2] = net[itype].bundleW[i][i1][k1 * net[itype].bundleinputsize[i][i1] + k2];
+                        beta[count2] = net(itype).bundleW[i][i1][k1 * net(itype).bundleinputsize[i][i1] + k2];
                         count2++;
                     }
-                    if (net[itype].freezeB[i][i1][k1]) {
+                    if (net(itype).freezeB[i][i1][k1]) {
                         continue;
                     }
-                    beta[count2] = net[itype].bundleB[i][i1][k1];
+                    beta[count2] = net(itype).bundleB[i][i1][k1];
                     count2++;
                 }
             }
@@ -4107,29 +4129,29 @@ void PairRANN::flatten_beta(NNarchitecture* net, double* beta)
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::unflatten_beta(NNarchitecture* net, double* beta)
+void PairRANN::unflatten_beta(CArray<NNarchitecture> net, double* beta)
 {
     std::cout << "**** Inside PairRANN::unflatten_beta ****" << std::endl;
     int itype, i, k1, k2, count2;
     count2 = 0;
     for (itype = 0; itype < nelementsp; itype++) {
-        for (i = 0; i < net[itype].layers - 1; i++) {
-            for (int i1 = 0; i1 < net[itype].bundles[i]; i1++) {
-                if (net[itype].identitybundle[i][i1]) {
+        for (i = 0; i < net(itype).layers - 1; i++) {
+            for (int i1 = 0; i1 < net(itype).bundles[i]; i1++) {
+                if (net(itype).identitybundle[i][i1]) {
                     continue;
                 }
-                for (k1 = 0; k1 < net[itype].bundleoutputsize[i][i1]; k1++) {
-                    for (k2 = 0; k2 < net[itype].bundleinputsize[i][i1]; k2++) {
-                        if (net[itype].freezeW[i][i1][k1 * net[itype].bundleinputsize[i][i1] + k2]) {
+                for (k1 = 0; k1 < net(itype).bundleoutputsize[i][i1]; k1++) {
+                    for (k2 = 0; k2 < net(itype).bundleinputsize[i][i1]; k2++) {
+                        if (net(itype).freezeW[i][i1][k1 * net(itype).bundleinputsize[i][i1] + k2]) {
                             continue;
                         }
-                        net[itype].bundleW[i][i1][k1 * net[itype].bundleinputsize[i][i1] + k2] = beta[count2];
+                        net(itype).bundleW[i][i1][k1 * net(itype).bundleinputsize[i][i1] + k2] = beta[count2];
                         count2++;
                     }
-                    if (net[itype].freezeB[i][i1][k1]) {
+                    if (net(itype).freezeB[i][i1][k1]) {
                         continue;
                     }
-                    net[itype].bundleB[i][i1][k1] = beta[count2];
+                    net(itype).bundleB[i][i1][k1] = beta[count2];
                     count2++;
                 }
             }
@@ -4151,7 +4173,7 @@ void PairRANN::unflatten_beta(NNarchitecture* net, double* beta)
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, int natoms, NNarchitecture* net)
+void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, int natoms, CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::jacobian_convolution ****" << std::endl;
     // clock_t start = clock();
@@ -4204,7 +4226,7 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
                 itype = sims[nn].type[ii];
                 double t2weight = sims[nn].energy_weight / sqrt(sims[nn].speciescount[itype]);
                 int    stype    = sims[nn].speciesmap[itype];
-                net1       = net[itype];
+                net1       = net(itype);
                 n1sl       = net1.sumlayers;
                 n1slM1     = n1sl - 1;
                 iiX3       = ii * 3;
@@ -4260,8 +4282,8 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
                 int count2 = 0;      // skip frozen parameters
                 int count3 = 0;      // include frozen parameters
                 if (itype > 0) {
-                    count2 = betalen_v[itype - 1];
-                    count3 = betalen_f[itype - 1];
+                    count2 = betalen_v(itype - 1);
+                    count3 = betalen_f(itype - 1);
                 }
                 // backpropagation
                 for (i = 0; i < net1.layers - 1; i++) {
@@ -4366,25 +4388,25 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
             }
             // #pragma omp for schedule(dynamic)
             for (int itype = 0; itype < nelementsp; itype++) {
-                for (int i = 0; i < net[itype].layers - 1; i++) {
-                    for (int i1 = 0; i1 < net[itype].bundles[i]; i1++) {
-                        if (net[itype].identitybundle[i][i1]) {
+                for (int i = 0; i < net(itype).layers - 1; i++) {
+                    for (int i1 = 0; i1 < net(itype).bundles[i]; i1++) {
+                        if (net(itype).identitybundle[i][i1]) {
                             continue;
                         }
-                        for (int k1 = 0; k1 < net[itype].bundleoutputsize[i][i1]; k1++) {
-                            for (int k2 = 0; k2 < net[itype].bundleinputsize[i][i1]; k2++) {
+                        for (int k1 = 0; k1 < net(itype).bundleoutputsize[i][i1]; k1++) {
+                            for (int k2 = 0; k2 < net(itype).bundleinputsize[i][i1]; k2++) {
                                 if (~freezebeta[count3]) {
                                     J[(snoff + count2) * betalen + count2] = regularizer;
-                                    target[snoff + count2] = -regularizer * net[itype].bundleW[i][i1][k1 * net[itype].bundleinputsize[i][i1] + k2];
+                                    target[snoff + count2] = -regularizer * net(itype).bundleW[i][i1][k1 * net(itype).bundleinputsize[i][i1] + k2];
                                     count2++;
                                 }
                                 count3++;
                             }
                             if (~freezebeta[count3]) {
                                 J[(sn + count2) * betalen + count2] = regularizer;
-                                target[sn + count2] = -regularizer * net[itype].bundleB[i][i1][k1];
+                                target[sn + count2] = -regularizer * net(itype).bundleB[i][i1][k1];
                                 // force last bias to not count toward regularization
-                                if (i + 2 == net[itype].layers) {
+                                if (i + 2 == net(itype).layers) {
                                     J[(snoff + count2) * betalen + count2] = 0;
                                     target[(snoff + count2) * betalen + count2] = 0;
                                 }
@@ -4405,7 +4427,7 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
 }
 
 // finds total error from features
-void PairRANN::forward_pass(double* target, int* s, int sn, NNarchitecture* net)
+void PairRANN::forward_pass(double* target, int* s, int sn, CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::forward_pass ****" << std::endl;
     // clock_t start = clock();
@@ -4445,7 +4467,7 @@ void PairRANN::forward_pass(double* target, int* s, int sn, NNarchitecture* net)
                 itype = sims[nn].type[ii];
                 double t2weight = sims[nn].energy_weight / sqrt(sims[nn].speciescount[itype]);
                 int    stype    = sims[nn].speciesmap[itype];
-                net1       = net[itype];
+                net1       = net(itype);
                 n1sl       = net1.sumlayers;
                 n1slM1     = n1sl - 1;
                 numneigh   = sims[nn].numneigh[ii];
@@ -4527,25 +4549,25 @@ void PairRANN::forward_pass(double* target, int* s, int sn, NNarchitecture* net)
             }
             // #pragma omp for schedule(dynamic)
             for (int itype = 0; itype < nelementsp; itype++) {
-                for (int i = 0; i < net[itype].layers - 1; i++) {
-                    for (int i1 = 0; i1 < net[itype].bundles[i]; i1++) {
-                        if (net[itype].identitybundle[i][i1]) {
+                for (int i = 0; i < net(itype).layers - 1; i++) {
+                    for (int i1 = 0; i1 < net(itype).bundles[i]; i1++) {
+                        if (net(itype).identitybundle[i][i1]) {
                             continue;
                         }
-                        for (int k1 = 0; k1 < net[itype].bundleoutputsize[i][i1]; k1++) {
-                            for (int k2 = 0; k2 < net[itype].bundleinputsize[i][i1]; k2++) {
+                        for (int k1 = 0; k1 < net(itype).bundleoutputsize[i][i1]; k1++) {
+                            for (int k2 = 0; k2 < net(itype).bundleinputsize[i][i1]; k2++) {
                                 if (~freezebeta[count3]) {
                                     // J[(snoff+count2)*betalen+count2] = regularizer;
-                                    target[snoff + count2] = -regularizer * net[itype].bundleW[i][i1][k1 * net[itype].bundleinputsize[i][i1] + k2];
+                                    target[snoff + count2] = -regularizer * net(itype).bundleW[i][i1][k1 * net(itype).bundleinputsize[i][i1] + k2];
                                     count2++;
                                 }
                                 count3++;
                             }
                             if (~freezebeta[count3]) {
                                 // J[(sn+count2)*betalen+count2] = regularizer;
-                                target[sn + count2] = -regularizer * net[itype].bundleB[i][i1][k1];
+                                target[sn + count2] = -regularizer * net(itype).bundleB[i][i1][k1];
                                 // force last bias to not count toward regularization
-                                if (i + 2 == net[itype].layers) {
+                                if (i + 2 == net(itype).layers) {
                                     // J[(snoff+count2)*betalen+count2]=0;
                                     target[(snoff + count2) * betalen + count2] = 0;
                                 }
@@ -4562,7 +4584,7 @@ void PairRANN::forward_pass(double* target, int* s, int sn, NNarchitecture* net)
 }
 
 // finds per atom energies from features
-void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, NNarchitecture* net)
+void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::get_per_atom_energy ****" << std::endl;
     double start_time = omp_get_wtime();
@@ -4584,7 +4606,7 @@ void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, NNarchitec
                 startI = 0;
                 NNarchitecture net1;
                 itype      = sims[nn].type[ii];
-                net1       = net[itype];
+                net1       = net(itype);
                 n1sl       = net1.sumlayers;
                 n1slM1     = n1sl - 1;
                 numneigh   = sims[nn].numneigh[ii];
@@ -4636,11 +4658,11 @@ void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, NNarchitec
 
 // finds total energy and per atom forces from features
 void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum, int itype, double* features, double* dfeaturesx, double* dfeaturesy, double* dfeaturesz, int* jl, int nn,
-    NNarchitecture* net)
+    CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::propagateforward ****" << std::endl;
     int i, j, k, jj, j1, i1;
-    NNarchitecture net1 = net[itype];
+    NNarchitecture net1 = net(itype);
     int L = net1.layers - 1;
     // energy output with forces from analytical derivatives
     double dsum1[net1.maxlayer];
@@ -4755,11 +4777,11 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
 ///
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::propagateforwardspin(double* energy, double** force, double** fm, double** hm, int ii, int jnum, int itype, double* features, double* dfeaturesx, double* dfeaturesy, double* dfeaturesz,
-    double* sx, double* sy, double* sz, double* sxx, double* sxy, double* sxz, double* syy, double* syz, double* szz, int* jl, int nn, NNarchitecture* net)
+    double* sx, double* sy, double* sz, double* sxx, double* sxy, double* sxz, double* syy, double* syz, double* szz, int* jl, int nn, CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::propagateforwardspin ****" << std::endl;
     int i, j, k, jj, j1, i1;
-    NNarchitecture net1 = net[itype];
+    NNarchitecture net1 = net(itype);
     int L = net1.layers - 1;
     // energy output with forces from analytical derivatives
     double dsum1[net1.maxlayer];
@@ -4972,7 +4994,7 @@ void PairRANN::cull_neighbor_list(double* xn, double* yn, double* zn, int* tn, i
     for (jj = 0; jj < jnum[0]; jj++) {
         j     = jlist[jj];
         j    &= NEIGHMASK;
-        jtype = map[type[j]];
+        jtype = map(type[j]);
         delx  = xtmp - x[j][0];
         dely  = ytmp - x[j][1];
         delz  = ztmp - x[j][2];
@@ -5244,7 +5266,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
         printf("%s", filename);
         errorf("Invalid parameter file name");
     }
-    NNarchitecture* net_out = new NNarchitecture[nelementsp];
+    auto net_out = CArray<NNarchitecture>(nelementsp);
     if (normalizeinput) {
         unnormalize_net(net_out);
     }
@@ -5262,7 +5284,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     // mass section
     for (i = 0; i < nelements; i++) {
         fprintf(fid, "mass:%s:\n", elements[i]);
-        fprintf(fid, "%f\n", mass[i]);
+        fprintf(fid, "%f\n", mass(i));
     }
     // fingerprints per element section
     for (i = 0; i < nelementsp; i++) {
@@ -5322,30 +5344,30 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // network layers section:
     for (i = 0; i < nelementsp; i++) {
-        if (net_out[i].layers > 0) {
+        if (net_out(i).layers > 0) {
             fprintf(fid, "networklayers:%s:\n", elementsp[i]);
-            fprintf(fid, "%d\n", net_out[i].layers);
+            fprintf(fid, "%d\n", net_out(i).layers);
         }
     }
     // layer size section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers; j++) {
+        for (j = 0; j < net_out(i).layers; j++) {
             fprintf(fid, "layersize:%s:%d:\n", elementsp[i], j);
-            fprintf(fid, "%d\n", net_out[i].dimensions[j]);
+            fprintf(fid, "%d\n", net_out(i).dimensions[j]);
         }
     }
     // bundles section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
             fprintf(fid, "bundles:%s:%d:\n", elements[i], j);
-            fprintf(fid, "%d\n", net_out[i].bundles[j]);
+            fprintf(fid, "%d\n", net_out(i).bundles[j]);
         }
     }
     // bundle id section
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
-            for (int i1 = 0; i1 < net_out[i].bundles[j]; i1++) {
-                if (net_out[i].identitybundle[j][i1]) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
+            for (int i1 = 0; i1 < net_out(i).bundles[j]; i1++) {
+                if (net_out(i).identitybundle[j][i1]) {
                     fprintf(fid, "bundleid:%s:%d:%d:\n", elements[i], j, i1);
                     fprintf(fid, "1\n");
                 }
@@ -5354,11 +5376,11 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // bundle input section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
-            for (int i1 = 0; i1 < net_out[i].bundles[j]; i1++) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
+            for (int i1 = 0; i1 < net_out(i).bundles[j]; i1++) {
                 fprintf(fid, "bundleinput:%s:%d:%d:\n", elements[i], j, i1);
-                for (k = 0; k < net_out[i].bundleinputsize[j][i1]; k++) {
-                    fprintf(fid, "%d ", net_out[i].bundleinput[j][i1][k]);
+                for (k = 0; k < net_out(i).bundleinputsize[j][i1]; k++) {
+                    fprintf(fid, "%d ", net_out(i).bundleinput[j][i1][k]);
                 }
                 fprintf(fid, "\n");
             }
@@ -5366,11 +5388,11 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // bundle output section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
-            for (int i1 = 0; i1 < net_out[i].bundles[j]; i1++) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
+            for (int i1 = 0; i1 < net_out(i).bundles[j]; i1++) {
                 fprintf(fid, "bundleoutput:%s:%d:%d:\n", elements[i], j, i1);
-                for (k = 0; k < net_out[i].bundleoutputsize[j][i1]; k++) {
-                    fprintf(fid, "%d ", net_out[i].bundleoutput[j][i1][k]);
+                for (k = 0; k < net_out(i).bundleoutputsize[j][i1]; k++) {
+                    fprintf(fid, "%d ", net_out(i).bundleoutput[j][i1][k]);
                 }
                 fprintf(fid, "\n");
             }
@@ -5378,15 +5400,15 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // weight section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
-            for (int i1 = 0; i1 < net_out[i].bundles[j]; i1++) {
-                if (net_out[i].identitybundle[j][i1]) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
+            for (int i1 = 0; i1 < net_out(i).bundles[j]; i1++) {
+                if (net_out(i).identitybundle[j][i1]) {
                     continue;
                 }
                 fprintf(fid, "weight:%s:%d:%d:\n", elementsp[i], j, i1);
-                for (k = 0; k < net_out[i].bundleoutputsize[j][i1]; k++) {
-                    for (l = 0; l < net_out[i].bundleinputsize[j][i1]; l++) {
-                        fprintf(fid, "%.15e\t", net_out[i].bundleW[j][i1][k * net_out[i].bundleinputsize[j][i1] + l]);
+                for (k = 0; k < net_out(i).bundleoutputsize[j][i1]; k++) {
+                    for (l = 0; l < net_out(i).bundleinputsize[j][i1]; l++) {
+                        fprintf(fid, "%.15e\t", net_out(i).bundleW[j][i1][k * net_out(i).bundleinputsize[j][i1] + l]);
                     }
                     fprintf(fid, "\n");
                 }
@@ -5395,30 +5417,30 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // bias section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
-            for (int i1 = 0; i1 < net_out[i].bundles[j]; i1++) {
-                if (net_out[i].identitybundle[j][i1]) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
+            for (int i1 = 0; i1 < net_out(i).bundles[j]; i1++) {
+                if (net_out(i).identitybundle[j][i1]) {
                     continue;
                 }
                 fprintf(fid, "bias:%s:%d:%d:\n", elementsp[i], j, i1);
-                for (k = 0; k < net_out[i].bundleoutputsize[j][i1]; k++) {
-                    fprintf(fid, "%.15e\n", net_out[i].bundleB[j][i1][k]);
+                for (k = 0; k < net_out(i).bundleoutputsize[j][i1]; k++) {
+                    fprintf(fid, "%.15e\n", net_out(i).bundleB[j][i1][k]);
                 }
             }
         }
     }
     // activation section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < net_out[i].layers - 1; j++) {
+        for (j = 0; j < net_out(i).layers - 1; j++) {
             bool allsame = true;
-            for (k = 1; k < net_out[i].dimensions[j + 1]; k++) {
+            for (k = 1; k < net_out(i).dimensions[j + 1]; k++) {
                 if (strcmp(activation[i][j][k]->style, activation[i][j][0]->style) != 0) {
                     allsame = false;
                     break;
                 }
             }
             if (!allsame) {
-                for (k = 0; k < net_out[i].dimensions[j + 1]; k++) {
+                for (k = 0; k < net_out(i).dimensions[j + 1]; k++) {
                     fprintf(fid, "activationfunctions:%s:%d:%d:\n", elementsp[i], j, k);
                     fprintf(fid, "%s\n", activation[i][j][k]->style);
                 }
@@ -5497,38 +5519,38 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
         fprintf(fid, "calibrationparameters:maxepochs:\n");
         fprintf(fid, "%d\n", max_epochs);
         for (i = 0; i < nelements; i++) {
-            for (j = 0; j < net_out[i].layers - 1; j++) {
-                for (int k = 0; k < net_out[i].bundles[j]; k++) {
-                    if (net_out[i].identitybundle[j][k]) {
+            for (j = 0; j < net_out(i).layers - 1; j++) {
+                for (int k = 0; k < net_out(i).bundles[j]; k++) {
+                    if (net_out(i).identitybundle[j][k]) {
                         continue;
                     }
                     bool anyfrozen = false;
-                    for (int l = 0; l < net_out[i].bundleoutputsize[j][k] * net_out[i].bundleinputsize[j][k]; l++) {
-                        if (net_out[i].freezeW[j][k][l]) {
+                    for (int l = 0; l < net_out(i).bundleoutputsize[j][k] * net_out(i).bundleinputsize[j][k]; l++) {
+                        if (net_out(i).freezeW[j][k][l]) {
                             anyfrozen = true;
                             break;
                         }
                     }
                     if (anyfrozen) {
                         fprintf(fid, "calibrationparameters:freezeW:%d:%d\n", j, k);
-                        for (int l = 0; l < net_out[i].bundleoutputsize[j][k]; l++) {
-                            for (int m = 0; m < net_out[i].bundleinputsize[j][k]; m++) {
-                                fprintf(fid, "%d ", net_out[i].freezeW[j][k][l * net_out[i].bundleoutputsize[j][k] + m]);
+                        for (int l = 0; l < net_out(i).bundleoutputsize[j][k]; l++) {
+                            for (int m = 0; m < net_out(i).bundleinputsize[j][k]; m++) {
+                                fprintf(fid, "%d ", net_out(i).freezeW[j][k][l * net_out(i).bundleoutputsize[j][k] + m]);
                             }
                             fprintf(fid, "\n");
                         }
                     }
                     anyfrozen = false;
-                    for (int l = 0; l < net_out[i].bundleoutputsize[j][k]; l++) {
-                        if (net_out[i].freezeB[j][k][l]) {
+                    for (int l = 0; l < net_out(i).bundleoutputsize[j][k]; l++) {
+                        if (net_out(i).freezeB[j][k][l]) {
                             anyfrozen = true;
                             break;
                         }
                     }
                     if (anyfrozen) {
                         fprintf(fid, "calibrationparameters:freezeB:%d:%d\n", j, k);
-                        for (int l = 0; l < net_out[i].bundleoutputsize[j][k]; l++) {
-                            fprintf(fid, "%d\n", net_out[i].freezeB[j][k][l]);
+                        for (int l = 0; l < net_out(i).bundleoutputsize[j][k]; l++) {
+                            fprintf(fid, "%d\n", net_out(i).freezeB[j][k][l]);
                         }
                     }
                 }
@@ -5568,7 +5590,6 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
         fprintf(fid, "%d\n", targettype);
     }
     fclose(fid);
-    delete[] net_out;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -5610,7 +5631,7 @@ void PairRANN::screen(double* Sik, double* dSikx, double* dSiky, double* dSikz, 
         PairRANN::Simulation* sim = &sims[sid];
         double xtmp, ytmp, ztmp, delx, dely, delz, rij, delx2, dely2, delz2, rik, delx3, dely3, delz3, rjk;
         i     = sim->ilist[ii];
-        itype = map[sim->type[i]];
+        itype = map(sim->type[i]);
         for (int jj = 0; jj < jnum; jj++) {
             Sik[jj]   = 1;
             Bij[jj]   = true;

@@ -37,6 +37,7 @@ int main(int argc, char** argv)
             PairRANN* cal = new PairRANN(argv[2]);
 
             auto start_setup = std::chrono::steady_clock::now();
+
             cal->setup(); // Initialize all memory, simulation struct comes after reading input script
 
             // Dump files initialize simulation struct.  Long array of simulation struct
@@ -59,7 +60,6 @@ int main(int argc, char** argv)
             // 4 different algorithms, levenberg_marquet_ch is most important
             // Run just picks algorithm
             // Algorithm contains all work
-
             // now = std::chrono::steady_clock::now();
             // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_run);
             
@@ -71,7 +71,9 @@ int main(int argc, char** argv)
             // auto start_finish = std::chrono::steady_clock::now();
 
             // cal->finish();
+
             // Currently unused, possibly done by filewrite, ignore
+
             
             // now = std::chrono::steady_clock::now();
             // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_finish);

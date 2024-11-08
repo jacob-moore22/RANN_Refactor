@@ -398,8 +398,8 @@ void Fingerprint_bondscreenedspin::do3bodyfeatureset_singleneighborloop(double* 
     ilist = sim->ilist;
     int nelements = pair->nelements;
     i     = ilist[ii];
-    itype = pair->map[type[i]];
-    int     f = pair->net[itype].dimensions[0];
+    itype = pair->map(type[i]);
+    int     f = pair->net(itype).dimensions[0];
     double  expr[jnum][kmax + 12];
     int     p = kmax;
     int     countmb = ((mlength) * (mlength + 1)) >> 1;
@@ -789,8 +789,8 @@ void Fingerprint_bondscreenedspin::do3bodyfeatureset_doubleneighborloop(double* 
     double cutinv2 = 1 / cutmax / cutmax;
     ilist = sim->ilist;
     i     = ilist[ii];
-    itype = pair->map[type[i]];
-    int     f = pair->net[itype].dimensions[0];
+    itype = pair->map(type[i]);
+    int     f = pair->net(itype).dimensions[0];
     double  expr[jnum][kmax];
     double  y[jnum][3];
     double  ri[jnum];

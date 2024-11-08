@@ -104,8 +104,10 @@ public:
     int      nsets;// DEFINE:
     int      betalen;// DEFINE:
     int      jlen1; // DEFINE:
-    int*     betalen_v; // 1D DEFINE:
-    int*     betalen_f; // 1D DEFINE:
+
+    DualCArray<int> betalen_v; // 1D DEFINE: NOTE: Possibly not needed on device
+    DualCArray<int> betalen_f; // 1D DEFINE: NOTE: Possibly not needed on device
+ 
     int      natoms; // DEFINE:
     int      natomsr; // DEFINE:
     int      natomsv; // DEFINE:
@@ -116,37 +118,56 @@ public:
     int      nsimr, nsimv;  // DEFINE:
     int*     Xset;          // 1D 
     char**   dumpfilenames; // 2D
-    double** normalshift;   // 2D   // DEFINE:
-    double** normalgain;    // 2D   // DEFINE:
+    
+    RaggedRightArrayKokkos<real_t> normalshift; // 2D   // DEFINE:
+    RaggedRightArrayKokkos<real_t> normalgain; // 2D   // DEFINE:
+    
     bool***  weightdefined; // 3D   // DEFINE:
     bool***  biasdefined;   // 3D   // DEFINE:
+    
     bool**   dimensiondefined;  // 2D   // DEFINE:
+    
     bool***  bundle_inputdefined;   // 3D   // DEFINE:
     bool***  bundle_outputdefined;  // 3D   // DEFINE:
+    
     double   energy_fitv_best;  // DEFINE:
+    
     int      nelements;               // # of elements (distinct from LAMMPS atom types since multiple atom types can be mapped to one element)
     int      nelementsp;              // nelements+1
+    
     char**   elements;                // names of elements // 2D
     char**   elementsp;               // names of elements with "all" appended as the last "element" // 2D
-    double*  mass;                    // mass of each element // 1D
-    double   cutmax;                  // max radial distance for neighbor lists
-    int*     map;                     // mapping from atom types to elements // 1D
+    
+    double   cutmax;                  // max radial distance for neighbor lists    
+
+    DualCArray<real_t> mass; // mass of each element 1D      
+    DualCArray<int> map;     // mapping from atom types to elements // 1D
+
+
     int*     fingerprintcount;        // static variable used in initialization // 1D
     int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element. // 1D
     int*     fingerprintperelement;   // # of fingerprints for each element // 1D
     int*     stateequationperelement; // 1D // DEFINE:
     int*     stateequationcount;      // 1D // DEFINE:
+    
     bool     doscreen; // screening is calculated if any defined fingerprint uses it
     bool     allscreen;
     bool     dospin;
+    
     int      res; // Resolution of function tables for cubic interpolation.
+    
     double*  screening_min; // 1D   // DEFINE:
     double*  screening_max; // 1D   // DEFINE:
+    
     int      memguess;  // DEFINE:
+    
     bool*    freezebeta; // 1D
+    
     int      speciesnumberr;    // DEFINE:
     int      speciesnumberv;    // DEFINE:
+    
     bool     freeenergy;    // DEFINE:
+    
     double   hbar;  // DEFINE:
 
     struct NNarchitecture
@@ -164,15 +185,43 @@ public:
         bool** identitybundle;  // 2D // DEFINE:
         int*** bundleinput;     // 3D // DEFINE:
         int*** bundleoutput;    // 3D // DEFINE:
+
         double*** bundleW;      // 3D // DEFINE: 600 - 800 doubles (product of each adjoining layers, (num_elements,num_layers,num_bundles)
         double*** bundleB;      // 3D // DEFINE:
         bool*** freezeW;        // 3D // DEFINE:
         bool*** freezeB;        // 3D // DEFINE:
+
+        // int layers;
+        // int maxlayer;
+        // int sumlayers;
+        
+        // DualCArray<int> dimensions;  // 1D (num_layers)
+        // DualCArray<int> activations; // 1D
+
+        // DualCArray<int> startI;     // 1D
+
+        // bool bundle;
+        // DualCArray<int> bundles;   // 1D (num_layers)
+        // DualCArray<int> bundleinputsize;    // 2D
+        // DualCArray<int> bundleoutputsize;   // 2D
+        // DualCArray<bool> identitybundle;    // 2D
+        
+        // DualCArray<int> bundleinput;    // 3D
+        // DualCArray<int> bundleoutput;   // 3D
+        // DualCArray<real_t> bundleW; // 3D
+        // DualCArray<real_t> bundleB; // 3D
+        
+        // DualCArray<bool> freezeW;   // 3D
+        // DualCArray<bool> freezeB;   // 3D
+
     };
     
-    NNarchitecture* net;    // array of networks, 1 for each element.
+    // CArray<NNarchitecture> net;    // array of networks, 1 for each element.
 
-    // DEFINE: Note: mostly ragged
+
+    CArray<NNarchitecture> net; // array of networks, 1 for each element.
+
+    // DEFINE:   Note: mostly ragged
     struct Simulation
     {
         bool forces; // DEFINE:
@@ -193,6 +242,7 @@ public:
         int* ilist;     // 1D // DEFINE:
         int* numneigh;  // 1D // DEFINE: Neighbor list size
         int** firstneigh; // 2D // DEFINE: Neighbor ID
+
         int* type;  // 1D // DEFINE:
         int inum;   // DEFINE:
         int gnum;   // DEFINE:
@@ -278,17 +328,17 @@ public:
     void create_random_weights(int, int, int, int, int);
     void create_random_biases(int, int, int, int);
     void create_identity_wb(int, int, int, int, int);
-    void jacobian_convolution(double*, double*, int*, int, int, NNarchitecture*);
-    void forward_pass(double*, int*, int, NNarchitecture*);
-    void get_per_atom_energy(double**, int*, int, NNarchitecture*);
-    void propagateforward(double*, double**, int, int, int, double*, double*, double*, double*, int*, int, NNarchitecture*);
+    void jacobian_convolution(double*, double*, int*, int, int, CArray<NNarchitecture>);
+    void forward_pass(double*, int*, int, CArray<NNarchitecture>);
+    void get_per_atom_energy(double**, int*, int, CArray<NNarchitecture>);
+    void propagateforward(double*, double**, int, int, int, double*, double*, double*, double*, int*, int, CArray<NNarchitecture>);
     void propagateforwardspin(double*, double**, double**, double**, int, int, int, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*,
-        int*, int, NNarchitecture*);
-    void flatten_beta(NNarchitecture*, double*);   // fill beta vector from net structure
-    void unflatten_beta(NNarchitecture*, double*);   // fill net structure from beta vector
-    void copy_network(NNarchitecture*, NNarchitecture*);
-    void normalize_net(NNarchitecture*);
-    void unnormalize_net(NNarchitecture*);
+        int*, int, CArray<NNarchitecture>);
+    void flatten_beta(CArray<NNarchitecture>, double*);   // fill beta vector from net structure
+    void unflatten_beta(CArray<NNarchitecture>, double*);   // fill net structure from beta vector
+    void copy_network(CArray<NNarchitecture>, CArray<NNarchitecture>);
+    void normalize_net(CArray<NNarchitecture>);
+    void unnormalize_net(CArray<NNarchitecture>);
 
     // run fitting
     void levenburg_marquardt_ch();
@@ -326,9 +376,11 @@ public:
     RANN::State* create_state(const char*); // DEFINE: 
 
 protected:
+
     RANN::Activation**** activation;    // DEFINE: 
     RANN::Fingerprint*** fingerprints;  // DEFINE: 
     RANN::State***       state;         // DEFINE: 
+
 };
 } // namespace LAMMPS_NS
 #endif /* CALIBRATION_H_ */

@@ -450,7 +450,7 @@ void Reference_lattice::cull_neighbor_list(double* xn, double* yn, double* zn, i
     for (jj = 0; jj < jnum[0]; jj++) {
         j  = jlist[jj];
         j &= NEIGHMASK;
-        // jtype = pair->map[type[j]];
+        // jtype = pair->map(type[j]);
         jtype = type[j];
         delx  = xtmp - x[j][0];
         dely  = ytmp - x[j][1];
@@ -494,7 +494,7 @@ void Reference_lattice::screen(double* Sik, bool* Bij, int ii, int sid, double* 
     double Sijk, Cijk, Cn, Cd, C;
     double xtmp, ytmp, ztmp, delx, dely, delz, rij, delx2, dely2, delz2, rik, delx3, dely3, delz3, rjk;
     i = ilist[ii];
-    // itype = pair->map[sim->type[i]];
+    // itype = pair->map(sim->type[i]);
     itype = invtypemap[type[i]];
     double cutmax    = state->cutmax;
     int    nelements = state->pair->nelements;
