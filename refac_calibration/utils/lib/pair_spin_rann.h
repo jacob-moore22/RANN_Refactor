@@ -116,13 +116,18 @@ public:
     int      nsimr, nsimv;  // DEFINE:
     int*     Xset;          // 1D 
     char**   dumpfilenames; // 2D
+    
     double** normalshift;   // 2D   // DEFINE:
     double** normalgain;    // 2D   // DEFINE:
+    
     bool***  weightdefined; // 3D   // DEFINE:
     bool***  biasdefined;   // 3D   // DEFINE:
+    
     bool**   dimensiondefined;  // 2D   // DEFINE:
+    
     bool***  bundle_inputdefined;   // 3D   // DEFINE:
     bool***  bundle_outputdefined;  // 3D   // DEFINE:
+    
     double   energy_fitv_best;  // DEFINE:
     
     int      nelements;               // # of elements (distinct from LAMMPS atom types since multiple atom types can be mapped to one element)
@@ -136,7 +141,10 @@ public:
 
     double   cutmax;                  // max radial distance for neighbor lists
     
-    int*     map;                     // mapping from atom types to elements // 1D
+    // int*     map;                     // mapping from atom types to elements // 1D
+    DualCArray<int> map;
+
+
     int*     fingerprintcount;        // static variable used in initialization // 1D
     int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element. // 1D
     int*     fingerprintperelement;   // # of fingerprints for each element // 1D

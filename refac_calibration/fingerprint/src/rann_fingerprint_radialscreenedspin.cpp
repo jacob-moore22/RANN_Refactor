@@ -243,7 +243,7 @@ void Fingerprint_radialscreenedspin::compute_fingerprint(double* features, doubl
     ilist = sim->ilist;
     double cutmax = pair->cutmax;
     i     = ilist[ii];
-    itype = pair->map[type[i]];
+    itype = pair->map(type[i]);
     int     f = pair->net[itype].dimensions[0];
     double  cutinv2 = 1 / cutmax / cutmax;
     double* si = sim->s[i];

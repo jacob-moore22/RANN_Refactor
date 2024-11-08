@@ -170,7 +170,7 @@ void State_eamscreenedr::eos_function(double* ep, double** force, double* Sik, d
     double rho    = 0;
     double phisum = 0;
     PairRANN::Simulation* sim = &pair->sims[nn];
-    int itype = pair->map[sim->type[ii]];
+    int itype = pair->map(sim->type[ii]);
     i = itype;
     for (j = 0; j < jnum; j++) {
         if (Bij[j] == false) {

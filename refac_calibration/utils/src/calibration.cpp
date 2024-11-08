@@ -32,7 +32,7 @@ PairRANN::PairRANN(char* potential_file)
     doscreen  = false;
     allscreen = true;
     dospin    = false;
-    map      = NULL; // check this
+    // map      = NULL; // check this
     natoms   = 0;
     nsims    = 0;
     doforces = false;
@@ -179,7 +179,7 @@ PairRANN::~PairRANN()
         }
     }
     delete[] net;
-    delete[] map;
+    // delete[] map;
     for (int i = 0; i < nelementsp; i++) {
         if (fingerprintperelement[i] > 0) {
             for (int j = 0; j < fingerprintperelement[i]; j++) {
@@ -233,6 +233,7 @@ void PairRANN::setup()
 
     read_file(potential_input_file);
     check_parameters();
+    
     for (int i = 0; i < nelementsp; i++) {
         for (int j = 0; j < fingerprintperelement[i]; j++) {
             fingerprints[i][j]->allocate();
@@ -241,6 +242,7 @@ void PairRANN::setup()
             state[i][j]->allocate();
         }
     }
+    
     read_dump_files();
     create_neighbor_lists();
     compute_fingerprints();
@@ -656,13 +658,15 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     // initialize arrays
     elements  = new char*[nelements];
     elementsp = new char*[nelementsp];     // elements + 'all'
-    map  = new int[nelementsp];
+    
+    // map  = new int[nelementsp];
+    this->map = DualCArray<int>(nelementsp, "map");
     
     // mass = new double[nelements];
     this->mass = DualCArray<double>(nelements, "mass");
 
 
-    net  = new NNarchitecture[nelementsp];
+    net = new NNarchitecture[nelementsp];
 
     // this->net = CArray<NNarchitecture>(nelementsp, "NNarchitecture_array");
 
@@ -701,7 +705,7 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
         fingerprintcount[i] = 0;
         stateequationperelement[i] = 0;
         stateequationcount[i] = 0;
-        map[i] = i;
+        map(i) = i;
         if (i < nelements) {
             mass(i)     = -1.0;
             elements[i] = utils::strdup(elementwords[i]);
@@ -1540,7 +1544,7 @@ void PairRANN::compute_fingerprints()
         }
         for (ii = 0; ii < sims[nn].inum; ii++) {
             i     = sims[nn].ilist[ii];
-            itype = map[sims[nn].type[i]];
+            itype = map(sims[nn].type[i]);
             if (net[itype].layers == 0) {
                 errorf(FLERR, "atom type found without corresponding network defined");
             }
@@ -1575,7 +1579,7 @@ void PairRANN::compute_fingerprints()
             }
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 f     = net[itype].dimensions[0];
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
@@ -1680,7 +1684,7 @@ void PairRANN::compute_fingerprints()
                     }
                 }
                 double e = 0.0;
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 len   = stateequationperelement[itype];
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -4981,7 +4985,7 @@ void PairRANN::cull_neighbor_list(double* xn, double* yn, double* zn, int* tn, i
     for (jj = 0; jj < jnum[0]; jj++) {
         j     = jlist[jj];
         j    &= NEIGHMASK;
-        jtype = map[type[j]];
+        jtype = map(type[j]);
         delx  = xtmp - x[j][0];
         dely  = ytmp - x[j][1];
         delz  = ztmp - x[j][2];
@@ -5619,7 +5623,7 @@ void PairRANN::screen(double* Sik, double* dSikx, double* dSiky, double* dSikz, 
         PairRANN::Simulation* sim = &sims[sid];
         double xtmp, ytmp, ztmp, delx, dely, delz, rij, delx2, dely2, delz2, rik, delx3, dely3, delz3, rjk;
         i     = sim->ilist[ii];
-        itype = map[sim->type[i]];
+        itype = map(sim->type[i]);
         for (int jj = 0; jj < jnum; jj++) {
             Sik[jj]   = 1;
             Bij[jj]   = true;

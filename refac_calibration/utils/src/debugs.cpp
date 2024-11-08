@@ -226,7 +226,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
             }
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 f     = net[itype].dimensions[0];
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
@@ -313,7 +313,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
                 }
                 double e  = 0.0;
                 double e1 = 0.0;
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 len   = stateequationperelement[itype];
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -345,7 +345,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
                         state[itype][j]->eos_function(&e, force, fm, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz, Bij, i, nn, xn, yn, zn, tn, jnum - 1, jl);
                     }
                 }
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 NNarchitecture* net_out = new NNarchitecture[nelementsp];
                 if (normalizeinput) {
                     unnormalize_net(net_out);
@@ -479,7 +479,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                         }
                         for (ii = 0; ii < sims[nn].inum; ii++) {
                             i     = sims[nn].ilist[ii];
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             f     = net[itype].dimensions[0];
                             features1[k][ii][v][(s + 1) >> 1] = new double [f];
                             dfeatures1[k][ii][v] = new double [f];
@@ -570,7 +570,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                             }
                             double e  = 0.0;
                             double e1 = 0.0;
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             len   = stateequationperelement[itype];
                             for (j = 0; j < len; j++) {
                                 if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -602,7 +602,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                                     state[itype][j]->eos_function(&e, force, fm, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz, Bij, i, nn, xn, yn, zn, tn, jnum - 1, jl);
                                 }
                             }
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             NNarchitecture* net_out = new NNarchitecture[nelementsp];
                             if (normalizeinput) {
                                 unnormalize_net(net_out);
@@ -629,7 +629,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                             energy1[k][v][(s + 1) >> 1]    += energy[ii];
                             energyeos1[k][v][(s + 1) >> 1] += energyeos[ii];
                             i     = sims[nn].ilist[ii];
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             f     = net[itype].dimensions[0];
                         }
                     }
@@ -637,7 +637,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                     feos[k][v] = (energyeos1[k][v][0] - energyeos1[k][v][1]) / diff / 2;
                     for (ii = 0; ii < sims[nn].inum; ii++) {
                         i     = sims[nn].ilist[ii];
-                        itype = map[sims[nn].type[i]];
+                        itype = map(sims[nn].type[i]);
                         f     = net[itype].dimensions[0];
                         for (j = 0; j < f; j++) {
                             dfeatures1[k][ii][v][j] = (features1[k][ii][v][1][j] - features1[k][ii][v][0][j]) / diff / 2;
@@ -667,7 +667,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
             }
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 f     = net[itype].dimensions[0];
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
@@ -754,7 +754,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                 }
                 double e  = 0.0;
                 double e1 = 0.0;
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 len   = stateequationperelement[itype];
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -786,7 +786,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                         state[itype][j]->eos_function(&e, forceeos, fm, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz, Bij, i, nn, xn, yn, zn, tn, jnum - 1, jl);
                     }
                 }
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 NNarchitecture* net_out = new NNarchitecture[nelementsp];
                 if (normalizeinput) {
                     unnormalize_net(net_out);
@@ -917,7 +917,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
             }
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 f     = net[itype].dimensions[0];
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
@@ -1004,7 +1004,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                 }
                 double e  = 0.0;
                 double e1 = 0.0;
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 len   = stateequationperelement[itype];
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -1036,7 +1036,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                         state[itype][j]->eos_function(&e, forceeos, fm, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz, Bij, i, nn, xn, yn, zn, tn, jnum - 1, jl);
                     }
                 }
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 NNarchitecture* net_out = new NNarchitecture[nelementsp];
                 if (normalizeinput) {
                     unnormalize_net(net_out);
@@ -1160,7 +1160,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                         printf("%f %d %d %d 2\n", hn[0][5], k, s, v);
                         for (ii = 0; ii < sims[nn].inum; ii++) {
                             i     = sims[nn].ilist[ii];
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             f     = net[itype].dimensions[0];
                             features1[k][ii][v][(s + 1) >> 1] = new double [f];
                             dfeatures1[k][ii][v] = new double [f];
@@ -1254,7 +1254,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                             }
                             double e  = 0.0;
                             double e1 = 0.0;
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             len   = stateequationperelement[itype];
                             printf("%f %d %d %d %d 4\n", hn[0][5], k, s, v, ii);
                             for (j = 0; j < len; j++) {
@@ -1287,7 +1287,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                                     state[itype][j]->eos_function(&e, force, fm2, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz, Bij, i, nn, xn, yn, zn, tn, jnum - 1, jl);
                                 }
                             }
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             NNarchitecture* net_out = new NNarchitecture[nelementsp];
                             if (normalizeinput) {
                                 unnormalize_net(net_out);
@@ -1368,7 +1368,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                             energy1[k][v][(s + 1) >> 1]    += energy[ii];
                             energyeos1[k][v][(s + 1) >> 1] += energyeos[ii];
                             i     = sims[nn].ilist[ii];
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             f     = net[itype].dimensions[0];
                         }
                     }
@@ -1378,7 +1378,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                         feos[k][v] = (energyeos1[k][v][0] - energyeos1[k][v][1]) / diff / 2;
                         for (ii = 0; ii < sims[nn].inum; ii++) {
                             i     = sims[nn].ilist[ii];
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             f     = net[itype].dimensions[0];
                             for (j = 0; j < f; j++) {
                                 dfeatures1[k][ii][v][j] = (features1[k][ii][v][1][j] - features1[k][ii][v][0][j]) / diff / 2;
@@ -1516,7 +1516,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
             fprintf(current2, "\n");
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
-                itype = map[sims[nn].type[i]];
+                itype = map(sims[nn].type[i]);
                 f     = net[itype].dimensions[0];
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
@@ -1643,7 +1643,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
                             for (j = 0; j < jnum - 1; j++) {
                                 screenijk[jj][j][v][(s + 1) >> 1] = Sik[j];
                             }
-                            itype = map[sims[nn].type[i]];
+                            itype = map(sims[nn].type[i]);
                             if (jj < jnum - 1) {
                                 if (v == 0) {
                                     sims[nn].x[j1][0] += s * diff;
@@ -1765,7 +1765,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
                                 dSijky, dSijkz, Bij, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
                         }
                     }
-                    itype = map[sims[nn].type[i]];
+                    itype = map(sims[nn].type[i]);
                     fprintf(current1, "%d, %d, %d, %d, %d, %d", nn, ii, jj, tn[jj], itype, jl[jj]);
                     for (j = 0; j < f; j++) {
                         fprintf(current1, ", %.10e, %.10e, %.10e, %.10e, %.10e, %.10e, %.10e", features[j], dfeatures1[jj][j][0], dfeaturesx[jj * f + j], dfeatures1[jj][j][1], dfeaturesy[jj * f + j],
