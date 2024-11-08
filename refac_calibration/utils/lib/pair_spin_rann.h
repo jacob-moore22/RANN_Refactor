@@ -104,8 +104,10 @@ public:
     int      nsets;// DEFINE:
     int      betalen;// DEFINE:
     int      jlen1; // DEFINE:
-    int*     betalen_v; // 1D DEFINE:
-    int*     betalen_f; // 1D DEFINE:
+
+    DualCArray<int> betalen_v; // 1D DEFINE: NOTE: Possibly not needed on device
+    DualCArray<int> betalen_f; // 1D DEFINE: NOTE: Possibly not needed on device
+ 
     int      natoms; // DEFINE:
     int      natomsr; // DEFINE:
     int      natomsv; // DEFINE:
@@ -137,12 +139,8 @@ public:
     char**   elementsp;               // names of elements with "all" appended as the last "element" // 2D
     
     DualCArray<real_t> mass; // mass of each element 1D
-
-
-    double   cutmax;                  // max radial distance for neighbor lists
-    
-    // int*     map;                     // mapping from atom types to elements // 1D
-    DualCArray<int> map;
+    double   cutmax;                  // max radial distance for neighbor lists                
+    DualCArray<int> map;     // mapping from atom types to elements // 1D
 
 
     int*     fingerprintcount;        // static variable used in initialization // 1D

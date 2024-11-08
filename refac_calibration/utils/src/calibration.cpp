@@ -659,24 +659,27 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     elements  = new char*[nelements];
     elementsp = new char*[nelementsp];     // elements + 'all'
     
-    // map  = new int[nelementsp];
     this->map = DualCArray<int>(nelementsp, "map");
-    
-    // mass = new double[nelements];
     this->mass = DualCArray<double>(nelements, "mass");
-
 
     net = new NNarchitecture[nelementsp];
 
-    // this->net = CArray<NNarchitecture>(nelementsp, "NNarchitecture_array");
+    // this->net = CArray<NNarchitecture>(nelementspd);
 
     for (i = 0; i < nelementsp; i++) {
         net[i].layers = 0;
     }
-    betalen_v     = new int[nelementsp];
-    betalen_f     = new int[nelementsp];
+    
+    // betalen_v     = new int[nelementsp];
+    // betalen_f     = new int[nelementsp];
+
+    this->betalen_v = DualCArray<int>(nelementsp, "betalen_v");
+    this->betalen_f = DualCArray<int>(nelementsp, "betalen_f");
+
+    
     screening_min = new double [nelements * nelements * nelements];
     screening_max = new double [nelements * nelements * nelements];
+    
     for (i = 0; i < nelements; i++) {
         for (int j = 0; j < nelements; j++) {
             for (int k = 0; k < nelements; k++) {
@@ -850,7 +853,7 @@ bool PairRANN::check_parameters()
                 }
             }
         }
-        betalen_v[itype] = count;
+        betalen_v(itype) = count;
     }
     betalen = count;    // update betalen to skip frozen parameters
 
@@ -4273,8 +4276,8 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
                 int count2 = 0;      // skip frozen parameters
                 int count3 = 0;      // include frozen parameters
                 if (itype > 0) {
-                    count2 = betalen_v[itype - 1];
-                    count3 = betalen_f[itype - 1];
+                    count2 = betalen_v(itype - 1);
+                    count3 = betalen_f(itype - 1);
                 }
                 // backpropagation
                 for (i = 0; i < net1.layers - 1; i++) {
