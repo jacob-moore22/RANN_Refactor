@@ -37,7 +37,13 @@ int main(int argc, char** argv)
             PairRANN* cal = new PairRANN(argv[2]);
 
             auto start_setup = std::chrono::steady_clock::now();
-            cal->setup();
+            cal->setup(); // Initialize all memory, simulation struct comes after reading input script
+
+            // Dump files initialize simulation struct.  Long array of simulation struct
+            // After reading sims, computes neighbor lists
+            // Computes fingerprints per atom per simulation (add timing here)
+            // Possible normalization
+            // Seperate out validation (RANDOMLY) consider flattening
             
             auto now = std::chrono::steady_clock::now();
             auto duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_setup);
@@ -47,34 +53,39 @@ int main(int argc, char** argv)
             std::cout << "******************************************" << std::endl;
 
             
-            auto start_run = std::chrono::steady_clock::now();
-            cal->run();
+            // auto start_run = std::chrono::steady_clock::now();
+            // cal->run();
 
-            now = std::chrono::steady_clock::now();
-            duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_run);
+            // 4 different algorithms, levenberg_marquet_ch is most important
+            // Run just picks algorithm
+            // Algorithm contains all work
+
+            // now = std::chrono::steady_clock::now();
+            // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_run);
             
-            std::cout << "******************************************" << std::endl;
-            std::cout << "*****  Time taken for run: " << duration_ms.count() << " s" << std::endl;
-            std::cout << "******************************************" << std::endl;
+            // std::cout << "******************************************" << std::endl;
+            // std::cout << "*****  Time taken for run: " << duration_ms.count() << " s" << std::endl;
+            // std::cout << "******************************************" << std::endl;
 
 
-            auto start_finish = std::chrono::steady_clock::now();
+            // auto start_finish = std::chrono::steady_clock::now();
 
-            cal->finish();
+            // cal->finish();
+            // Currently unused, possibly done by filewrite, ignore
             
-            now = std::chrono::steady_clock::now();
-            duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_finish);
+            // now = std::chrono::steady_clock::now();
+            // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start_finish);
             
-            std::cout << "******************************************" << std::endl;
-            std::cout << "*****  Time taken for finish: " << duration_ms.count() << " s" << std::endl;
-            std::cout << "******************************************" << std::endl;
+            // std::cout << "******************************************" << std::endl;
+            // std::cout << "*****  Time taken for finish: " << duration_ms.count() << " s" << std::endl;
+            // std::cout << "******************************************" << std::endl;
 
 
-            now = std::chrono::steady_clock::now();
-            duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start);
-            std::cout << "******************************************" << std::endl;
-            std::cout << "*****  Total time taken: " << duration_ms.count() << " s" << std::endl;
-            std::cout << "******************************************" << std::endl;
+            // now = std::chrono::steady_clock::now();
+            // duration_ms = std::chrono::duration_cast<std::chrono::seconds>(now - start);
+            // std::cout << "******************************************" << std::endl;
+            // std::cout << "*****  Total time taken: " << duration_ms.count() << " s" << std::endl;
+            // std::cout << "******************************************" << std::endl;
 
 
             delete cal;
