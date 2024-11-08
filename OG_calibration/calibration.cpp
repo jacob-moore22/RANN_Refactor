@@ -1599,7 +1599,7 @@ void PairRANN::copy_network(NNarchitecture *net_old,NNarchitecture *net_new){
 
 
 
-//top level run function, calls compute_jacobian and qrsolve. Cannot be parallelized.
+//top level run function, calls compute_jacobian and qrsolve. Cannot be parallelized over time steps.
 void PairRANN::levenburg_marquardt_ch(){
 	//jlen is number of rows; betalen is number of columns of jacobian
 	char str[MAXLINE];
@@ -1634,13 +1634,13 @@ void PairRANN::levenburg_marquardt_ch(){
 	jlen1 = jlen;
 		sprintf(str,"types=%d; betalen=%d; jlen1=%d; jlen2=%d, regularization:%d\n",nelementsp,betalen,jlen1,jlen2, doregularizer);
 	std::cout<<str;
-	double J[jlen1*betalen];
-	double J1[jlen1*betalen];
-	double J2[betalen*betalen];
-	double t2[betalen];
+	double J[jlen1*betalen]; // jlen1 >>> betalen  (0 or 1 ,number of simulations + betalen , betalen=total number of weights and biases)
+	double J1[jlen1*betalen]; // Copy of jacobian, consider wrapping in to 1
+	double J2[betalen*betalen]; // J^{T}*J
+	double t2[betalen]; // J^{T}*target_vec 
 	double target[jlen1];
-	double target1[jlen1];
-	double targetv[jlenv];
+	double target1[jlen1]; // corresponds to J1
+	double targetv[jlenv]; // validation target
 	double beta[betalen];
 	double beta1[betalen];
 	double D[betalen];
@@ -1668,7 +1668,7 @@ void PairRANN::levenburg_marquardt_ch(){
 	}
 	energy_fit/=jlen2;
 	if (doforces){
-		for (i=nsimr;i<nsimr+natoms*3;i++)force_fit +=tp[i]*tp[i];
+		for (i = nsimr;i<nsimr+natoms*3;i++) force_fit += tp[i]*tp[i];
 		force_fit/=natomsr*3;
 	}
 	if (doregularizer){
