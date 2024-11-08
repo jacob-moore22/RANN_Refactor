@@ -72,7 +72,7 @@ public:
     char*  potential_input_file;    // 1D DEFINE:
     char*  dump_directory;          // 1D DEFINE:
     bool   doforces;
-    double tolerance;   // DEFINE:
+    double tolerance;   // DEFINE: convergence tolerance for calibration
     double regularizer; // DEFINE:
     bool   doregularizer;
     char*  log_file;        // 1D
@@ -176,7 +176,7 @@ public:
         bool** identitybundle;  // 2D // DEFINE:
         int*** bundleinput;     // 3D // DEFINE:
         int*** bundleoutput;    // 3D // DEFINE:
-        double*** bundleW;      // 3D // DEFINE:
+        double*** bundleW;      // 3D // DEFINE:  600 - 800 doubles (product of each adjoining layers, (num_elements,num_layers,num_bundles)
         double*** bundleB;      // 3D // DEFINE:
         bool*** freezeW;        // 3D // DEFINE:
         bool*** freezeB;        // 3D // DEFINE:
@@ -210,27 +210,27 @@ public:
 
     // CArray<NNarchitecture> net; // array of networks, 1 for each element.
 
-    // DEFINE: 
+    // DEFINE:   Note: mostly ragged
     struct Simulation
     {
         bool forces; // DEFINE:
         bool spins; // DEFINE:
         int* id;    // 1D // DEFINE:
-        double** x; // 2D // DEFINE:
-        double** f; // 2D // DEFINE:
-        double** s; // 2D // DEFINE:
+        double** x; // 2D // DEFINE: position (num_atoms, x, y, z)
+        double** f; // 2D // DEFINE: forces  (num_atoms, x, y, z) 
+        double** s; // 2D // DEFINE: spins   (num_atoms, x, y, z)
         double box[3][3]; // 2D // DEFINE:
         double origin[3]; // 1D // DEFINE:
-        double** features;  // 2D // DEFINE:
-        double** dfx;   // 2D // DEFINE:
+        double** features;  // 2D // DEFINE:  (num_atoms, length_per_elem) (Ragged) lenght per elem is the feature length, ragged
+        double** dfx;   // 2D // DEFINE:  Derivative of features in X direction wrt x coordinates of all neighbors (num_atoms, (num_neighbors+1)*feature_length) (note, make 3D) +1 is self term
         double** dfy;   // 2D // DEFINE:
         double** dfz;   // 2D // DEFINE:
         double** dsx;   // 2D // DEFINE:
         double** dsy;   // 2D // DEFINE:
         double** dsz;   // 2D // DEFINE:
         int* ilist;     // 1D // DEFINE:
-        int* numneigh;  // 1D // DEFINE:
-        int** firstneigh; // 2D // DEFINE:
+        int* numneigh;  // 1D // DEFINE:  Neighbor list size
+        int** firstneigh; // 2D // DEFINE:  Neighbor ID
         int* type;  // 1D // DEFINE:
         int inum;   // DEFINE:
         int gnum;   // DEFINE:
@@ -256,7 +256,7 @@ public:
         int* speciescount; // 1D // DEFINE:
         double temp; // DEFINE:
     };
-    Simulation* sims;
+    Simulation* sims; // Array of simulation structs, 
 
     // read potential file:
     void read_file(char* filename);
