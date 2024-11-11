@@ -288,7 +288,7 @@ void Fingerprint_torsion::compute_fingerprint(double* features, double* dfeature
     ilist = sim->ilist;
     i     = ilist[ii];
     itype = pair->map(type[i]);
-    int    f = pair->net(itype).dimensions[0];
+    int    f = pair->net(itype).dimensions(0);
     double expr[jnum][kmax];
     double y[jnum][3];
     double ri[jnum];

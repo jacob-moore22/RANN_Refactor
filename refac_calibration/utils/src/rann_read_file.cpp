@@ -163,6 +163,8 @@ void PairRANN::read_file(char* filename)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_atom_types(std::vector<std::string> line, char* filename, int linenum)
 {
+
+    std::cout << "** Inside PairRANN::read_atom_types **" << std::endl;
     int nwords = line.size();
     if (nwords < 1) {
         errorf(filename, linenum, "Incorrect syntax for atom types");
@@ -188,6 +190,7 @@ void PairRANN::read_atom_types(std::vector<std::string> line, char* filename, in
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_mass(const std::vector<std::string>& line1, const std::vector<std::string>& line2, const char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_mass **" << std::endl;
     if (nelements == -1) {
         errorf(filename, linenum - 1, "atom types must be defined before mass in potential file.");
     }
@@ -216,6 +219,7 @@ void PairRANN::read_mass(const std::vector<std::string>& line1, const std::vecto
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_fpe(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_fpe **" << std::endl;
     int i;
     if (nelements == -1) {
         errorf(filename, linenum - 1, "atom types must be defined before fingerprints per element in potential file.");
@@ -249,6 +253,8 @@ void PairRANN::read_fpe(std::vector<std::string> line, std::vector<std::string> 
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_fingerprints(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_fingerprints **" << std::endl;
+
     int  nwords1, nwords, i, j, k, i1, * atomtypes;
     bool found;
     nwords1 = line1.size();
@@ -308,6 +314,8 @@ void PairRANN::read_fingerprints(std::vector<std::string> line, std::vector<std:
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_fingerprint_constants(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+
+    std::cout << "** Inside PairRANN::read_fingerprint_constants **" << std::endl;
     int  i, j, k, i1, * atomtypes;
     bool found;
     int  nwords = line.size();
@@ -382,6 +390,8 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
     if (nelements == -1) {
         errorf(FLERR, "atom types must be defined before network layers in potential file.");
     }
+
+    std::cout << "nelements = "<< nelements << std::endl;
     for (i = 0; i < nelements; i++) {
         
         if (line[1].compare(elements[i]) == 0) {
@@ -398,21 +408,41 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
                 errorf(filename, linenum, "invalid number of network layers");
             }
             
+            std::cout << "weightdefined["<<i<<"] dim 2 size = "<< net(i).layers << std::endl;
+
             weightdefined[i]        = new bool*[net(i).layers];
+            
             biasdefined[i]          = new bool*[net(i).layers];
+            
             dimensiondefined[i]     = new bool [net(i).layers];
+            
             bundle_inputdefined[i]  = new bool*[net(i).layers];
             bundle_outputdefined[i] = new bool*[net(i).layers];
-            net(i).dimensions       = new int [net(i).layers];
+            
+            
+
+
+            // net(i).dimensions       = new int [net(i).layers];
+            net(i).dimensions = DualCArray<int>(net(i).layers, "net.dimensions");
+            
             net(i).bundles          = new int[net(i).layers];
+            
             net(i).identitybundle   = new bool*[net(i).layers];
+            
             net(i).bundleinputsize  = new int*[net(i).layers];
+            
             net(i).bundleoutputsize = new int*[net(i).layers];
+            
             net(i).bundleinput      = new int**[net(i).layers];
+            
             net(i).bundleoutput     = new int**[net(i).layers];
+            
             net(i).bundleW          = new double**[net(i).layers];
+            
             net(i).bundleB          = new double**[net(i).layers];
+            
             net(i).freezeW          = new bool**[net(i).layers];
+            
             net(i).freezeB          = new bool**[net(i).layers];
 
             // this->net(i).dimensions       = DualCArray<int>(num_layers, "net_dimensions");
@@ -431,7 +461,8 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
             // this->net(i).freezeB          =      // new bool**[num_layers];
             
             for (j = 0; j < num_layers; j++) {
-                net(i).dimensions[j] = 0;
+                
+                net(i).dimensions(j) = 0;
                 net(i).bundles[j]    = 1;
                 
                 net(i).bundleinputsize[j]  = new int [net(i).bundles[j]];
@@ -447,10 +478,14 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
                 net(i).identitybundle[j] = new bool[net(i).bundles[j]];
                 
                 weightdefined[i][j]        = new bool[net(i).bundles[j]];
+
+                std::cout << "weightdefined["<<i<<"] dim 3 size = "<< net(i).bundles[j] << std::endl;
+
                 biasdefined[i][j]          = new bool[net(i).bundles[j]];
                 dimensiondefined[i][j]     = false;
                 bundle_inputdefined[i][j]  = new bool [net(i).bundles[j]];
                 bundle_outputdefined[i][j] = new bool [net(i).bundles[j]];
+                
                 for (int k = 0; k < net(i).bundles[j]; k++) {
                     weightdefined[i][j][k] = false;
                     biasdefined[i][j][k]   = false;
@@ -486,6 +521,7 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_layer_size(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_layer_size **" << std::endl;
     int i;
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
@@ -497,11 +533,11 @@ void PairRANN::read_layer_size(std::vector<std::string> line, std::vector<std::s
                 errorf(filename, linenum, "invalid layer in layer size definition");
             }
             ;
-            net(i).dimensions[j]   = utils::inumeric(filename, linenum, line1[0], true, lmp);
+            net(i).dimensions(j)   = utils::inumeric(filename, linenum, line1[0], true, lmp);
             dimensiondefined[i][j] = true;
             if (j > 0) {
-                activation[i][j - 1] = new RANN::Activation*[net(i).dimensions[j]];
-                for (int k = 0; k < net(i).dimensions[j]; k++) {
+                activation[i][j - 1] = new RANN::Activation*[net(i).dimensions(j)];
+                for (int k = 0; k < net(i).dimensions(j); k++) {
                     activation[i][j - 1][k] = new RANN::Activation(this);
                 }
             }
@@ -556,6 +592,7 @@ void PairRANN::read_bundles(std::vector<std::string> line, std::vector<std::stri
             delete[] biasdefined[i][j];
             delete[] bundle_inputdefined[i][j];
             delete[] bundle_outputdefined[i][j];
+            
             net(i).bundleinputsize[j]  = new int [net(i).bundles[j]];
             net(i).bundleoutputsize[j] = new int [net(i).bundles[j]];
             net(i).bundleinput[j]  = new int*[net(i).bundles[j]];
@@ -565,10 +602,15 @@ void PairRANN::read_bundles(std::vector<std::string> line, std::vector<std::stri
             net(i).freezeW[j] = new bool*[net(i).bundles[j]];
             net(i).freezeB[j] = new bool*[net(i).bundles[j]];
             net(i).identitybundle[j] = new bool[net(i).bundles[j]];
+
+
+            std::cout << "weightdefined["<<i<<"] dim 3 size in read bundles = "<< net(i).bundles[j] << std::endl;
+            
             weightdefined[i][j] = new bool[net(i).bundles[j]];
             biasdefined[i][j]   = new bool[net(i).bundles[j]];
             bundle_inputdefined[i][j]  = new bool[net(i).bundles[j]];
             bundle_outputdefined[i][j] = new bool[net(i).bundles[j]];
+            
             for (int k = 0; k < net(i).bundles[j]; k++) {
                 weightdefined[i][j][k] = false;
                 biasdefined[i][j][k]   = false;
@@ -598,6 +640,7 @@ void PairRANN::read_bundles(std::vector<std::string> line, std::vector<std::stri
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_bundle_id(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_bundle_id **" << std::endl;
     int i;
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
@@ -664,7 +707,7 @@ void PairRANN::read_bundle_input(std::vector<std::string> line, std::vector<std:
 
             for (int k = 0; k < nwords; k++) {
                 net(i).bundleinput[j][b][k] = utils::inumeric(filename, linenum, line1[k], true, lmp);
-                if (net(i).bundleinput[j][b][k] > net(i).dimensions[j] || net(i).bundleinput[j][b][k] < 0) {
+                if (net(i).bundleinput[j][b][k] > net(i).dimensions(j) || net(i).bundleinput[j][b][k] < 0) {
                     errorf(filename, linenum - 1, "bundle input neurons exceed layer size");
                 }
             }
@@ -691,6 +734,7 @@ void PairRANN::read_bundle_input(std::vector<std::string> line, std::vector<std:
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_bundle_output(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_bundle_output **" << std::endl;
     int i, nwords;
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
@@ -711,7 +755,7 @@ void PairRANN::read_bundle_output(std::vector<std::string> line, std::vector<std
             net(i).bundleoutput[j][b]     = new int [nwords];
             for (int k = 0; k < nwords; k++) {
                 net(i).bundleoutput[j][b][k] = utils::inumeric(filename, linenum, line1[k], true, lmp);
-                if (net(i).bundleoutput[j][b][k] > net(i).dimensions[j + 1] || net(i).bundleoutput[j][b][k] < 0) {
+                if (net(i).bundleoutput[j][b][k] > net(i).dimensions(j + 1) || net(i).bundleoutput[j][b][k] < 0) {
                     errorf(filename, linenum - 1, "bundle output neurons exceed layer size");
                 }
             }
@@ -773,13 +817,13 @@ void PairRANN::read_weight(std::vector<std::string> line, std::vector<std::strin
                 errorf(filename, *linenum - 1, "cannot define weights for an identity bundle");
             }
             if (bundle_inputdefined[l][i][b] == false) {
-                ins = net(l).dimensions[i];
+                ins = net(l).dimensions(i);
             }
             else {
                 ins = net(l).bundleinputsize[i][b];
             }
             if (bundle_outputdefined[l][i][b] == false) {
-                ops = net(l).dimensions[i + 1];
+                ops = net(l).dimensions(i + 1);
             }
             else {
                 ops = net(l).bundleoutputsize[i][b];
@@ -837,6 +881,7 @@ void PairRANN::read_weight(std::vector<std::string> line, std::vector<std::strin
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_bias(std::vector<std::string> line, std::vector<std::string> line1, FILE* fp, char* filename, int* linenum)
 {
+    std::cout << "** Inside PairRANN::read_bias **" << std::endl;
     int   i, j, l, b, ops;
     char* ptr;
     int   longline = 1024;
@@ -867,7 +912,7 @@ void PairRANN::read_bias(std::vector<std::string> line, std::vector<std::string>
                 errorf(filename, *linenum - 1, "cannot define bias for an identity bundle");
             }
             if (bundle_outputdefined[l][i][b] == false) {
-                ops = net(l).dimensions[i + 1];
+                ops = net(l).dimensions(i + 1);
             }
             else {
                 ops = net(l).bundleoutputsize[i][b];
@@ -910,6 +955,7 @@ void PairRANN::read_bias(std::vector<std::string> line, std::vector<std::string>
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_activation_functions(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_activation_functions **" << std::endl;
     int i, l;
     int nwords = line.size();
     for (l = 0; l < nelements; l++) {
@@ -922,7 +968,7 @@ void PairRANN::read_activation_functions(std::vector<std::string> line, std::vec
                 errorf(filename, linenum - 1, "network layer sizes must be defined before corresponding activation");
             }
             if (nwords == 3) {
-                for (int j = 0; j < net(l).dimensions[i + 1]; j++) {
+                for (int j = 0; j < net(l).dimensions(i + 1); j++) {
                     delete activation[l][i][j];
                     activation[l][i][j] = create_activation(line1[0].c_str());
                 }
@@ -954,6 +1000,7 @@ void PairRANN::read_activation_functions(std::vector<std::string> line, std::vec
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_eospe(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_eospe **" << std::endl;
     int i;
     if (nelements == -1) {
         errorf(filename, linenum - 1, "atom types must be defined before equations of state per element in potential file.");
@@ -987,6 +1034,7 @@ void PairRANN::read_eospe(std::vector<std::string> line, std::vector<std::string
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_eos(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_eos **" << std::endl;
     int  nwords1, nwords, i, j, k, i1, * atomtypes;
     bool found;
     nwords1 = line1.size();
@@ -1046,6 +1094,7 @@ void PairRANN::read_eos(std::vector<std::string> line, std::vector<std::string> 
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_eos_constants(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_eos_constants **" << std::endl;
     int  i, j, k, i1, * atomtypes;
     bool found;
     int  nwords = line.size();
@@ -1115,6 +1164,7 @@ void PairRANN::read_eos_constants(std::vector<std::string> line, std::vector<std
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_screening(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** PairRANN::read_screening **" << std::endl;
     int  i, j, k, * atomtypes;
     bool found;
     int  nwords = line.size();
@@ -1178,39 +1228,39 @@ bool PairRANN::check_potential()
         net(i).startI    = new int [net(i).layers];
         for (j = 0; j < net(i).layers; j++) {
             net(i).startI[j]  = net(i).sumlayers;
-            net(i).sumlayers += net(i).dimensions[j];
-            if (net(i).dimensions[j] <= 0) {
+            net(i).sumlayers += net(i).dimensions(j);
+            if (net(i).dimensions(j) <= 0) {
                 errorf(FLERR, "missing layersize");                 // incomplete network definition
             }
-            if (net(i).dimensions[j] > net(i).maxlayer) {
-                net(i).maxlayer = net(i).dimensions[j];
+            if (net(i).dimensions(j) > net(i).maxlayer) {
+                net(i).maxlayer = net(i).dimensions(j);
             }
         }
         if (net(i).maxlayer > fnmax) {
             fnmax = net(i).maxlayer;
         }
-        if (net(i).dimensions[net(i).layers - 1] != 1) {
+        if (net(i).dimensions(net(i).layers - 1) != 1) {
             errorf(FLERR, "output layer must have single neuron");                                 // output layer must have single neuron (the energy)
         }
-        if (net(i).dimensions[0] > fmax) {
-            fmax = net(i).dimensions[0];
+        if (net(i).dimensions(0) > fmax) {
+            fmax = net(i).dimensions(0);
         }
         for (j = 0; j < net(i).layers - 1; j++) {
-            for (int k = 0; k < net(i).dimensions[j + 1]; k++) {
+            for (int k = 0; k < net(i).dimensions(j + 1); k++) {
                 if (activation[i][j][k]->empty) {
                     errorf(FLERR, "undefined activations");                  // undefined activations
                 }
             }
             for (int k = 0; k < net(i).bundles[j]; k++) {
                 if (!bundle_inputdefined[i][j][k]) {
-                    net(i).bundleinputsize[j][k] = net(i).dimensions[j];
+                    net(i).bundleinputsize[j][k] = net(i).dimensions(j);
                     net(i).bundleinput[j][k]     = new int[net(i).bundleinputsize[j][k]];
                     for (int l = 0; l < net(i).bundleinputsize[j][k]; l++) {
                         net(i).bundleinput[j][k][l] = l;
                     }
                 }
                 if (!bundle_outputdefined[i][j][k]) {
-                    net(i).bundleoutputsize[j][k] = net(i).dimensions[j + 1];
+                    net(i).bundleoutputsize[j][k] = net(i).dimensions(j + 1);
                     net(i).bundleoutput[j][k]     = new int[net(i).bundleoutputsize[j][k]];
                     for (int l = 0; l < net(i).bundleoutputsize[j][k]; l++) {
                         net(i).bundleoutput[j][k][l] = l;
@@ -1229,7 +1279,7 @@ bool PairRANN::check_potential()
                     errorf(FLERR, "undefined weight matrix!");
                 }
                 if (!biasdefined[i][j][k] && !is_lammps) {
-                    create_random_biases(net(i).dimensions[j + 1], i, j, k);                       // undefined biases
+                    create_random_biases(net(i).dimensions(j + 1), i, j, k);                       // undefined biases
                 }
                 else if (!biasdefined[i][k][k]) {
                     errorf(FLERR, "undefined bias vector!");
@@ -1240,7 +1290,7 @@ bool PairRANN::check_potential()
                     continue;
                 }
             }
-            for (int k = 0; k < net(i).dimensions[j]; k++) {
+            for (int k = 0; k < net(i).dimensions(j); k++) {
                 bool foundoutput = false;
                 for (int l = 0; l < net(i).bundles[j]; l++) {
                     if (foundoutput) {
@@ -1257,7 +1307,7 @@ bool PairRANN::check_potential()
                     errorf(FLERR, "found neuron with no output\n");
                 }
             }
-            for (int k = 0; k < net(i).dimensions[j + 1]; k++) {
+            for (int k = 0; k < net(i).dimensions(j + 1); k++) {
                 bool foundinput = false;
                 for (int l = 0; l < net(i).bundles[j]; l++) {
                     if (foundinput) {
@@ -1296,7 +1346,7 @@ bool PairRANN::check_potential()
                 cutmax = state[i][j]->rc;
             }
         }
-        if (net(i).dimensions[0] != fingerprintlength[i]) {
+        if (net(i).dimensions(0) != fingerprintlength[i]) {
             errorf(FLERR, "fingerprint length does not match input layersize");
         }
     }

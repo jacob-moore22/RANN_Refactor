@@ -428,7 +428,7 @@ void Fingerprint_bond::do3bodyfeatureset_singleneighborloop(double* features, do
     i     = ilist[ii];
     itype = pair->map(type[i]);
 
-    int    f = pair->net(itype).dimensions[0];
+    int    f = pair->net(itype).dimensions(0);
     double expr[jnum][kmax + 12];
 
     int p = kmax;
@@ -727,7 +727,7 @@ void Fingerprint_bond::do3bodyfeatureset_doubleneighborloop(
     ilist = sim->ilist;
     i     = ilist[ii];
     itype = pair->map(type[i]);
-    int    f = pair->net(itype).dimensions[0];
+    int    f = pair->net(itype).dimensions(0);
     double expr[jnum][kmax];
     double y[jnum][3];
     double ri[jnum];
