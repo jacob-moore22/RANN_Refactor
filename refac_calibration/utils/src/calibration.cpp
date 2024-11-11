@@ -82,7 +82,7 @@ PairRANN::~PairRANN()
     delete[] potential_output_file;
     // delete[] r;
     // delete[] v;
-    delete[] Xset;
+    // delete[] Xset;
     // delete[] mass;
     for (int i = 0; i < nsims; i++) {
         for (int j = 0; j < sims[i].inum; j++) {
@@ -897,7 +897,9 @@ void PairRANN::read_dump_files()
     closedir(folder);
     folder = opendir(dump_directory);
     this->nsets = nsets;
-    Xset = new int[nsets];
+
+    Xset = DualCArray<int>(nsets, "Xset");
+
     dumpfilenames = new char*[nsets];
     int count = 0;
     // count snapshots per file
@@ -925,7 +927,7 @@ void PairRANN::read_dump_files()
         sets = strtol(words[4], NULL, 10);
         delete[] words;
         nsims += sets;
-        Xset[count++] = sets;
+        Xset(count++) = sets;
         fclose(fid);
     }
     closedir(folder);
@@ -1969,10 +1971,10 @@ void PairRANN::separate_validation()
     for (i = 0; i < nsets; i++) {
         startI = 0;
         for (j = 0; j < i; j++) {
-            startI += Xset[j];
+            startI += Xset(j);
         }
-        endI = startI + Xset[i];
-        len  = Xset[i];
+        endI = startI + Xset(i);
+        len  = Xset(i);
         // vnum = rand();
         // if (vnum<floor(RAND_MAX*validation)){
         //      vnum = 1;
@@ -2014,11 +2016,8 @@ void PairRANN::separate_validation()
     nsimr   = n2;
     nsimv   = n1;
 
-    // r       = new int [n2];
-    r = DualCArray<int>(n2);
-
-    // v       = new int [n1];
-    v = DualCArray<int>(n1);
+    this->r = DualCArray<int>(n2, "r");
+    this->v = DualCArray<int>(n1, "v");
     
     natomsr = 0;
     natomsv = 0;

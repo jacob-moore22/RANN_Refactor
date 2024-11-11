@@ -66,7 +66,7 @@ void PairRANN::write_debug_level2(double* fit_err, double* val_err)
     char* debugnames[nsets];
     int   check = mkdir("DEBUG", 0777);
     for (int i = 0; i < nsets; i++) {
-        if (Xset[i] == 0) {
+        if (Xset(i) == 0) {
             continue;
         }
         debugnames[i] = new char [strlen(dumpfilenames[i]) + 20];
@@ -77,13 +77,13 @@ void PairRANN::write_debug_level2(double* fit_err, double* val_err)
         bool foundcurrent = false;
         int  nsims, j;
         for (j = 0; j < nsets; j++) {
-            if (Xset[j] == 0) {
+            if (Xset(j) == 0) {
                 continue;
             }
             if (strcmp(dumpfilenames[j], sims[i].filename) == 0) {
                 current = dumps[j];
                 foundcurrent = true;
-                nsims = Xset[j];
+                nsims = Xset(j);
                 break;
             }
         }
@@ -140,7 +140,7 @@ void PairRANN::write_debug_level2(double* fit_err, double* val_err)
         }
     }
     for (int i = 0; i < nsets; i++) {
-        if (Xset[i] == 0) {
+        if (Xset(i) == 0) {
             continue;
         }
         fclose(dumps[i]);

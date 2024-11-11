@@ -115,15 +115,13 @@ public:
     int      fnmax; // DEFINE:
     
 
-    // int*     r; // simulations included in training // 1D // DEFINE:
-    DualCArray<int> r;
-    
-    // int*     v; // simulations held back for validation // 1D // DEFINE:
-    DualCArray<int> v;
+
+    DualCArray<int> r; // simulations included in training // 1D // DEFINE:
+    DualCArray<int> v; // simulations held back for validation // 1D // DEFINE:
 
     int      nsimr, nsimv;  // DEFINE:
-    int*     Xset;          // 1D 
     
+    DualCArray<int> Xset;  // 1D 
 
     char**   dumpfilenames; // 2D
     
