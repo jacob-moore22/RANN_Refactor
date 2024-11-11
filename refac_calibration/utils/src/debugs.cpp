@@ -20,31 +20,32 @@ void PairRANN::write_debug_level1(double* fit_err, double* val_err)
     double errmax    = 0;
     double err    = 0;
     double target = 0;
+    
     for (int i = 0; i < nsimr; i++) {
-        err    = fit_err[i] / sims[r[i]].energy_weight / sims[r[i]].inum;
-        target = sims[r[i]].energy / sims[r[i]].inum;
-        double state = sims[r[i]].state_e / sims[r[i]].inum;
+        err    = fit_err[i] / sims[r(i)].energy_weight / sims[r(i)].inum;
+        target = sims[r(i)].energy / sims[r(i)].inum;
+        double state = sims[r(i)].state_e / sims[r(i)].inum;
         if (target < targetmin) {
             targetmin = target;
         }
         if (fabs(err) > errmax) {
             errmax = fabs(err);
         }
-        fprintf(fid_summary, "%d %s %d %d %f %f %f %f\n", r[i], sims[r[i]].filename, sims[r[i]].timestep, sims[r[i]].inum, target + state, state, target, err);
+        fprintf(fid_summary, "%d %s %d %d %f %f %f %f\n", r(i), sims[r(i)].filename, sims[r(i)].timestep, sims[r(i)].inum, target + state, state, target, err);
     }
     fprintf(fid_summary, "#Error from simulations included in validation:\n");
     fprintf(fid_summary, "#val_index, filename, timestep, natoms, target/atom, state/atom, (t-s)/a, error/atom\n");
     for (int i = 0; i < nsimv; i++) {
-        err    = val_err[i] / sims[v[i]].energy_weight / sims[v[i]].inum;
-        target = sims[v[i]].energy / sims[v[i]].inum;
-        double state = sims[v[i]].state_e / sims[v[i]].inum;
+        err    = val_err[i] / sims[v(i)].energy_weight / sims[v(i)].inum;
+        target = sims[v(i)].energy / sims[v(i)].inum;
+        double state = sims[v(i)].state_e / sims[v(i)].inum;
         if (target < targetmin) {
             targetmin = target;
         }
         if (fabs(err) > errmax) {
             errmax = fabs(err);
         }
-        fprintf(fid_summary, "%d %s %d %d %f %f %f %f\n", v[i], sims[v[i]].filename, sims[v[i]].timestep, sims[v[i]].inum, target + state, state, target, err);
+        fprintf(fid_summary, "%d %s %d %d %f %f %f %f\n", v(i), sims[v(i)].filename, sims[v(i)].timestep, sims[v(i)].inum, target + state, state, target, err);
     }
     fprintf(fid_summary, "#mininum target/atom: %f, max error/atom: %f\n", targetmin, errmax);
     fclose(fid_summary);

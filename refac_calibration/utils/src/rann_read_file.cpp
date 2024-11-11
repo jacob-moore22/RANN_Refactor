@@ -163,6 +163,8 @@ void PairRANN::read_file(char* filename)
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_atom_types(std::vector<std::string> line, char* filename, int linenum)
 {
+
+    std::cout << "** Inside PairRANN::read_atom_types **" << std::endl;
     int nwords = line.size();
     if (nwords < 1) {
         errorf(filename, linenum, "Incorrect syntax for atom types");
@@ -188,6 +190,7 @@ void PairRANN::read_atom_types(std::vector<std::string> line, char* filename, in
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_mass(const std::vector<std::string>& line1, const std::vector<std::string>& line2, const char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_mass **" << std::endl;
     if (nelements == -1) {
         errorf(filename, linenum - 1, "atom types must be defined before mass in potential file.");
     }
@@ -216,6 +219,7 @@ void PairRANN::read_mass(const std::vector<std::string>& line1, const std::vecto
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_fpe(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_fpe **" << std::endl;
     int i;
     if (nelements == -1) {
         errorf(filename, linenum - 1, "atom types must be defined before fingerprints per element in potential file.");
@@ -249,6 +253,8 @@ void PairRANN::read_fpe(std::vector<std::string> line, std::vector<std::string> 
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_fingerprints(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_fingerprints **" << std::endl;
+
     int  nwords1, nwords, i, j, k, i1, * atomtypes;
     bool found;
     nwords1 = line1.size();
@@ -308,6 +314,8 @@ void PairRANN::read_fingerprints(std::vector<std::string> line, std::vector<std:
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_fingerprint_constants(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+
+    std::cout << "** Inside PairRANN::read_fingerprint_constants **" << std::endl;
     int  i, j, k, i1, * atomtypes;
     bool found;
     int  nwords = line.size();
@@ -399,20 +407,37 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
             }
             
             weightdefined[i]        = new bool*[net(i).layers];
+            
             biasdefined[i]          = new bool*[net(i).layers];
+            
             dimensiondefined[i]     = new bool [net(i).layers];
+            
             bundle_inputdefined[i]  = new bool*[net(i).layers];
             bundle_outputdefined[i] = new bool*[net(i).layers];
+            
+            
+
+
             net(i).dimensions       = new int [net(i).layers];
+            
             net(i).bundles          = new int[net(i).layers];
+            
             net(i).identitybundle   = new bool*[net(i).layers];
+            
             net(i).bundleinputsize  = new int*[net(i).layers];
+            
             net(i).bundleoutputsize = new int*[net(i).layers];
+            
             net(i).bundleinput      = new int**[net(i).layers];
+            
             net(i).bundleoutput     = new int**[net(i).layers];
+            
             net(i).bundleW          = new double**[net(i).layers];
+            
             net(i).bundleB          = new double**[net(i).layers];
+            
             net(i).freezeW          = new bool**[net(i).layers];
+            
             net(i).freezeB          = new bool**[net(i).layers];
 
             // this->net(i).dimensions       = DualCArray<int>(num_layers, "net_dimensions");
@@ -431,6 +456,7 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
             // this->net(i).freezeB          =      // new bool**[num_layers];
             
             for (j = 0; j < num_layers; j++) {
+                
                 net(i).dimensions[j] = 0;
                 net(i).bundles[j]    = 1;
                 
@@ -486,6 +512,7 @@ void PairRANN::read_network_layers(std::vector<std::string> line, std::vector<st
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_layer_size(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_layer_size **" << std::endl;
     int i;
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
@@ -556,6 +583,7 @@ void PairRANN::read_bundles(std::vector<std::string> line, std::vector<std::stri
             delete[] biasdefined[i][j];
             delete[] bundle_inputdefined[i][j];
             delete[] bundle_outputdefined[i][j];
+            
             net(i).bundleinputsize[j]  = new int [net(i).bundles[j]];
             net(i).bundleoutputsize[j] = new int [net(i).bundles[j]];
             net(i).bundleinput[j]  = new int*[net(i).bundles[j]];
@@ -565,10 +593,12 @@ void PairRANN::read_bundles(std::vector<std::string> line, std::vector<std::stri
             net(i).freezeW[j] = new bool*[net(i).bundles[j]];
             net(i).freezeB[j] = new bool*[net(i).bundles[j]];
             net(i).identitybundle[j] = new bool[net(i).bundles[j]];
+            
             weightdefined[i][j] = new bool[net(i).bundles[j]];
             biasdefined[i][j]   = new bool[net(i).bundles[j]];
             bundle_inputdefined[i][j]  = new bool[net(i).bundles[j]];
             bundle_outputdefined[i][j] = new bool[net(i).bundles[j]];
+            
             for (int k = 0; k < net(i).bundles[j]; k++) {
                 weightdefined[i][j][k] = false;
                 biasdefined[i][j][k]   = false;
@@ -598,6 +628,7 @@ void PairRANN::read_bundles(std::vector<std::string> line, std::vector<std::stri
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_bundle_id(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_bundle_id **" << std::endl;
     int i;
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
@@ -691,6 +722,7 @@ void PairRANN::read_bundle_input(std::vector<std::string> line, std::vector<std:
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_bundle_output(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_bundle_output **" << std::endl;
     int i, nwords;
     for (i = 0; i < nelements; i++) {
         if (line[1].compare(elements[i]) == 0) {
@@ -837,6 +869,7 @@ void PairRANN::read_weight(std::vector<std::string> line, std::vector<std::strin
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_bias(std::vector<std::string> line, std::vector<std::string> line1, FILE* fp, char* filename, int* linenum)
 {
+    std::cout << "** Inside PairRANN::read_bias **" << std::endl;
     int   i, j, l, b, ops;
     char* ptr;
     int   longline = 1024;
@@ -910,6 +943,7 @@ void PairRANN::read_bias(std::vector<std::string> line, std::vector<std::string>
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_activation_functions(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_activation_functions **" << std::endl;
     int i, l;
     int nwords = line.size();
     for (l = 0; l < nelements; l++) {
@@ -954,6 +988,7 @@ void PairRANN::read_activation_functions(std::vector<std::string> line, std::vec
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_eospe(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_eospe **" << std::endl;
     int i;
     if (nelements == -1) {
         errorf(filename, linenum - 1, "atom types must be defined before equations of state per element in potential file.");
@@ -987,6 +1022,7 @@ void PairRANN::read_eospe(std::vector<std::string> line, std::vector<std::string
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_eos(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_eos **" << std::endl;
     int  nwords1, nwords, i, j, k, i1, * atomtypes;
     bool found;
     nwords1 = line1.size();
@@ -1046,6 +1082,7 @@ void PairRANN::read_eos(std::vector<std::string> line, std::vector<std::string> 
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_eos_constants(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** Inside PairRANN::read_eos_constants **" << std::endl;
     int  i, j, k, i1, * atomtypes;
     bool found;
     int  nwords = line.size();
@@ -1115,6 +1152,7 @@ void PairRANN::read_eos_constants(std::vector<std::string> line, std::vector<std
 /////////////////////////////////////////////////////////////////////////////
 void PairRANN::read_screening(std::vector<std::string> line, std::vector<std::string> line1, char* filename, int linenum)
 {
+    std::cout << "** PairRANN::read_screening **" << std::endl;
     int  i, j, k, * atomtypes;
     bool found;
     int  nwords = line.size();

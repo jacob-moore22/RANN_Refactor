@@ -80,8 +80,8 @@ PairRANN::~PairRANN()
     delete[] dump_directory;
     delete[] log_file;
     delete[] potential_output_file;
-    delete[] r;
-    delete[] v;
+    // delete[] r;
+    // delete[] v;
     delete[] Xset;
     // delete[] mass;
     for (int i = 0; i < nsims; i++) {
@@ -221,6 +221,7 @@ PairRANN::~PairRANN()
 void PairRANN::setup()
 {
     std::cout << "**** Inside PairRANN::setup ****" << std::endl;
+    
     int nthreads = 1;
 #pragma omp parallel
     nthreads = omp_get_num_threads();
@@ -231,6 +232,7 @@ void PairRANN::setup()
     double start_time = omp_get_wtime();
 
     read_file(potential_input_file);
+    
     check_parameters();
     
     for (int i = 0; i < nelementsp; i++) {
@@ -243,11 +245,15 @@ void PairRANN::setup()
     }
     
     read_dump_files();
+    
     create_neighbor_lists();
+    
     compute_fingerprints();
+    
     if (normalizeinput) {
         normalize_data();
     }
+    
     separate_validation();
 
     double end_time = omp_get_wtime();
@@ -591,9 +597,13 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
 void PairRANN::create_random_weights(int rows, int columns, int itype, int layer, int bundle)
 {
     std::cout << "**** Inside PairRANN::create_random_weights ****" << std::endl;
+    
     net(itype).bundleW[layer][bundle] = new double [rows * columns];
+    
     net(itype).freezeW[layer][bundle] = new bool [rows * columns];
+    
     double r;
+    
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             r = (double)rand() / RAND_MAX * 2 - 1;      // flat distribution from -1 to 1
@@ -1235,14 +1245,14 @@ void PairRANN::read_dump_files()
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-int PairRANN::count_unique_species(int* s, int nsims)
+int PairRANN::count_unique_species(DualCArray<int> s, int nsims)
 {
     std::cout << "**** Inside PairRANN::count_unique_species ****" << std::endl;
     int nn, n1, j, count1, count2, count3;
     count1 = 0;
     count3 = 0;
     for (n1 = 0; n1 < nsims; n1++) {
-        nn = s[n1];
+        nn = s(n1);
         sims[nn].speciescount  = new int[nelements];
         sims[nn].speciesoffset = count1;
         sims[nn].atomoffset    = count3;
@@ -2003,17 +2013,22 @@ void PairRANN::separate_validation()
     }
     nsimr   = n2;
     nsimv   = n1;
-    r       = new int [n2];
-    v       = new int [n1];
+
+    // r       = new int [n2];
+    r = DualCArray<int>(n2);
+
+    // v       = new int [n1];
+    v = DualCArray<int>(n1);
+    
     natomsr = 0;
     natomsv = 0;
     for (i = 0; i < n1; i++) {
-        v[i]     = Iv[i];
-        natomsv += sims[v[i]].inum;
+        v(i)     = Iv[i];
+        natomsv += sims[v(i)].inum;
     }
     for (i = 0; i < n2; i++) {
-        r[i]     = Ir[i];
-        natomsr += sims[r[i]].inum;
+        r(i)     = Ir[i];
+        natomsr += sims[r(i)].inum;
     }
     sprintf(str, "assigning %d simulations (%d atoms) for validation, %d simulations (%d atoms) for fitting\n", nsimv, natomsv, nsimr, natomsr);
     std::cout << str;
@@ -2116,8 +2131,10 @@ void PairRANN::levenburg_marquardt_ch()
     double time1, time2;
     jlen  = count_unique_species(r, nsimr);
     jlenv = count_unique_species(v, nsimv);
+    
     speciesnumberr = jlen;
     speciesnumberv = jlenv;
+    
     if (targettype == 1) {
         jlen  = nsimr;
         jlenv = nsimv;
@@ -4173,7 +4190,7 @@ void PairRANN::unflatten_beta(CArray<NNarchitecture> net, double* beta)
 /// \return <return type and definition description if not void>
 ///
 /////////////////////////////////////////////////////////////////////////////
-void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, int natoms, CArray<NNarchitecture> net)
+void PairRANN::jacobian_convolution(double* J, double* target, DualCArray<int> s, int sn, int natoms, CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::jacobian_convolution ****" << std::endl;
     // clock_t start = clock();
@@ -4188,7 +4205,7 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
         int sPcPiiX3, p1dlxyz, p2dlxyz, jPstartI, jjXfPk, iiX3, j1X3, p1dXw, p2dXw, p1ddXw, p2ddXw, i2n1W;
         #pragma omp for schedule(guided)
         for (n1 = 0; n1 < sn; n1++) {
-            nn  = s[n1];
+            nn  = s(n1);
             n4s = sims[nn].inum;
             double energy;
             double force[n4s * 3];
@@ -4427,7 +4444,7 @@ void PairRANN::jacobian_convolution(double* J, double* target, int* s, int sn, i
 }
 
 // finds total error from features
-void PairRANN::forward_pass(double* target, int* s, int sn, CArray<NNarchitecture> net)
+void PairRANN::forward_pass(double* target, DualCArray<int> s, int sn, CArray<NNarchitecture> net)
 {
     std::cout << "**** Inside PairRANN::forward_pass ****" << std::endl;
     // clock_t start = clock();
@@ -4441,7 +4458,7 @@ void PairRANN::forward_pass(double* target, int* s, int sn, CArray<NNarchitectur
         int count4 = 0;
         #pragma omp for schedule(guided)
         for (n1 = 0; n1 < sn; n1++) {
-            nn  = s[n1];
+            nn  = s(n1);
             n4s = sims[nn].inum;
             double energy;
             energy = 0.0;

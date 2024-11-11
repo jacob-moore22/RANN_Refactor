@@ -113,18 +113,31 @@ public:
     int      natomsv; // DEFINE:
     int      fmax;  // DEFINE:
     int      fnmax; // DEFINE:
-    int*     r; // simulations included in training // 1D // DEFINE:
-    int*     v; // simulations held back for validation // 1D // DEFINE:
+    
+
+    // int*     r; // simulations included in training // 1D // DEFINE:
+    DualCArray<int> r;
+    
+    // int*     v; // simulations held back for validation // 1D // DEFINE:
+    DualCArray<int> v;
+
     int      nsimr, nsimv;  // DEFINE:
     int*     Xset;          // 1D 
+    
+
     char**   dumpfilenames; // 2D
     
     RaggedRightArrayKokkos<real_t> normalshift; // 2D   // DEFINE:
     RaggedRightArrayKokkos<real_t> normalgain; // 2D   // DEFINE:
     
+    
+
     bool***  weightdefined; // 3D   // DEFINE:
     bool***  biasdefined;   // 3D   // DEFINE:
     
+    
+
+
     bool**   dimensiondefined;  // 2D   // DEFINE:
     
     bool***  bundle_inputdefined;   // 3D   // DEFINE:
@@ -172,22 +185,43 @@ public:
 
     struct NNarchitecture
     {
+        
         int layers;
+        
+        // Dimension size (net.layers)
         int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
+        
+
         int* activations;        // unused // 1D
+        
         int maxlayer;        // longest layer (for memory allocation)
+        
         int sumlayers;
+        
         int* startI;    // 1D
+        
         bool bundle;
+        
+        // Sized by num_layers
         int* bundles;   // 1D
+        
+
         int** bundleinputsize;  // 2D // DEFINE: 
+        
         int** bundleoutputsize; // 2D // DEFINE:
+        
         bool** identitybundle;  // 2D // DEFINE:
+        
+
         int*** bundleinput;     // 3D // DEFINE:
         int*** bundleoutput;    // 3D // DEFINE:
 
+        // BundleW/B sizes ( , , net(i).bundleinputsize[j][k] *  net(i).bundleoutputsize[j][k])
         double*** bundleW;      // 3D // DEFINE: 600 - 800 doubles (product of each adjoining layers, (num_elements,num_layers,num_bundles)
         double*** bundleB;      // 3D // DEFINE:
+        
+
+
         bool*** freezeW;        // 3D // DEFINE:
         bool*** freezeB;        // 3D // DEFINE:
 
@@ -322,14 +356,14 @@ public:
     void compute_fingerprints();
     void separate_validation();
     void normalize_data();
-    int count_unique_species(int*, int);
+    int count_unique_species(DualCArray<int>, int);
 
     // handle network
     void create_random_weights(int, int, int, int, int);
     void create_random_biases(int, int, int, int);
     void create_identity_wb(int, int, int, int, int);
-    void jacobian_convolution(double*, double*, int*, int, int, CArray<NNarchitecture>);
-    void forward_pass(double*, int*, int, CArray<NNarchitecture>);
+    void jacobian_convolution(double*, double*, DualCArray<int>, int, int, CArray<NNarchitecture>);
+    void forward_pass(double*, DualCArray<int>, int, CArray<NNarchitecture>);
     void get_per_atom_energy(double**, int*, int, CArray<NNarchitecture>);
     void propagateforward(double*, double**, int, int, int, double*, double*, double*, double*, int*, int, CArray<NNarchitecture>);
     void propagateforwardspin(double*, double**, double**, double**, int, int, int, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*,
