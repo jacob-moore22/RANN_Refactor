@@ -145,7 +145,7 @@ PairRANN::~PairRANN()
             for (int j = 0; j < net(i).layers - 1; j++) {
                 delete[] net(i).bundleinputsize[j];
                 delete[] net(i).bundleoutputsize[j];
-                for (int k = 0; k < net(i).dimensions[j + 1]; k++) {
+                for (int k = 0; k < net(i).dimensions(j + 1); k++) {
                     delete activation[i][j][k];
                 }
                 for (int k = 0; k < net(i).bundles[j]; k++) {
@@ -165,7 +165,7 @@ PairRANN::~PairRANN()
                 delete[] net(i).freezeB[j];
             }
             delete[] activation[i];
-            delete[] net(i).dimensions;
+            // delete[] net(i).dimensions;
             delete[] net(i).startI;
             delete[] net(i).bundleinput;
             delete[] net(i).bundleoutput;
@@ -432,13 +432,13 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
                     errorf("cannot define weights for an identity bundle");
                 }
                 if (bundle_inputdefined[l][i][b] == false) {
-                    ins = net(l).dimensions[i];
+                    ins = net(l).dimensions(i);
                 }
                 else {
                     ins = net(l).bundleinputsize[i][b];
                 }
                 if (bundle_outputdefined[l][i][b] == false) {
-                    ops = net(l).dimensions[i + 1];
+                    ops = net(l).dimensions(i + 1);
                 }
                 else {
                     ops = net(l).bundleoutputsize[i][b];
@@ -502,7 +502,7 @@ void PairRANN::read_parameters(std::vector<std::string> line, std::vector<std::s
                     errorf("cannot define bias for an identity bundle");
                 }
                 if (bundle_outputdefined[l][i][b] == false) {
-                    ops = net(l).dimensions[i + 1];
+                    ops = net(l).dimensions(i + 1);
                 }
                 else {
                     ops = net(l).bundleoutputsize[i][b];
@@ -748,7 +748,7 @@ void PairRANN::update_stack_size()
     // neighborlist memory use:
     memguess = 0;
     for (int i = 0; i < nelementsp; i++) {
-        memguess += 8 * net(i).dimensions[0] * 20 * 3;
+        memguess += 8 * net(i).dimensions(0) * 20 * 3;
     }
     memguess += 8 * 20 * 12;
     memguess += 8 * 20 * 20 * 3;
@@ -1555,7 +1555,7 @@ void PairRANN::compute_fingerprints()
             if (net(itype).layers == 0) {
                 errorf(FLERR, "atom type found without corresponding network defined");
             }
-            f    = net(itype).dimensions[0];
+            f    = net(itype).dimensions(0);
             jnum = sims[nn].numneigh[i];
             sims[nn].features[ii] = new double [f];
             if (doforces) {
@@ -1587,7 +1587,7 @@ void PairRANN::compute_fingerprints()
             for (ii = 0; ii < sims[nn].inum; ii++) {
                 i     = sims[nn].ilist[ii];
                 itype = map(sims[nn].type[i]);
-                f     = net(itype).dimensions[0];
+                f     = net(itype).dimensions(0);
                 jnum  = sims[nn].numneigh[i];
                 double xn[jnum];
                 double yn[jnum];
@@ -1767,7 +1767,7 @@ void PairRANN::normalize_data()
             continue;
         }
 
-        strides(i) = net(i).dimensions[0];
+        strides(i) = net(i).dimensions(0);
         natoms[i] = 0;
     }
 
@@ -1784,14 +1784,14 @@ void PairRANN::normalize_data()
             itype = sims[n].type[ii];
             natoms[itype]++;
             if (net(itype).layers != 0) {
-                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                for (j = 0; j < net(itype).dimensions(0); j++) {
                     normalshift(itype,j) += sims[n].features[ii][j];
                 }
             }
             itype = nelements;
             natoms[itype]++;
             if (net(itype).layers != 0) {
-                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                for (j = 0; j < net(itype).dimensions(0); j++) {
                     normalshift(itype,j) += sims[n].features[ii][j];
                 }
             }
@@ -1801,7 +1801,7 @@ void PairRANN::normalize_data()
         if (net(i).layers == 0) {
             continue;
         }
-        for (j = 0; j < net(i).dimensions[0]; j++) {
+        for (j = 0; j < net(i).dimensions(0); j++) {
             normalshift(i, j) /= natoms[i];
         }
     }
@@ -1810,13 +1810,13 @@ void PairRANN::normalize_data()
         for (ii = 0; ii < sims[n].inum; ii++) {
             itype = sims[n].type[ii];
             if (net(itype).layers != 0) {
-                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                for (j = 0; j < net(itype).dimensions(0); j++) {
                     normalgain(itype,j) += (sims[n].features[ii][j] - normalshift(itype,j)) * (sims[n].features[ii][j] - normalshift(itype,j));
                 }
             }
             itype = nelements;
             if (net(itype).layers != 0) {
-                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                for (j = 0; j < net(itype).dimensions(0); j++) {
                     normalshift(itype,j) += (sims[n].features[ii][j] - normalshift(itype,j)) * (sims[n].features[ii][j] - normalshift(itype,j));
                 }
             }
@@ -1826,7 +1826,7 @@ void PairRANN::normalize_data()
         if (net(i).layers == 0) {
             continue;
         }
-        for (j = 0; j < net(i).dimensions[0]; j++) {
+        for (j = 0; j < net(i).dimensions(0); j++) {
             normalgain(i,j) = sqrt(normalgain(i,j) / natoms[i]);
         }
     }
@@ -1835,7 +1835,7 @@ void PairRANN::normalize_data()
         for (ii = 0; ii < sims[n].inum; ii++) {
             itype = sims[n].type[ii];
             if (net(itype).layers != 0) {
-                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                for (j = 0; j < net(itype).dimensions(0); j++) {
                     if (normalgain(itype,j) > 0) {
                         sims[n].features[ii][j] -= normalshift(itype,j);
                         sims[n].features[ii][j] /= normalgain(itype,j);
@@ -1844,7 +1844,7 @@ void PairRANN::normalize_data()
             }
             itype = nelements;
             if (net(itype).layers != 0) {
-                for (j = 0; j < net(itype).dimensions[0]; j++) {
+                for (j = 0; j < net(itype).dimensions(0); j++) {
                     if (normalgain(itype,j) > 0) {
                         sims[n].features[ii][j] -= normalshift(itype,j);
                         sims[n].features[ii][j] /= normalgain(itype,j);
@@ -2056,7 +2056,9 @@ void PairRANN::copy_network(CArray<NNarchitecture> net_old, CArray<NNarchitectur
         if (net_new(i).layers > 0) {
             net_new(i).maxlayer   = net_old(i).maxlayer;
             net_new(i).sumlayers  = net_old(i).sumlayers;
-            net_new(i).dimensions = new int [net_new(i).layers];
+            // net_new(i).dimensions = new int [net_new(i).layers];
+            net_new(i).dimensions = DualCArray<int>(net_new(i).layers, "net.dimension");
+            
             net_new(i).startI     = new int [net_new(i).layers];
             net_new(i).bundleW    = new double**[net_new(i).layers - 1];
             net_new(i).bundleB    = new double**[net_new(i).layers - 1];
@@ -2068,8 +2070,9 @@ void PairRANN::copy_network(CArray<NNarchitecture> net_old, CArray<NNarchitectur
             net_new(i).bundleoutput = new int**[net_new(i).layers - 1];
             net_new(i).bundles = new int [net_new(i).layers - 1];
             net_new(i).identitybundle = new bool*[net_new(i).layers - 1];
+            
             for (j = 0; j < net_old(i).layers; j++) {
-                net_new(i).dimensions[j] = net_old(i).dimensions[j];
+                net_new(i).dimensions(j) = net_old(i).dimensions(j);
                 net_new(i).startI[j]     = net_old(i).startI[j];
                 if (j == net_old(i).layers - 1) {
                     continue;
@@ -2532,7 +2535,7 @@ void PairRANN::levenburg_marquardt_ch()
             delete[] net1(i).bundleB;
             delete[] net1(i).freezeW;
             delete[] net1(i).freezeB;
-            delete[] net1(i).dimensions;
+            // delete[] net1(i).dimensions;
             delete[] net1(i).startI;
         }
     }
@@ -2677,7 +2680,7 @@ void PairRANN::conjugate_gradient()
     printf("%s", line);
     double start2;
     // get gradient direction
-        #pragma omp parallel
+#pragma omp parallel
     {
         #pragma omp for
         for (j = 0; j < betalen; j++) {
@@ -2854,7 +2857,7 @@ void PairRANN::conjugate_gradient()
         unflatten_beta(net, bp);
         jacobian_convolution(Jp, tp, r, nsimr, natomsr, net);
         energy_fit = 0.0;
-                #pragma omp parallel
+#pragma omp parallel
         {
                 #pragma omp for reduction(+ : energy_fit)
             for (i = 0; i < jlen2; i++) {
@@ -3034,7 +3037,7 @@ void PairRANN::conjugate_gradient()
             delete[] net1(i).bundleB;
             delete[] net1(i).freezeW;
             delete[] net1(i).freezeB;
-            delete[] net1(i).dimensions;
+            // delete[] net1(i).dimensions;
             delete[] net1(i).startI;
         }
     }
@@ -3533,7 +3536,7 @@ void PairRANN::levenburg_marquardt_linesearch()
             delete[] net1(i).bundleB;
             delete[] net1(i).freezeW;
             delete[] net1(i).freezeB;
-            delete[] net1(i).dimensions;
+            // delete[] net1(i).dimensions;
             delete[] net1(i).startI;
         }
     }
@@ -4074,7 +4077,7 @@ void PairRANN::bfgs()
             delete[] net1(i).bundleB;
             delete[] net1(i).freezeW;
             delete[] net1(i).freezeB;
-            delete[] net1(i).dimensions;
+            // delete[] net1(i).dimensions;
             delete[] net1(i).startI;
         }
     }
@@ -4257,15 +4260,15 @@ void PairRANN::jacobian_convolution(double* J, double* target, DualCArray<int> s
                 double  dlayerx[jnum * n1sl];
                 double  dlayery[jnum * n1sl];
                 double  dlayerz[jnum * n1sl];
-                int     f = net1.dimensions[0];
+                int     f = net1.dimensions(0);
                 double* features = sims[nn].features[ii];
                 prevI  = 0;
-                n1dimi = net1.dimensions[0];
+                n1dimi = net1.dimensions(0);
                 for (k = 0; k < n1dimi; k++) {
                     layer[k]  = features[k];
                     dlayer[k] = 1.0;
                 }
-                for (k = net1.dimensions[0]; k < n1sl; k++) {
+                for (k = net1.dimensions(0); k < n1sl; k++) {
                     layer[k] = 0;
                 }
                 for (i = 0; i < net1.layers - 1; i++) {
@@ -4283,7 +4286,7 @@ void PairRANN::jacobian_convolution(double* J, double* target, DualCArray<int> s
                             layer[jPstartI] += net1.bundleB[i][i1][j];
                         }
                     }
-                    for (j = 0; j < net1.dimensions[i + 1]; j++) {
+                    for (j = 0; j < net1.dimensions(i + 1); j++) {
                         startI   = net1.startI[i + 1];
                         jPstartI = j + startI;
                         dlayer[jPstartI] = activation[itype][i][j]->dactivation_function(layer[jPstartI]);
@@ -4303,8 +4306,8 @@ void PairRANN::jacobian_convolution(double* J, double* target, DualCArray<int> s
                 }
                 // backpropagation
                 for (i = 0; i < net1.layers - 1; i++) {
-                    int    d1 = net1.dimensions[i + 1];
-                    int    d2 = net1.dimensions[i];
+                    int    d1 = net1.dimensions(i + 1);
+                    int    d2 = net1.dimensions(i);
                     double dXw[d1 * net1.sumlayers];
                     startI = net1.startI[i + 1];
                     prevI  = net1.startI[i];
@@ -4323,8 +4326,8 @@ void PairRANN::jacobian_convolution(double* J, double* target, DualCArray<int> s
                         int s3 = net1.bundleoutputsize[i][i1];
                         int s4 = net1.bundleinputsize[i][i1];
                         for (l = i + 1; l < net1.layers - 1; l++) {
-                            int d3     = net1.dimensions[l + 1];
-                            int d4     = net1.dimensions[l];
+                            int d3     = net1.dimensions(l + 1);
+                            int d4     = net1.dimensions(l);
                             int startL = net1.startI[l + 1];
                             int prevL  = net1.startI[l];
                             for (int l1 = 0; l1 < net1.bundles[l]; l1++) {
@@ -4496,7 +4499,7 @@ void PairRANN::forward_pass(double* target, DualCArray<int> s, int sn, CArray<NN
                 double  dlayerx[jnum * n1sl];
                 double  dlayery[jnum * n1sl];
                 double  dlayerz[jnum * n1sl];
-                int     f = net1.dimensions[0];
+                int     f = net1.dimensions(0);
                 double* features = sims[nn].features[ii];
                 double* dfeaturesx;
                 double* dfeaturesy;
@@ -4507,11 +4510,11 @@ void PairRANN::forward_pass(double* target, DualCArray<int> s, int sn, CArray<NN
                     dfeaturesz = sims[nn].dfz[ii];
                 }
                 prevI = 0;
-                for (k = 0; k < net1.dimensions[0]; k++) {
+                for (k = 0; k < net1.dimensions(0); k++) {
                     layer[k]  = features[k];
                     dlayer[k] = 1.0;
                 }
-                for (k = net1.dimensions[0]; k < n1sl; k++) {
+                for (k = net1.dimensions(0); k < n1sl; k++) {
                     layer[k] = 0;
                 }
                 for (i = 0; i < net1.layers - 1; i++) {
@@ -4529,7 +4532,7 @@ void PairRANN::forward_pass(double* target, DualCArray<int> s, int sn, CArray<NN
                             layer[jPstartI] += net1.bundleB[i][i1][j];
                         }
                     }
-                    for (j = 0; j < net1.dimensions[i + 1]; j++) {
+                    for (j = 0; j < net1.dimensions(i + 1); j++) {
                         startI   = net1.startI[i + 1];
                         jPstartI = j + startI;
                         dlayer[jPstartI] = activation[itype][i][j]->dactivation_function(layer[jPstartI]);
@@ -4631,13 +4634,13 @@ void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, CArray<NNa
                 jlist      = firstneigh[ii];
                 int     L = net1.layers - 1;
                 double  layer[n1sl];
-                int     f = net1.dimensions[0];
+                int     f = net1.dimensions(0);
                 double* features = sims[nn].features[ii];
                 prevI = 0;
-                for (k = 0; k < net1.dimensions[0]; k++) {
+                for (k = 0; k < net1.dimensions(0); k++) {
                     layer[k] = features[k];
                 }
-                for (k = net1.dimensions[0]; k < n1sl; k++) {
+                for (k = net1.dimensions(0); k < n1sl; k++) {
                     layer[k] = 0;
                 }
                 for (i = 0; i < net1.layers - 1; i++) {
@@ -4655,7 +4658,7 @@ void PairRANN::get_per_atom_energy(double** energies, int* s, int sn, CArray<NNa
                             layer[jPstartI] += net1.bundleB[i][i1][j];
                         }
                     }
-                    for (j = 0; j < net1.dimensions[i + 1]; j++) {
+                    for (j = 0; j < net1.dimensions(i + 1); j++) {
                         startI   = net1.startI[i + 1];
                         jPstartI = j + startI;
                         layer[jPstartI] =  activation[itype][i][j]->activation_function(layer[jPstartI]);
@@ -4682,7 +4685,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
     int L = net1.layers - 1;
     // energy output with forces from analytical derivatives
     double dsum1[net1.maxlayer];
-    int    f = net1.dimensions[0];
+    int    f = net1.dimensions(0);
     double sum[net1.maxlayer];
     double layer[net1.maxlayer];
     double dlayersumx[jnum][net1.maxlayer];
@@ -4691,7 +4694,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
     double dlayerx[jnum][net1.maxlayer];
     double dlayery[jnum][net1.maxlayer];
     double dlayerz[jnum][net1.maxlayer];
-    for (k = 0; k < net1.dimensions[0]; k++) {
+    for (k = 0; k < net1.dimensions(0); k++) {
         layer[k] = features[k];
         for (jj = 0; jj < jnum; jj++) {
             dlayerx[jj][k] = dfeaturesx[jj * f + k];
@@ -4700,7 +4703,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
         }
     }
     for (i = 0; i < net1.layers - 1; i++) {
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             sum[j] = 0;
         }
         for (i1 = 0; i1 < net1.bundles[i]; i1++) {
@@ -4715,7 +4718,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
                 sum[j1] += net1.bundleB[i][i1][j];
             }
         }
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             dsum1[j] = activation[itype][i][j]->dactivation_function(sum[j]);
             sum[j]   = activation[itype][i][j]->activation_function(sum[j]);
             if (i == L - 1) {
@@ -4744,7 +4747,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
                 }
             }
         }
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             for (jj = 0; jj < jnum; jj++) {
                 dlayersumx[jj][j] *= dsum1[j];
                 dlayersumy[jj][j] *= dsum1[j];
@@ -4752,7 +4755,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
             }
         }
         if (i == L - 1) {
-            for (j = 0; j < net1.dimensions[i + 1]; j++) {
+            for (j = 0; j < net1.dimensions(i + 1); j++) {
                 for (jj = 0; jj < jnum - 1; jj++) {
                     int j2 = jl[jj];
                     force[j2][0] += dlayersumx[jj][j];
@@ -4767,7 +4770,7 @@ void PairRANN::propagateforward(double* energy, double** force, int ii, int jnum
             }
         }
         // update values for next iteration
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             layer[j] = sum[j];
             for (jj = 0; jj < jnum; jj++) {
                 dlayerx[jj][j] = dlayersumx[jj][j];
@@ -4802,7 +4805,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
     // energy output with forces from analytical derivatives
     double dsum1[net1.maxlayer];
     double ddsum1[net1.maxlayer];
-    int    f = net1.dimensions[0];
+    int    f = net1.dimensions(0);
     double sum[net1.maxlayer];
     double layer[net1.maxlayer];
     double dlayersumx[jnum][net1.maxlayer];
@@ -4830,7 +4833,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
     double dssumyz[jnum][net1.maxlayer];
     double dssumzz[jnum][net1.maxlayer];
     // energy output with forces from analytical derivatives
-    for (k = 0; k < net1.dimensions[0]; k++) {
+    for (k = 0; k < net1.dimensions(0); k++) {
         layer[k] = features[k];
         for (jj = 0; jj < jnum; jj++) {
             dlayerx[jj][k] = dfeaturesx[jj * f + k];
@@ -4848,7 +4851,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
         }
     }
     for (i = 0; i < net1.layers - 1; i++) {
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             sum[j] = 0;
         }
         for (i1 = 0; i1 < net1.bundles[i]; i1++) {
@@ -4863,7 +4866,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
                 sum[j1] += net1.bundleB[i][i1][j];
             }
         }
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             ddsum1[j] = activation[itype][i][j]->ddactivation_function(sum[j]);
             dsum1[j]  = activation[itype][i][j]->dactivation_function(sum[j]);
             sum[j]    = activation[itype][i][j]->activation_function(sum[j]);
@@ -4911,7 +4914,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
                 }
             }
         }
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             for (jj = 0; jj < jnum; jj++) {
                 dlayersumx[jj][j] *= dsum1[j];
                 dlayersumy[jj][j] *= dsum1[j];
@@ -4928,7 +4931,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
             }
         }
         if (i == L - 1) {
-            for (j = 0; j < net1.dimensions[i + 1]; j++) {
+            for (j = 0; j < net1.dimensions(i + 1); j++) {
                 for (jj = 0; jj < jnum - 1; jj++) {
                     int j2 = jl[jj];
                     force[j2][0] += dlayersumx[jj][j];
@@ -4961,7 +4964,7 @@ void PairRANN::propagateforwardspin(double* energy, double** force, double** fm,
             }
         }
         // update values for next iteration
-        for (j = 0; j < net1.dimensions[i + 1]; j++) {
+        for (j = 0; j < net1.dimensions(i + 1); j++) {
             layer[j] = sum[j];
             for (jj = 0; jj < jnum; jj++) {
                 dlayerx[jj][j] = dlayersumx[jj][j];
@@ -5369,7 +5372,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     for (i = 0; i < nelementsp; i++) {
         for (j = 0; j < net_out(i).layers; j++) {
             fprintf(fid, "layersize:%s:%d:\n", elementsp[i], j);
-            fprintf(fid, "%d\n", net_out(i).dimensions[j]);
+            fprintf(fid, "%d\n", net_out(i).dimensions(j));
         }
     }
     // bundles section:
@@ -5449,14 +5452,14 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     for (i = 0; i < nelementsp; i++) {
         for (j = 0; j < net_out(i).layers - 1; j++) {
             bool allsame = true;
-            for (k = 1; k < net_out(i).dimensions[j + 1]; k++) {
+            for (k = 1; k < net_out(i).dimensions(j + 1); k++) {
                 if (strcmp(activation[i][j][k]->style, activation[i][j][0]->style) != 0) {
                     allsame = false;
                     break;
                 }
             }
             if (!allsame) {
-                for (k = 0; k < net_out(i).dimensions[j + 1]; k++) {
+                for (k = 0; k < net_out(i).dimensions(j + 1); k++) {
                     fprintf(fid, "activationfunctions:%s:%d:%d:\n", elementsp[i], j, k);
                     fprintf(fid, "%s\n", activation[i][j][k]->style);
                 }

@@ -129,14 +129,18 @@ public:
     RaggedRightArrayKokkos<real_t> normalgain; // 2D   // DEFINE:
     
     
-
+    // (num_elements, num_layers_per_net_for_elem, )
+    
     bool***  weightdefined; // 3D   // DEFINE:
+    
+
+
     bool***  biasdefined;   // 3D   // DEFINE:
     
     
 
 
-    bool**   dimensiondefined;  // 2D   // DEFINE:
+    bool**   dimensiondefined;  // 2D   // DEFINE: (nelements, net(element).layers) RAGGED
     
     bool***  bundle_inputdefined;   // 3D   // DEFINE:
     bool***  bundle_outputdefined;  // 3D   // DEFINE:
@@ -187,8 +191,8 @@ public:
         int layers;
         
         // Dimension size (net.layers)
-        int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
-        
+        // int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
+        DualCArray<int> dimensions;
 
         int* activations;        // unused // 1D
         
