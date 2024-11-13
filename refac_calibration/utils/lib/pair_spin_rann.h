@@ -158,13 +158,12 @@ public:
     DualCArray<real_t> mass; // mass of each element 1D      
     DualCArray<int> map;     // mapping from atom types to elements // 1D
 
+    DualCArray<int> fingerprintcount; // static variable used in initialization // 1D
+    DualCArray<int> fingerprintlength;  // # of input neurons defined by fingerprints of each element. // 1D
+    DualCArray<int> fingerprintperelement;   // # of fingerprints for each element // 1D
+    DualCArray<int> stateequationperelement; // 1D // DEFINE:
+    DualCArray<int> stateequationcount;      // 1D // DEFINE:
 
-    int*     fingerprintcount;        // static variable used in initialization // 1D
-    int*     fingerprintlength;       // # of input neurons defined by fingerprints of each element. // 1D
-    int*     fingerprintperelement;   // # of fingerprints for each element // 1D
-    int*     stateequationperelement; // 1D // DEFINE:
-    int*     stateequationcount;      // 1D // DEFINE:
-    
     bool     doscreen; // screening is calculated if any defined fingerprint uses it
     bool     allscreen;
     bool     dospin;

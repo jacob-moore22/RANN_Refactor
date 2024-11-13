@@ -276,7 +276,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
                     screen_neighbor_list(xn, yn, zn, tn, &jnum, jl, i, nn, Bij, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz);
                 }
                 // do fingerprints for atom type
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -295,7 +295,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
                 }
                 itype = nelements;
                 // do fingerprints for type "all"
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -315,7 +315,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
                 double e  = 0.0;
                 double e1 = 0.0;
                 itype = map(sims[nn].type[i]);
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -331,7 +331,7 @@ void PairRANN::write_debug_level4(double* fit_err, double* val_err)
                     }
                 }
                 itype = nelements;
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -533,7 +533,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                                 screen_neighbor_list(xn, yn, zn, tn, &jnum, jl, i, nn, Bij, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz);
                             }
                             // do fingerprints for atom type
-                            len = fingerprintperelement[itype];
+                            len = fingerprintperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                                     fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -553,7 +553,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                             }
                             itype = nelements;
                             // do fingerprints for type "all"
-                            len = fingerprintperelement[itype];
+                            len = fingerprintperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                                     fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -574,7 +574,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                             double e  = 0.0;
                             double e1 = 0.0;
                             itype = map(sims[nn].type[i]);
-                            len   = stateequationperelement[itype];
+                            len   = stateequationperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                                     state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -590,7 +590,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                                 }
                             }
                             itype = nelements;
-                            len   = stateequationperelement[itype];
+                            len   = stateequationperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                                     state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -721,7 +721,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                     screen_neighbor_list(xn, yn, zn, tn, &jnum, jl, i, nn, Bij, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz);
                 }
                 // do fingerprints for atom type
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -740,7 +740,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                 }
                 itype = nelements;
                 // do fingerprints for type "all"
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -760,7 +760,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                 double e  = 0.0;
                 double e1 = 0.0;
                 itype = map(sims[nn].type[i]);
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, forceeos, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -776,7 +776,7 @@ void PairRANN::write_debug_level5(double* fit_err, double* val_err)
                     }
                 }
                 itype = nelements;
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, forceeos, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -972,7 +972,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                     screen_neighbor_list(xn, yn, zn, tn, &jnum, jl, i, nn, Bij, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz);
                 }
                 // do fingerprints for atom type
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -991,7 +991,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                 }
                 itype = nelements;
                 // do fingerprints for type "all"
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1011,7 +1011,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                 double e  = 0.0;
                 double e1 = 0.0;
                 itype = map(sims[nn].type[i]);
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, forceeos, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1027,7 +1027,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                     }
                 }
                 itype = nelements;
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, forceeos, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1221,7 +1221,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                             }
                             printf("%f %d %d %d %d 3\n", hn[0][5], k, s, v, ii);
                             // do fingerprints for atom type
-                            len = fingerprintperelement[itype];
+                            len = fingerprintperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                                     fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1241,7 +1241,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                             }
                             itype = nelements;
                             // do fingerprints for type "all"
-                            len = fingerprintperelement[itype];
+                            len = fingerprintperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                                     fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1262,7 +1262,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                             double e  = 0.0;
                             double e1 = 0.0;
                             itype = map(sims[nn].type[i]);
-                            len   = stateequationperelement[itype];
+                            len   = stateequationperelement(itype);
                             printf("%f %d %d %d %d 4\n", hn[0][5], k, s, v, ii);
                             for (j = 0; j < len; j++) {
                                 if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
@@ -1279,7 +1279,7 @@ void PairRANN::write_debug_level5_spin(double* fit_err, double* val_err)
                                 }
                             }
                             itype = nelements;
-                            len   = stateequationperelement[itype];
+                            len   = stateequationperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                                     state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1606,7 +1606,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
                                 screen(Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz, Bij, ii, nn, xn, yn, zn, tn, jnum - 1);
                             }
                             // do fingerprints for atom type
-                            len = fingerprintperelement[itype];
+                            len = fingerprintperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                                     fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1626,7 +1626,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
                             }
                             itype = nelements;
                             // do fingerprints for type "all"
-                            len = fingerprintperelement[itype];
+                            len = fingerprintperelement(itype);
                             for (j = 0; j < len; j++) {
                                 if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                                     fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1737,7 +1737,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
                         fprintf(current2, "\n");
                     }
                     // do fingerprints for atom type
-                    len = fingerprintperelement[itype];
+                    len = fingerprintperelement(itype);
                     for (j = 0; j < len; j++) {
                         if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                             fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1756,7 +1756,7 @@ void PairRANN::write_debug_level6(double* fit_err, double* val_err)
                     }
                     itype = nelements;
                     // do fingerprints for type "all"
-                    len = fingerprintperelement[itype];
+                    len = fingerprintperelement(itype);
                     for (j = 0; j < len; j++) {
                         if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                             fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);

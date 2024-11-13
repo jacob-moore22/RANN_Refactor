@@ -46,7 +46,7 @@ PTHREADS_ADDITIONS=(
 
 # Configure kokkos using CMake
 cmake_options=(
-    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_BUILD_TYPE=Debug
     -D CMAKE_INSTALL_PREFIX="${KOKKOS_INSTALL_DIR}"
     -D CMAKE_CXX_STANDARD=17
     -D Kokkos_ENABLE_SERIAL=ON

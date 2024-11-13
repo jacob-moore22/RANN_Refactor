@@ -226,9 +226,9 @@ void PairRANN::read_fpe(std::vector<std::string> line, std::vector<std::string> 
     }
     for (i = 0; i < nelementsp; i++) {
         if (line[1].compare(elementsp[i]) == 0) {
-            fingerprintperelement[i] = utils::inumeric(filename, linenum, line1[0], true, lmp);
-            fingerprints[i] = new RANN::Fingerprint*[fingerprintperelement[i]];
-            for (int j = 0; j < fingerprintperelement[i]; j++) {
+            fingerprintperelement(i) = utils::inumeric(filename, linenum, line1[0], true, lmp);
+            fingerprints[i] = new RANN::Fingerprint*[fingerprintperelement(i)];
+            for (int j = 0; j < fingerprintperelement(i); j++) {
                 fingerprints[i][j] = new RANN::Fingerprint(this);
             }
             return;
@@ -278,12 +278,12 @@ void PairRANN::read_fingerprints(std::vector<std::string> line, std::vector<std:
     }
     i = atomtypes[0];
     k = 0;
-    if (fingerprintperelement[i] == -1) {
+    if (fingerprintperelement(i) == -1) {
         errorf(filename, linenum - 1, "fingerprint per element must be defined before fingerprints");
     }
     while (k < nwords1) {
-        i1 = fingerprintcount[i];
-        if (i1 >= fingerprintperelement[i]) {
+        i1 = fingerprintcount(i);
+        if (i1 >= fingerprintperelement(i)) {
             errorf(filename, linenum, "more fingerprints defined than fingerprint per element");
         }
         delete fingerprints[i][i1];
@@ -293,7 +293,7 @@ void PairRANN::read_fingerprints(std::vector<std::string> line, std::vector<std:
         }
         k++;
         fingerprints[i][i1]->init(atomtypes, utils::inumeric(filename, linenum, line1[k++], true, lmp));
-        fingerprintcount[i]++;
+        fingerprintcount(i)++;
     }
     delete[] atomtypes;
 }
@@ -339,7 +339,7 @@ void PairRANN::read_fingerprint_constants(std::vector<std::string> line, std::ve
     }
     i     = atomtypes[0];
     found = false;
-    for (k = 0; k < fingerprintperelement[i]; k++) {
+    for (k = 0; k < fingerprintperelement(i); k++) {
         if (fingerprints[i][k]->empty) {
             continue;
         }
@@ -1007,9 +1007,9 @@ void PairRANN::read_eospe(std::vector<std::string> line, std::vector<std::string
     }
     for (i = 0; i < nelementsp; i++) {
         if (line[1].compare(elementsp[i]) == 0) {
-            stateequationperelement[i] = utils::inumeric(filename, linenum, line1[0], true, lmp);
-            state[i] = new RANN::State*[stateequationperelement[i]];
-            for (int j = 0; j < stateequationperelement[i]; j++) {
+            stateequationperelement(i) = utils::inumeric(filename, linenum, line1[0], true, lmp);
+            state[i] = new RANN::State*[stateequationperelement(i)];
+            for (int j = 0; j < stateequationperelement(i); j++) {
                 state[i][j] = new RANN::State(this);
             }
             return;
@@ -1058,12 +1058,12 @@ void PairRANN::read_eos(std::vector<std::string> line, std::vector<std::string> 
     }
     i = atomtypes[0];
     k = 0;
-    if (stateequationperelement[i] == -1) {
+    if (stateequationperelement(i) == -1) {
         errorf(filename, linenum - 1, "eos per element must be defined before fingerprints");
     }
     while (k < nwords1) {
-        i1 = stateequationcount[i];
-        if (i1 >= stateequationperelement[i]) {
+        i1 = stateequationcount(i);
+        if (i1 >= stateequationperelement(i)) {
             errorf(filename, linenum, "more state equations defined than eos per element");
         }
         delete state[i][i1];
@@ -1073,7 +1073,7 @@ void PairRANN::read_eos(std::vector<std::string> line, std::vector<std::string> 
         }
         k++;
         state[i][i1]->init(atomtypes, utils::inumeric(filename, linenum, line1[k++], true, lmp));
-        stateequationcount[i]++;
+        stateequationcount(i)++;
     }
     delete[] atomtypes;
 }
@@ -1118,7 +1118,7 @@ void PairRANN::read_eos_constants(std::vector<std::string> line, std::vector<std
     }
     i     = atomtypes[0];
     found = false;
-    for (k = 0; k < stateequationperelement[i]; k++) {
+    for (k = 0; k < stateequationperelement(i); k++) {
         if (state[i][k]->empty) {
             continue;
         }
@@ -1325,12 +1325,12 @@ bool PairRANN::check_potential()
                 }
             }
         }
-        for (j = 0; j < fingerprintperelement[i]; j++) {
+        for (j = 0; j < fingerprintperelement(i); j++) {
             if (fingerprints[i][j]->fullydefined == false) {
                 errorf(FLERR, "undefined fingerprint parameters");
             }
-            fingerprints[i][j]->startingneuron = fingerprintlength[i];
-            fingerprintlength[i] += fingerprints[i][j]->get_length();
+            fingerprints[i][j]->startingneuron = fingerprintlength(i);
+            fingerprintlength(i) += fingerprints[i][j]->get_length();
             if (fingerprints[i][j]->rc > cutmax) {
                 cutmax = fingerprints[i][j]->rc;
             }
@@ -1338,7 +1338,7 @@ bool PairRANN::check_potential()
                 dospin = true;
             }
         }
-        for (j = 0; j < stateequationperelement[i]; j++) {
+        for (j = 0; j < stateequationperelement(i); j++) {
             if (state[i][j]->fullydefined == false) {
                 errorf(FLERR, "undefined state equation parameters");
             }
@@ -1346,7 +1346,7 @@ bool PairRANN::check_potential()
                 cutmax = state[i][j]->rc;
             }
         }
-        if (net(i).dimensions(0) != fingerprintlength[i]) {
+        if (net(i).dimensions(0) != fingerprintlength(i)) {
             errorf(FLERR, "fingerprint length does not match input layersize");
         }
     }

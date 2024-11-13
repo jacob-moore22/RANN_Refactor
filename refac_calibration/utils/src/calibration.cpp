@@ -12,7 +12,7 @@ PairRANN::PairRANN(char* potential_file)
     nelementsp = -1;
     nelements  = -1;
     // net = NULL;
-    fingerprintlength = NULL;
+    // fingerprintlength = NULL;
     // mass    = NULL;
     betalen = 0;
     doregularizer  = false;
@@ -21,8 +21,6 @@ PairRANN::PairRANN(char* potential_file)
     max_epochs     = 1e7;
     regularizer    = 0.0;
     res = 10000;
-    fingerprintcount   = 0;
-    stateequationcount = 0;
     elementsp  = NULL;
     elements   = NULL;
     activation = NULL;
@@ -36,8 +34,6 @@ PairRANN::PairRANN(char* potential_file)
     natoms   = 0;
     nsims    = 0;
     doforces = false;
-    fingerprintperelement   = NULL;
-    stateequationperelement = NULL;
     validation = 0.0;
     potential_output_freq = 100;
     algorithm = new char [SHORTLINE];
@@ -180,14 +176,14 @@ PairRANN::~PairRANN()
     }
 
     for (int i = 0; i < nelementsp; i++) {
-        if (fingerprintperelement[i] > 0) {
-            for (int j = 0; j < fingerprintperelement[i]; j++) {
+        if (fingerprintperelement(i) > 0) {
+            for (int j = 0; j < fingerprintperelement(i); j++) {
                 delete fingerprints[i][j];
             }
             delete[] fingerprints[i];
         }
-        if (stateequationperelement[i] > 0) {
-            for (int j = 0; j < stateequationperelement[i]; j++) {
+        if (stateequationperelement(i) > 0) {
+            for (int j = 0; j < stateequationperelement(i); j++) {
                 delete state[i][j];
             }
             delete[] state[i];
@@ -196,11 +192,6 @@ PairRANN::~PairRANN()
     delete[] fingerprints;
     delete[] activation;
     delete[] state;
-    delete[] fingerprintcount;
-    delete[] fingerprintperelement;
-    delete[] fingerprintlength;
-    delete[] stateequationcount;
-    delete[] stateequationperelement;
     delete[] freezebeta;
 }
 
@@ -236,10 +227,10 @@ void PairRANN::setup()
     check_parameters();
     
     for (int i = 0; i < nelementsp; i++) {
-        for (int j = 0; j < fingerprintperelement[i]; j++) {
+        for (int j = 0; j < fingerprintperelement(i); j++) {
             fingerprints[i][j]->allocate();
         }
-        for (int j = 0; j < stateequationperelement[i]; j++) {
+        for (int j = 0; j < stateequationperelement(i); j++) {
             state[i][j]->allocate();
         }
     }
@@ -698,18 +689,21 @@ void PairRANN::allocate(const std::vector<std::string>& elementwords)
     activation = new RANN::Activation***[nelementsp];
     fingerprints = new RANN::Fingerprint * *[nelementsp];
     state = new RANN::State * *[nelementsp];
-    fingerprintlength     = new int[nelementsp];
-    fingerprintperelement = new int [nelementsp];
-    fingerprintcount = new int[nelementsp];
-    stateequationperelement = new int [nelementsp];
-    stateequationcount = new int [nelementsp];
+    
+
+    fingerprintlength = DualCArray<int>(nelementsp, "fingerprintlength");
+    fingerprintperelement = DualCArray<int>(nelementsp, "fingerprintperelement");
+    fingerprintcount = DualCArray<int>(nelementsp, "fingerprintcount");
+    stateequationperelement = DualCArray<int>(nelementsp, "stateequationperelement");
+    stateequationcount = DualCArray<int>(nelementsp, "stateequationcount");
+
     for (i = 0; i <= nelements; i++) {
         n = elementwords[i].size();
-        fingerprintlength[i]     = 0;
-        fingerprintperelement[i] = -1;
-        fingerprintcount[i] = 0;
-        stateequationperelement[i] = 0;
-        stateequationcount[i] = 0;
+        fingerprintlength(i)     = 0;
+        fingerprintperelement(i) = -1;
+        fingerprintcount(i) = 0;
+        stateequationperelement(i) = 0;
+        stateequationcount(i) = 0;
         map(i) = i;
         if (i < nelements) {
             mass(i)     = -1.0;
@@ -1636,7 +1630,7 @@ void PairRANN::compute_fingerprints()
                     screen_neighbor_list(xn, yn, zn, tn, &jnum, jl, i, nn, Bij, Sik, dSikx, dSiky, dSikz, dSijkx, dSijky, dSijkz);
                 }
                 // do fingerprints for atom type
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1655,7 +1649,7 @@ void PairRANN::compute_fingerprints()
                 }
                 itype = nelements;
                 // do fingerprints for type "all"
-                len = fingerprintperelement[itype];
+                len = fingerprintperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (fingerprints[itype][j]->spin == false && fingerprints[itype][j]->screen == false) {
                         fingerprints[itype][j]->compute_fingerprint(features, dfeaturesx, dfeaturesy, dfeaturesz, ii, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1692,7 +1686,7 @@ void PairRANN::compute_fingerprints()
                 }
                 double e = 0.0;
                 itype = map(sims[nn].type[i]);
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -1708,7 +1702,7 @@ void PairRANN::compute_fingerprints()
                     }
                 }
                 itype = nelements;
-                len   = stateequationperelement[itype];
+                len   = stateequationperelement(itype);
                 for (j = 0; j < len; j++) {
                     if (state[itype][j]->screen == false && state[itype][j]->spin == false) {
                         state[itype][j]->eos_function(&e, force, i, nn, xn, yn, zn, tn, jnum - 1, jl);
@@ -5307,15 +5301,15 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // fingerprints per element section
     for (i = 0; i < nelementsp; i++) {
-        if (fingerprintperelement[i] > 0) {
+        if (fingerprintperelement(i) > 0) {
             fprintf(fid, "fingerprintsperelement:%s:\n", elementsp[i]);
-            fprintf(fid, "%d\n", fingerprintperelement[i]);
+            fprintf(fid, "%d\n", fingerprintperelement(i));
         }
     }
     // fingerprints section:
     for (i = 0; i < nelementsp; i++) {
         bool printheader = true;
-        for (j = 0; j < fingerprintperelement[i]; j++) {
+        for (j = 0; j < fingerprintperelement(i); j++) {
             if (printheader) {
                 fprintf(fid, "fingerprints:");
                 fprintf(fid, "%s", elementsp[fingerprints[i][j]->atomtypes[0]]);
@@ -5329,7 +5323,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
             }
             fprintf(fid, "%s_%d", fingerprints[i][j]->style, fingerprints[i][j]->id);
             printheader = true;
-            if (j < fingerprintperelement[i] - 1 && fingerprints[i][j]->n_body_type == fingerprints[i][j + 1]->n_body_type) {
+            if (j < fingerprintperelement(i) - 1 && fingerprints[i][j]->n_body_type == fingerprints[i][j + 1]->n_body_type) {
                 printheader = false;
                 for (k = 1; k < fingerprints[i][j]->n_body_type; k++) {
                     if (fingerprints[i][j]->atomtypes[k] != fingerprints[i][j + 1]->atomtypes[k]) {
@@ -5346,7 +5340,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // fingerprint contants section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < fingerprintperelement[i]; j++) {
+        for (j = 0; j < fingerprintperelement(i); j++) {
             fingerprints[i][j]->write_values(fid);
         }
     }
@@ -5472,15 +5466,15 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // state equation per element section
     for (i = 0; i < nelementsp; i++) {
-        if (stateequationperelement[i] > 0) {
+        if (stateequationperelement(i) > 0) {
             fprintf(fid, "stateequationsperelement:%s:\n", elementsp[i]);
-            fprintf(fid, "%d\n", stateequationperelement[i]);
+            fprintf(fid, "%d\n", stateequationperelement(i));
         }
     }
     // state equations section:
     for (i = 0; i < nelementsp; i++) {
         bool printheader = true;
-        for (j = 0; j < stateequationperelement[i]; j++) {
+        for (j = 0; j < stateequationperelement(i); j++) {
             if (printheader) {
                 fprintf(fid, "stateequations:");
                 fprintf(fid, "%s", elementsp[state[i][j]->atomtypes[0]]);
@@ -5494,7 +5488,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
             }
             fprintf(fid, "%s_%d", state[i][j]->style, state[i][j]->id);
             printheader = true;
-            if (j < stateequationperelement[i] - 1 && state[i][j]->n_body_type == state[i][j + 1]->n_body_type) {
+            if (j < stateequationperelement(i) - 1 && state[i][j]->n_body_type == state[i][j + 1]->n_body_type) {
                 printheader = false;
                 for (k = 1; k < state[i][j]->n_body_type; k++) {
                     if (state[i][j]->atomtypes[k] != state[i][j + 1]->atomtypes[k]) {
@@ -5511,7 +5505,7 @@ void PairRANN::write_potential_file(bool writeparameters, char* header, int iter
     }
     // state equations contants section:
     for (i = 0; i < nelementsp; i++) {
-        for (j = 0; j < stateequationperelement[i]; j++) {
+        for (j = 0; j < stateequationperelement(i); j++) {
             state[i][j]->write_values(fid);
         }
     }
