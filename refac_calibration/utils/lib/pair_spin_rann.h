@@ -169,13 +169,13 @@ public:
     bool     dospin;
     
     int      res; // Resolution of function tables for cubic interpolation.
-    
-    double*  screening_min; // 1D   // DEFINE:
-    double*  screening_max; // 1D   // DEFINE:
-    
+
+    DualCArray<double> screening_min; // 1D   // DEFINE:
+    DualCArray<double> screening_max; // 1D   // DEFINE:
+
     int      memguess;  // DEFINE:
-    
-    bool*    freezebeta; // 1D
+
+    DualCArray<bool> freezebeta; // 1D   // DEFINE:
     
     int      speciesnumberr;    // DEFINE:
     int      speciesnumberv;    // DEFINE:
@@ -189,23 +189,18 @@ public:
         
         int layers;
         
-        // Dimension size (net.layers)
-        // int* dimensions;        // vector of length layers with entries for neurons per layer // 1D
-        DualCArray<int> dimensions;
+        // Dimension size (net.layers)     
+        DualCArray<int> dimensions; // vector of length layers with entries for neurons per layer // 1D
 
-        int* activations;        // unused // 1D
-        
         int maxlayer;        // longest layer (for memory allocation)
-        
         int sumlayers;
-        
-        int* startI;    // 1D
-        
+    
+        DualCArray<int> startI;    // 1D
+
         bool bundle;
         
-        // Sized by num_layers
-        int* bundles;   // 1D
         
+        DualCArray<int> bundles;   // 1D // Sized by num_layers
 
         int** bundleinputsize;  // 2D // DEFINE: 
         

@@ -542,8 +542,11 @@ void Reference_lattice::screen(double* Sik, bool* Bij, int ii, int sid, double* 
             if (rik + rij - rjk < 1e-13) {
                 continue;
             }                            // bond angle > 90 degrees
-            double Cmax  = state->pair->screening_max[itype * nelements * nelements + jtype * nelements + ktype];
-            double Cmin  = state->pair->screening_min[itype * nelements * nelements + jtype * nelements + ktype];
+            
+            double Cmax  = state->pair->screening_max(itype, jtype, ktype);
+            double Cmin  = state->pair->screening_min(itype, jtype, ktype);
+
+
             double temp1 = rij - rik + rjk;
             Cn    = temp1 * temp1 - 4 * rij * rjk;
             temp1 = rij - rjk;
