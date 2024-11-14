@@ -188,13 +188,11 @@ public:
     {
         
         int layers;
+        int maxlayer;        // longest layer (for memory allocation)
+        int sumlayers;
         
         // Dimension size (net.layers)     
         DualCArray<int> dimensions; // vector of length layers with entries for neurons per layer // 1D
-
-        int maxlayer;        // longest layer (for memory allocation)
-        int sumlayers;
-    
         DualCArray<int> startI;    // 1D
 
         bool bundle;
@@ -203,7 +201,6 @@ public:
         DualCArray<int> bundles;   // 1D // Sized by num_layers
 
         int** bundleinputsize;  // 2D // DEFINE: 
-        
         int** bundleoutputsize; // 2D // DEFINE:
         
         bool** identitybundle;  // 2D // DEFINE:
